@@ -1,7 +1,7 @@
 # StrideSim
 
 <p align="center">
-  <img src="exts/stride.simulator/data/icon.png" alt="" width="300" />
+  <img src="docs/resources/icon.png" alt="" width="300" />
 </p>
 
 StrideSim is a Nvidia Isaac Sim-based robot simulator, offering a realistic environment and compatibility with ROS2 for efficient robotics development.
