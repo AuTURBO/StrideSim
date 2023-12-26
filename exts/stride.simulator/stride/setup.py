@@ -22,8 +22,8 @@ setup(
     # additional metadata about your package
     author=EXTENSION_TOML_DATA["package"]["author"],
     author_email=EXTENSION_TOML_DATA["package"]["author_email"],
-    maintainer=EXTENSION_TOML_DATA["package"]["author"],
-    maintainer_email=EXTENSION_TOML_DATA["package"]["author_email"],
+    maintainer=EXTENSION_TOML_DATA["package"]["maintainers"],
+    maintainer_email=EXTENSION_TOML_DATA["package"]["maintainer_email"],
     version=EXTENSION_TOML_DATA["package"]["version"],
     description=EXTENSION_TOML_DATA["package"]["description"],
     keywords=EXTENSION_TOML_DATA["package"]["keywords"],

@@ -3,9 +3,12 @@
 version = "0.0.1"
 
 # Lists people or organizations that are considered the "authors" of the package.
-authors = ["Jinwon Kim"]
+authors = ["Jinwon Kim", "Nicky Kim"]
+author_email = ["mqjinwon@gmail.com", "kheo1772@gmail.com"]
 
-author_email = "mqjinwon@gmail.com"
+# Lists peple or organizations that are considered the "maintainers" of the package.
+maintainers = ["Jinwon Kim", "Nicky Kim"]
+maintainer_email = ["mqjinwon@gmail.com", "kheo1772@gmail.com"]
 
 # The title and description fields are primarily for displaying extension info in UI
 title = "stride simulator"
