@@ -4,13 +4,14 @@
 import omni.kit.test
 
 # Extnsion for writing UI tests (simulate UI interaction)
-import omni.kit.ui_test as ui_test
+from omni.kit import ui_test
 
 # Import extension python module we are testing with absolute import path, as if we are external user (other extension)
 import stride.simulator
 
 
-# Having a test class dervived from omni.kit.test.AsyncTestCase declared on the root of module will make it auto-discoverable by omni.kit.test
+# Having a test class dervived from omni.kit.test.AsyncTestCase declared on the root of module will make it
+# auto-discoverable by omni.kit.test
 class Test(omni.kit.test.AsyncTestCase):
     # Before running each test
     async def setUp(self):
