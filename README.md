@@ -42,7 +42,7 @@ If multiple Omniverse apps is installed script will select recommended one. Or y
 
 ## Acknowledge
 
-We developed this project by referencing the code framework of the Pegasus simulator.
+We developed this project by referencing the code framework of [the Pegasus simulator](https://github.com/PegasusSimulator/PegasusSimulator).
 
 ```
 @misc{jacinto2023pegasus,
