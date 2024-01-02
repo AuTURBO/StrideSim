@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 
-import omni.isaac.core.utils.nucleus as nucleus
+from omni.isaac.core.utils import nucleus
 
 # Get the current directory of where this extension is located
 EXTENSION_FOLDER_PATH = Path(os.path.dirname(os.path.realpath(__file__)))
@@ -15,7 +15,7 @@ NVIDIA_ASSETS_PATH = str(nucleus.get_assets_root_path())
 
 print(NVIDIA_ASSETS_PATH)
 
-ISAAC_SIM_ROBOTS = "Isaac/Robots"
+ISAAC_SIM_ROBOTS = "/Isaac/Robots"
 
 # Define the built in robots of the extension
 NVIDIA_SIMULATION_ROBOTS = {
@@ -44,12 +44,14 @@ NVIDIA_SIMULATION_ENVIRONMENTS = {
 ROBOTS_ENVIRONMNETS = {}
 
 # Add the Isaac Sim assets to the list
-for asset in NVIDIA_SIMULATION_ENVIRONMENTS:
-    ROBOTS_ENVIRONMNETS[asset] = (NVIDIA_ASSETS_PATH + ISAAC_SIM_ROBOTS + "/" + NVIDIA_SIMULATION_ROBOTS[asset])
+for asset, path in NVIDIA_SIMULATION_ROBOTS.items():
+    ROBOTS_ENVIRONMNETS[asset] = (NVIDIA_ASSETS_PATH + ISAAC_SIM_ROBOTS + "/" + path)
 
 SIMULATION_ENVIRONMENTS = {}
 
 # Add the Isaac Sim assets to the list
-for asset in NVIDIA_SIMULATION_ENVIRONMENTS:
-    SIMULATION_ENVIRONMENTS[asset] = (NVIDIA_ASSETS_PATH + ISAAC_SIM_ENVIRONMENTS + "/" +
-                                      NVIDIA_SIMULATION_ENVIRONMENTS[asset])
+for asset, path in NVIDIA_SIMULATION_ENVIRONMENTS.items():
+    SIMULATION_ENVIRONMENTS[asset] = (NVIDIA_ASSETS_PATH + ISAAC_SIM_ENVIRONMENTS + "/" + path)
+
+# Define the default settings for the simulation environment
+DEFAULT_WORLD_SETTINGS = {"physics_dt": 1.0 / 250.0, "stage_units_in_meters": 1.0, "rendering_dt": 1.0 / 60.0}
