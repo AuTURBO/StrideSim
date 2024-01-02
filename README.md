@@ -40,7 +40,7 @@ If multiple Omniverse apps is installed script will select recommended one. Or y
 > ./link_app.sh --path "/home/${USER}/.local/share/ov/pkg/${ISAAC_FOLDER}"
 ```
 
-## Set Environment variables
+## Set Environment Variables
 
 Set environment variables to facilitate running Isaac Sim in the `~/.bashrc`.
 
