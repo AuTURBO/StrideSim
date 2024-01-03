@@ -40,6 +40,21 @@ If multiple Omniverse apps is installed script will select recommended one. Or y
 > ./link_app.sh --path "/home/${USER}/.local/share/ov/pkg/${ISAAC_FOLDER}"
 ```
 
+## Set Environment Variables
+
+Set environment variables to facilitate running Isaac Sim in the `~/.bashrc`.
+
+```bash
+# ~/.bashrc
+
+# Isaac Sim root directory
+export ISAACSIM_PATH="${HOME}/.local/share/ov/pkg/${ISAAC_FOLDER}"
+# Isaac Sim python executable
+alias ISAACSIM_PYTHON="${ISAACSIM_PATH}/python.sh"
+# Isaac Sim app
+alias ISAACSIM="${ISAACSIM_PATH}/isaac-sim.sh"
+```
+
 ## Acknowledge
 
 We developed this project by referencing the code framework of [the Pegasus simulator](https://github.com/PegasusSimulator/PegasusSimulator).
