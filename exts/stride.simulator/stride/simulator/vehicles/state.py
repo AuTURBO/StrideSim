@@ -1,9 +1,3 @@
-"""
-| File: state.py
-| Author: Marcelo Jacinto (marcelo.jacinto@tecnico.ulisboa.pt)
-| License: BSD-3-Clause. Copyright (c) 2023, Marcelo Jacinto. All rights reserved.
-| Description: Describes the state of a vehicle (or rigidbody).
-"""
 __all__ = ["State"]
 
 import numpy as np

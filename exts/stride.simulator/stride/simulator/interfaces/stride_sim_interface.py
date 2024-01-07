@@ -39,9 +39,6 @@ class StrideInterface:
         if StrideInterface._is_initialized:
             return
 
-        carb.log_info("Initializing the Pegasus Simulator Extension")
-        StrideInterface._is_initialized = True
-
         # Get a handle to the vehicle manager instance which will manage which vehicles are spawned in the world
         # to be controlled and simulated
         self._vehicle_manager = VehicleManager()
@@ -55,6 +52,9 @@ class StrideInterface:
         self._latitude = 0.0
         self._longitude = 0.0
         self._altitude = 0.0
+
+        carb.log_info("Initializing the Pegasus Simulator Extension")
+        StrideInterface._is_initialized = True
 
     @property
     def world(self):

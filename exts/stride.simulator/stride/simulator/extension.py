@@ -69,7 +69,6 @@ class StrideSimulatorExtension(omni.ext.IExt):
                     ui.Button("Env", clicked_fn=on_reset)
 
     def autoload_helper(self):
-
         # Check if we already have a viewport and a camera of interest
         if get_active_viewport() is not None and isinstance(get_active_viewport().stage) == pxr.Usd.Stage and str(
                 get_active_viewport().stage.GetPrimAtPath("/OmniverseKit_Persp")) != "invalid null prim":

@@ -1,10 +1,3 @@
-"""
-| File: vehicle.py
-| Author: Marcelo Jacinto (marcelo.jacinto@tecnico.ulisboa.pt)
-| License: BSD-3-Clause. Copyright (c) 2023, Marcelo Jacinto. All rights reserved.
-| Description: Definition of the Vehicle class which is used as the base for all the vehicles.
-"""
-
 # Numerical computations
 import numpy as np
 from scipy.spatial.transform import Rotation
@@ -138,19 +131,28 @@ class Vehicle(Robot):
         """
         return self._state
 
-    def sim_start_stop(self, event):
+    def sim_start(self, event):
         """
-        Callback that is called every time there is a timeline event such as starting/stoping the simulation.
+        Callback that is called every time there is a timeline event such as starting the simulation.
 
         Args:
-            event: A timeline event generated from Isaac Sim, such as starting or stoping the simulation.
+            event: A timeline event generated from Isaac Sim, such as starting the simulation.
         """
 
-        # If the start/stop button was pressed, then call the start and stop methods accordingly
+        # If the start/stop button was pressed, then call the start method accordingly
         if self._world.is_playing() and self._sim_running is False:
             self._sim_running = True
             self.start()
+            
+    def sim_stop(self, event):
+        """
+        Callback that is called every time there is a timeline event such as stopping the simulation.
 
+        Args:
+            event: A timeline event generated from Isaac Sim, such as stopping the simulation.
+        """
+        
+        # If the start/stop button was pressed, then call the stop method accordingly
         if self._world.is_stopped() and self._sim_running is True:
             self._sim_running = False
             self.stop()
