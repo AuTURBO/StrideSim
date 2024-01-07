@@ -20,7 +20,7 @@ class StrideSimulatorExtension(omni.ext.IExt):
 
         self._count = 0
 
-        self._window = ui.Window("My Window", width=300, height=300)
+        self._window = ui.Window("Stride Simulator", width=300, height=300)
         with self._window.frame:
             with ui.VStack():
                 label = ui.Label("")
