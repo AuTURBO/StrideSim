@@ -1,6 +1,6 @@
 __all__ = ["StrideInterface"]
 
-# Importing Lock in ordef to have a multithread safe Pegasus singleton that manages the entire Pegasus extension
+# Importing lock in order to have a multithread safe Pegasus singleton that manages the entire Pegasus extension.
 import gc
 import asyncio
 from threading import Lock
