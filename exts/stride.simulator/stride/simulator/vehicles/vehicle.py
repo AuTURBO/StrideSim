@@ -143,7 +143,7 @@ class Vehicle(Robot):
         if self._world.is_playing() and self._sim_running is False:
             self._sim_running = True
             self.start()
-            
+
     def sim_stop(self, event):
         """
         Callback that is called every time there is a timeline event such as stopping the simulation.
@@ -151,7 +151,7 @@ class Vehicle(Robot):
         Args:
             event: A timeline event generated from Isaac Sim, such as stopping the simulation.
         """
-        
+
         # If the start/stop button was pressed, then call the stop method accordingly
         if self._world.is_stopped() and self._sim_running is True:
             self._sim_running = False
