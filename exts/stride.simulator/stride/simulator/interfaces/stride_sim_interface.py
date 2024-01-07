@@ -1,6 +1,6 @@
 __all__ = ["StrideInterface"]
 
-# Importing lock in order to have a multithread safe Pegasus singleton that manages the entire Pegasus extension.
+# Importing lock in order to have a multithread safe Stride singleton that manages the entire Stride extension.
 import gc
 import asyncio
 from threading import Lock
@@ -12,7 +12,7 @@ from omni.isaac.core.utils.stage import clear_stage
 from omni.isaac.core.utils.viewports import set_camera_view
 from omni.isaac.core.utils import nucleus
 
-# Pegasus Simulator internal API
+# Stride Simulator internal API
 from stride.simulator.params import DEFAULT_WORLD_SETTINGS, SIMULATION_ENVIRONMENTS
 from stride.simulator.vehicles.vehicle_manager import VehicleManager
 
@@ -53,7 +53,7 @@ class StrideInterface:
         self._longitude = 0.0
         self._altitude = 0.0
 
-        carb.log_info("Initializing the Pegasus Simulator Extension")
+        carb.log_info("Initializing the Stride Simulator Extension")
         StrideInterface._is_initialized = True
 
     @property
@@ -274,7 +274,7 @@ class StrideInterface:
         """
 
         # Use a lock in here to make sure we do not have a race condition
-        # when using multi-threading and creating the first instance of the Pegasus extension manager
+        # when using multi-threading and creating the first instance of the Stride extension manager
         with cls._lock:
             if cls._instance is None:
                 cls._instance = object.__new__(cls)

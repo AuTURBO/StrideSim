@@ -58,4 +58,4 @@ class QuadrupedRobot(Vehicle):
         super().__init__(stage_prefix, usd_file, init_pos, init_orientation)
 
 
-# TODO: check other functions from pegasus simulator
+# TODO: check other functions from stride simulator

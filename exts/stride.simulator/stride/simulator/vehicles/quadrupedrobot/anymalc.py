@@ -1,7 +1,7 @@
 from stride.simulator.vehicles.quadrupedrobot.quadrupedrobot import QuadrupedRobot, QuadrupedRobotConfig
 
 # Mavlink interface
-# from pegasus.simulator.logic.backends.mavlink_backend import MavlinkBackend
+# from stride.simulator.logic.backends.mavlink_backend import MavlinkBackend
 
 # Get the location of the asset
 from stride.simulator.params import ROBOTS_ENVIRONMNETS

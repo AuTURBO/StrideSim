@@ -1,3 +1,5 @@
+# TODO: 나중에 UI코드 부분을 빼서 ui folder에 정리해야 함
+
 # Python garbage collenction and asyncronous API
 from threading import Timer
 
@@ -72,7 +74,7 @@ class StrideSimulatorExtension(omni.ext.IExt):
         # Check if we already have a viewport and a camera of interest
         if get_active_viewport() is not None and isinstance(get_active_viewport().stage) == pxr.Usd.Stage and str(
                 get_active_viewport().stage.GetPrimAtPath("/OmniverseKit_Persp")) != "invalid null prim":
-            self._pegasus_sim.initialize_world()
+            self._stride_sim.initialize_world()
         else:
             Timer(0.1, self.autoload_helper).start()
 
