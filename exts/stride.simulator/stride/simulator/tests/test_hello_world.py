@@ -30,11 +30,11 @@ class Test(omni.kit.test.AsyncTestCase):
     async def test_window_button(self):
 
         # Find a label in our window
-        label = ui_test.find("My Window//Frame/**/Label[*]")
+        label = ui_test.find("Stride Simulator//Frame/**/Label[*]")
 
         # Find buttons in our window
-        add_button = ui_test.find("My Window//Frame/**/Button[*].text=='Add'")
-        reset_button = ui_test.find("My Window//Frame/**/Button[*].text=='Reset'")
+        add_button = ui_test.find("Stride Simulator//Frame/**/Button[*].text=='Add'")
+        reset_button = ui_test.find("Stride Simulator//Frame/**/Button[*].text=='Reset'")
 
         # Click reset button
         await reset_button.click()
