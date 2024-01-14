@@ -1,5 +1,6 @@
 # The vehicle interface
 from stride.simulator.vehicles.vehicle import Vehicle
+
 class QuadrupedRobotConfig:
     """
     A data class that is used for configuring a quadrupedrobot
