@@ -1,11 +1,27 @@
-import omni.ext
+# TODO: 나중에 UI코드 부분을 빼서 ui folder에 정리해야 함
 
+# Python garbage collenction and asyncronous API
+from threading import Timer
+
+# Omniverse general API
+import pxr
+import omni.ext
+import omni.usd
+import omni.kit.ui
+import omni.kit.app
 from omni import ui
+
+from omni.kit.viewport.utility import get_active_viewport
+
+from stride.simulator.interfaces.stride_sim_interface import StrideInterface
+from stride.simulator.vehicles.quadrupedrobot.anymalc import AnymalC
+from stride.simulator.params import SIMULATION_ENVIRONMENTS
+
 
 # Functions and vars are available to other extension as usual in python: `example.python_ext.some_public_function(x)`
 def some_public_function(x: int):
     print("[stride.simulator] some_public_function was called with x: ", x)
-    return x ** x
+    return x**x
 
 
 class StrideSimulatorExtension(omni.ext.IExt):
@@ -18,27 +34,49 @@ class StrideSimulatorExtension(omni.ext.IExt):
     def on_startup(self, ext_id):
         print("[stride.simulator] stride simulator startup")
 
-        self._count = 0
-
         self._window = ui.Window("Stride Simulator", width=300, height=300)
+
+        # Start the extension backend
+        self._stride_sim = StrideInterface()
+
         with self._window.frame:
             with ui.VStack():
                 label = ui.Label("")
 
-
                 def on_click():
-                    self._count += 1
-                    label.text = f"count: {self._count}"
+                    # Check if we already have a stage loaded (when using autoload feature, it might not be ready yet)
+                    # This is a limitation of the simulator, and we are doing this to make sure that the
+                    # extension does no crash when using the GUI with autoload feature
+                    # If autoload was not enabled, and we are enabling the extension from the Extension widget, then
+                    # we will always have a state open, and the auxiliary timer will never run
+
+                    if omni.usd.get_context().get_stage_state() != omni.usd.StageState.CLOSED:
+                        self._stride_sim.initialize_world()
+                    else:
+                        # We need to create a timer to check until the window is properly open and the stage created.
+                        # This is a limitation of the current Isaac Sim simulator and the way it loads extensions :(
+                        self.autoload_helper()
+
+                    label.text = "Initialize world"
 
                 def on_reset():
-                    self._count = 0
-                    label.text = "empty"
+                    self._stride_sim.load_environment(SIMULATION_ENVIRONMENTS["Default Environment"])
 
-                on_reset()
+                    self._anymal = AnymalC(id=ext_id, init_pos=[0.0, 0.0, 0.5], init_orientation=[0.0, 0.0, 0.0, 1.0])
+
+                    label.text = "Open environment"
 
                 with ui.HStack():
-                    ui.Button("Add", clicked_fn=on_click)
-                    ui.Button("Reset", clicked_fn=on_reset)
+                    ui.Button("Init", clicked_fn=on_click)
+                    ui.Button("Env", clicked_fn=on_reset)
+
+    def autoload_helper(self):
+        # Check if we already have a viewport and a camera of interest
+        if get_active_viewport() is not None and isinstance(get_active_viewport().stage) == pxr.Usd.Stage and str(
+                get_active_viewport().stage.GetPrimAtPath("/OmniverseKit_Persp")) != "invalid null prim":
+            self._stride_sim.initialize_world()
+        else:
+            Timer(0.1, self.autoload_helper).start()
 
     def on_shutdown(self):
         print("[stride.simulator] stride simulator shutdown")
