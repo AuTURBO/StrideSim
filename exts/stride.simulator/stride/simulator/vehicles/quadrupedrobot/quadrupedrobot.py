@@ -119,5 +119,3 @@ class QuadrupedRobot(Vehicle):
 
         # Apply the force to the rigidbody. The force should be expressed in the rigidbody frame
         self._world.dc_interface.apply_body_force(rb, carb._carb.Float3(force), carb._carb.Float3(pos), False)
-
-# TODO: check other functions from stride simulator
