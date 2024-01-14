@@ -34,8 +34,8 @@ class StrideSimulatorExtension(omni.ext.IExt):
     def on_startup(self, ext_id):
         print("[stride.simulator] stride simulator startup")
 
-        self._window = ui.Window("My Window", width=300, height=300)
-
+        self._window = ui.Window("Stride Simulator", width=300, height=300)
+    
         # Start the extension backend
         self._stride_sim = StrideInterface()
 
