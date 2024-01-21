@@ -10,12 +10,18 @@ import numpy as np
 import torch
 
 class AnyamlController(Controller):
-    
+    """
+    AnyamlController class - It defines a base interface for creating a AnyamlController
+
+    Args:
+        Controller: The base class for all controllers.
+    """
+
     def __init__(self):
-        super.__init__()
-        
+        super().__init__()
+
         assets_root_path = get_assets_root_path()
-        
+
         # Policy
         file_content = omni.client.read_file(assets_root_path + "/Isaac/Samples/Quadruped/Anymal_Policies/policy_1.pt")[
             2
@@ -40,16 +46,16 @@ class AnyamlController(Controller):
         self._actuator_network = LstmSeaNetwork()
         self._actuator_network.setup(file, self._default_joint_pos)
         self._actuator_network.reset()
-        
+
     def advance(self, dt, command):
         """[summary]
-        
+
         compute the desired torques and apply them to the articulation
-        
+
         Argument:
         dt {float} -- Timestep update in the world.
         command {np.ndarray} -- the robot command (v_x, v_y, w_z)
-        
+
         """
         if self._policy_counter % 4 == 0:
             obs = self._compute_observation(command)
@@ -76,8 +82,7 @@ class AnyamlController(Controller):
         current_joint_pos = np.array(current_joint_pos.reshape([3, 4]).T.flat)
         current_joint_vel = np.array(current_joint_vel.reshape([3, 4]).T.flat)
         joint_torques, _ = self._actuator_network.compute_torques(
-            current_joint_pos, current_joint_vel, self._action_scale * self.action
-        )
+            current_joint_pos, current_joint_vel, self._action_scale * self.action)
 
         # finally convert controller order to DC order for command torque
         torque_reorder = np.array(joint_torques.reshape([4, 3]).T.flat)

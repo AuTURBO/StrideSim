@@ -1,7 +1,6 @@
 __all__ = ["Controller"]
 
-import numpy as np
-
+# import numpy as np
 
 class Controller:
     """
@@ -23,6 +22,5 @@ class Controller:
         Returns:
             torque: robot torques
         """
-    
+
         return self._torque
-    

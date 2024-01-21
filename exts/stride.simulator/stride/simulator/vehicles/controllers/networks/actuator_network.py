@@ -16,19 +16,11 @@ class LstmSeaNetwork:
         # default joint position
         self._default_joint_pos = None
 
-    """
-    Properties
-    """
-
     def get_hidden_state(self) -> np.ndarray:
         if self._hidden_state is None:
             return np.zeros((12, 8))
         else:
             return self._hidden_state[1].detach().numpy()
-
-    """
-    Operations
-    """
 
     def setup(self, path_or_buffer, default_joint_pos: Union[list, np.ndarray]):
         # load the network from JIT file
@@ -85,10 +77,6 @@ class SeaNetwork(torch.nn.Module):
         # default joint position
         self._default_joint_pos = None
 
-    """
-    Operations
-    """
-
     def setup(self, weights_path: str, default_joint_pos: Union[list, np.ndarray]):
         # load the weights into network
         self._load_weights(weights_path)
@@ -102,10 +90,6 @@ class SeaNetwork(torch.nn.Module):
     def compute_torques(self, joint_pos, joint_vel, actions) -> np.ndarray:
         self._update_joint_history(joint_pos, joint_vel, actions)
         return self._compute_sea_torque()
-
-    """
-    Internal helpers.
-    """
 
     def _load_weights(self, weights_path: str):
         # load the data

@@ -1,5 +1,6 @@
 # The vehicle interface
 from stride.simulator.vehicles.vehicle import Vehicle
+import carb
 
 class QuadrupedRobotConfig:
     """
@@ -60,7 +61,7 @@ class QuadrupedRobot(Vehicle):
 
     def update(self, dt: float):
         """
-        Method that computes and applies the forces to the vehicle in simulation based on the motor speed. 
+        Method that computes and applies the forces to the vehicle in simulation based on the motor speed.
         This method must be implemented by a class that inherits this type. This callback
         is called on every physics step.
 
@@ -71,11 +72,12 @@ class QuadrupedRobot(Vehicle):
         # Get the articulation root of the vehicle
         articulation = self._world.dc_interface.get_articulation(self._stage_prefix)
 
-        # Get the desired angular velocities for each rotor from the first backend (can be mavlink or other) expressed in rad/s
+        # Get the desired angular velocities for each rotor from the first backend
+        # (can be mavlink or other) expressed in rad/s
         if len(self._backends) != 0:
             desired_rotor_velocities = self._backends[0].input_reference()
         else:
-            desired_rotor_velocities = [0.0 for i in range(self._thrusters._num_rotors)]
+            desired_rotor_velocities = [0.0 for i in range(self._thrusters._num_rotors)] # pylint: disable=protected-access
 
         # Input the desired rotor velocities in the thruster model
         self._thrusters.set_input_reference(desired_rotor_velocities)
@@ -102,14 +104,15 @@ class QuadrupedRobot(Vehicle):
         # Call the update methods in all backends
         for backend in self._backends:
             backend.update(dt)
-        
-    def apply_force(self, force, pos=[0.0, 0.0, 0.0], body_part="/body"):
+
+    def apply_force(self, force, pos=[0.0, 0.0, 0.0], body_part="/body"): # pylint: disable=dangerous-default-value
         """
-        Method that will apply a force on the rigidbody, on the part specified in the 'body_part' at its relative position
-        given by 'pos' (following a FLU) convention. 
+        Method that will apply a force on the rigidbody, on the part specified in the 'body_part' at
+        its relative position given by 'pos' (following a FLU) convention.
 
         Args:
-            force (list): A 3-dimensional vector of floats with the force [Fx, Fy, Fz] on the body axis of the vehicle according to a FLU convention.
+            force (list): A 3-dimensional vector of floats with the force [Fx, Fy, Fz] on the body axis of the vehicle
+                            according to a FLU convention.
             pos (list): _description_. Defaults to [0.0, 0.0, 0.0].
             body_part (str): . Defaults to "/body".
         """
@@ -118,4 +121,4 @@ class QuadrupedRobot(Vehicle):
         rb = self._world.dc_interface.get_rigid_body(self._stage_prefix + body_part)
 
         # Apply the force to the rigidbody. The force should be expressed in the rigidbody frame
-        self._world.dc_interface.apply_body_force(rb, carb._carb.Float3(force), carb._carb.Float3(pos), False)
+        self._world.dc_interface.apply_body_force(rb, carb._carb.Float3(force), carb._carb.Float3(pos), False) # pylint: disable=protected-access
