@@ -9,6 +9,8 @@ import io
 import numpy as np
 import torch
 
+# TODO: state를 공유해야한다. 아니면 input으로 받아야함 state는 로봇 Vehicle에서 관리하고 있음 e.g) quadrupedrobot.state
+
 class AnyamlController(Controller):
     """
     AnyamlController class - It defines a base interface for creating a AnyamlController

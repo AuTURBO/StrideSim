@@ -96,9 +96,6 @@ class Vehicle(Robot):
         # Variable that will hold the current state of the vehicle
         self._state = State()
 
-        # Motor that is given as reference
-        self._motor_speed = []
-
         # Add a callback to the physics engine to update the current state of the system
         # self._world.add_physics_callback(self._stage_prefix + "/state", self.update_state)
 
@@ -157,44 +154,10 @@ class Vehicle(Robot):
             self._sim_running = False
             self.stop()
 
-    def apply_force(self, force, pos, body_part="/body"):
-        """
-        Method that will apply a force on the rigidbody, on the part specified
-        in the 'body_part' at its relative position given by 'pos' (following a FLU) convention.
-
-        Args:
-            force (list): A 3-dimensional vector of floats with the force [Fx, Fy, Fz]
-                            on the body axis of the vehicle according to a FLU convention.
-            pos (list): _description_. Defaults to [0.0, 0.0, 0.0].
-            body_part (str): . Defaults to "/body".
-        """
-
-        if pos is None:
-            pos = [0.0, 0.0, 0.0]
-
-        # Get the handle of the rigidbody that we will apply the force to
-        rb = self._world.dc_interface.get_rigid_body(self._stage_prefix + body_part)
-
-        # Apply the force to the rigidbody. The force should be expressed in the rigidbody frame
-        self._world.dc_interface.apply_body_force(rb, carb._carb.Float3(force), carb._carb.Float3(pos), False)  # pylint: disable=protected-access FIXME
-
-    def apply_torque(self, torque, body_part="/body"):
-        """
-        Method that when invoked applies a given torque vector
-        to /<rigid_body_name>/"body" or to /<rigid_body_name>/<body_part>.
-
-        Args:
-            torque (list): A 3-dimensional vector of floats with the force [Tx, Ty, Tz]
-                            on the body axis of the vehicle according to a FLU convention.
-            body_part (str): . Defaults to "/body".
-        """
-
-        # Get the handle of the rigidbody that we will apply a torque to
-        rb = self._world.dc_interface.get_rigid_body(self._stage_prefix + body_part)
-
-        # Apply the torque to the rigidbody. The torque should be expressed in the rigidbody frame
-        self._world.dc_interface.apply_body_torque(rb, carb._carb.Float3(torque), False)  # pylint: disable=protected-access
-
+    
+    def apply_torque(self, torque):
+        pass
+        
     def update_state(self, dt: float):
         """
         Method that is called at every physics step to retrieve and update the current state of the vehicle, i.e., get

@@ -1,5 +1,6 @@
 # The vehicle interface
 from stride.simulator.vehicles.vehicle import Vehicle
+from stride.simulator.interfaces.stride_sim_interface import StrideInterface
 import carb
 
 class QuadrupedRobotConfig:
@@ -25,6 +26,8 @@ class QuadrupedRobotConfig:
         # [Can be None as well, if we do not desired to use PX4 with this simulated vehicle].
         # It can also be a ROS2 backend or your own custom Backend implementation!
         self.backends = []
+        
+        self.controller = None
 
 
 class QuadrupedRobot(Vehicle):
@@ -58,6 +61,21 @@ class QuadrupedRobot(Vehicle):
 
         # 1. Initiate the vehicle object itself
         super().__init__(stage_prefix, usd_file, init_pos, init_orientation)
+        
+        # 2. Initialize all the vehicle sensors
+        self._sensors = config.sensors
+        for sensor in self._sensors:
+            sensor.set_spherical_coordinate()
+
+        # Add callbacks to the physics engine to update each sensor at every timestep
+        # and let the sensor decide depending on its internal update rate whether to generate new data
+        self._world.add_physics_callback(self._stage_prefix + "/Sensors", self.update_sensors)
+        
+        # 4. Save the backend interface (if given in the configuration of the multirotor)
+        # and initialize them
+        self._backends = config.backends
+        for backend in self._backends:
+            backend.initialize(self)
 
     def update(self, dt: float):
         """
@@ -68,57 +86,28 @@ class QuadrupedRobot(Vehicle):
         Args:
             dt (float): The time elapsed between the previous and current function calls (s).
         """
+        
+        # Get the desired base velocity for robot from the first backend (can be mavlink or other) expressed in m/s
+        if len(self._backends) != 0:
+            command = self._backends[0].input_reference()
+        else:
+            command = [0.0 for i in range(self._thrusters._num_rotors)]
 
         # Get the articulation root of the vehicle
         articulation = self._world.dc_interface.get_articulation(self._stage_prefix)
 
-        # Get the desired angular velocities for each rotor from the first backend
-        # (can be mavlink or other) expressed in rad/s
-        if len(self._backends) != 0:
-            desired_rotor_velocities = self._backends[0].input_reference()
-        else:
-            desired_rotor_velocities = [0.0 for i in range(self._thrusters._num_rotors)] # pylint: disable=protected-access
+        torque = self.controller.advance(dt, command)
 
-        # Input the desired rotor velocities in the thruster model
-        self._thrusters.set_input_reference(desired_rotor_velocities)
-
-        # Get the desired forces to apply to the vehicle
-        forces_z, _, rolling_moment = self._thrusters.update(self._state, dt)
-
-        # Apply force to each rotor
-        for i in range(4):
-
-            # Apply the force in Z on the rotor frame
-            self.apply_force([0.0, 0.0, forces_z[i]], body_part="/rotor" + str(i))
-
-            # Generate the rotating propeller visual effect
-            self.handle_propeller_visual(i, forces_z[i], articulation)
-
-        # Apply the torque to the body frame of the vehicle that corresponds to the rolling moment
-        self.apply_torque([0.0, 0.0, rolling_moment], "/body")
-
-        # Compute the total linear drag force to apply to the vehicle's body frame
-        drag = self._drag.update(self._state, dt)
-        self.apply_force(drag, body_part="/body")
+        self.apply_torque(torque)
 
         # Call the update methods in all backends
         for backend in self._backends:
             backend.update(dt)
 
-    def apply_force(self, force, pos=[0.0, 0.0, 0.0], body_part="/body"): # pylint: disable=dangerous-default-value
-        """
-        Method that will apply a force on the rigidbody, on the part specified in the 'body_part' at
-        its relative position given by 'pos' (following a FLU) convention.
+    def apply_torque(self, torque):
 
-        Args:
-            force (list): A 3-dimensional vector of floats with the force [Fx, Fy, Fz] on the body axis of the vehicle
-                            according to a FLU convention.
-            pos (list): _description_. Defaults to [0.0, 0.0, 0.0].
-            body_part (str): . Defaults to "/body".
-        """
-
-        # Get the handle of the rigidbody that we will apply the force to
-        rb = self._world.dc_interface.get_rigid_body(self._stage_prefix + body_part)
-
-        # Apply the force to the rigidbody. The force should be expressed in the rigidbody frame
-        self._world.dc_interface.apply_body_force(rb, carb._carb.Float3(force), carb._carb.Float3(pos), False) # pylint: disable=protected-access
+        self._dc_interface.wake_up_articulation(self._handle)
+        
+        torque_reorder = torque.reshape([4, 3]).T.flat
+      
+        self._dc_interface.set_articulation_dof_efforts(self._handle, torque_reorder)
