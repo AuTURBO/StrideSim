@@ -3,7 +3,7 @@ import numpy as np
 from scipy.spatial.transform import Rotation
 
 # Low level APIs
-import carb
+# import carb
 from pxr import Usd, Gf
 
 # High level Isaac sim APIs
@@ -154,10 +154,9 @@ class Vehicle(Robot):
             self._sim_running = False
             self.stop()
 
-    
     def apply_torque(self, torque):
         pass
-        
+
     def update_state(self, dt: float):
         """
         Method that is called at every physics step to retrieve and update the current state of the vehicle, i.e., get
