@@ -55,6 +55,24 @@ alias ISAACSIM_PYTHON="${ISAACSIM_PATH}/python.sh"
 alias ISAACSIM="${ISAACSIM_PATH}/isaac-sim.sh"
 ```
 
+## Run Linter
+
+Install required packages.
+
+```bash
+$ python -m pip install --upgrade pip
+$ pip install pylint
+$ pylint --version
+pylint 3.0.3
+```
+
+Run linter.
+
+```bash
+$ . run_pylint.sh
+```
+
+
 ## Acknowledge
 
 We developed this project by referencing the code framework of [the Pegasus simulator](https://github.com/PegasusSimulator/PegasusSimulator).
