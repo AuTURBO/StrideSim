@@ -1,19 +1,11 @@
-"""
-| File: imu.py
-| Author: Marcelo Jacinto (marcelo.jacinto@tecnico.ulisboa.pt)
-| License: BSD-3-Clause. Copyright (c) 2023, Marcelo Jacinto. All rights reserved.
-| Description: Simulates an imu. Based on the implementation provided in PX4 stil_gazebo
-               (https://github.com/PX4/PX4-SITL_gazebo)
-"""
 __all__ = ["Imu"]
 
 import numpy as np
 from scipy.spatial.transform import Rotation
 
-from pegasus.simulator.logic.state import State
-from pegasus.simulator.logic.sensors import Sensor
-from pegasus.simulator.logic.rotations import rot_FLU_to_FRD, rot_ENU_to_NED
-from pegasus.simulator.logic.sensors.geo_mag_utils import GRAVITY_VECTOR
+from stride.simulator.vehicles import State
+from stride.simulator.vehicles.sensors import Sensor
+from stride.simulator.vehicles.sensors.geo_mag_utils import GRAVITY_VECTOR
 
 # TODO - test comment
 
@@ -41,13 +33,17 @@ class Imu(Sensor):
             >>>         "bias_correlation_time": 300.0,
             >>>         "turn_on_bias_sigma": 20.0e-3 * 9.8
             >>> },
-            >>>  "update_rate": 1.0}                 # Hz
+            >>>  "update_frequency": 1.0}                 # Hz
         """
+        if config is None:
+            config = {}
+        else:
+            assert isinstance(config, dict), "The config parameter must be a dictionary."
 
-        # Initialize the Super class "object" attributes
-        super().__init__(sensor_type="Imu", update_rate=config.get("update_rate", 250.0))
+        # Initialize the Super class "object" attributes.
+        super().__init__(sensor_type="Imu", update_frequency=config.get("update_frequency", 250.0))
 
-        # Orientation noise constant
+        # Orientation noise constant.
         self._orientation_noise: float = 0.0
 
         # Gyroscope noise constants
@@ -58,7 +54,7 @@ class Imu(Sensor):
         self._gyroscope_bias_correlation_time = gyroscope_config.get("bias_correlation_time", 1.0E3)
         self._gyroscope_turn_on_bias_sigma = gyroscope_config.get("turn_on_bias_sigma", 0.008726646259971648)
 
-        # Accelerometer noise constants
+        # Accelerometer noise constants.
         self._accelerometer_bias: np.ndarray = np.zeros((3,))
         accelerometer_config = config.get("accelerometer", {})
         self._accelerometer_noise_density = accelerometer_config.get("noise_density", 0.004)
@@ -66,7 +62,7 @@ class Imu(Sensor):
         self._accelerometer_bias_correlation_time = accelerometer_config.get("bias_correlation_time", 300.0)
         self._accelerometer_turn_on_bias_sigma = accelerometer_config.get("turn_on_bias_sigma", 0.196)
 
-        # Auxiliar variable used to compute the linear acceleration of the vehicle
+        # Auxiliar variable used to compute the linear acceleration of the vehicle.
         self._prev_linear_velocity = np.zeros((3,))
 
         # Save the current state measured by the Imu
@@ -83,15 +79,11 @@ class Imu(Sensor):
         """
         return self._state
 
-    @Sensor.update_at_rate
+    @Sensor.update_at_frequency
     def update(self, state: State, dt: float):
         """Method that implements the logic of an Imu. In this method we start by generating the random walk of the
-        gyroscope. This value is then added to the real angular velocity of the vehicle (FLU relative to ENU inertial
-        frame expressed in FLU body frame). The same logic is followed for the accelerometer and the accelerations.
-        After this step, the angular velocity is rotated such that it expressed a FRD body frame, relative to a NED
-        inertial frame, expressed in the FRD body frame. Additionally, the acceleration is also rotated, such that it
-        becomes expressed in the body FRD frame of the vehicle. This sensor outputs data that follows the PX4 adopted
-        standard.
+        gyroscope. This value is then added to the real angular velocity of the vehicle (ENU inertial frame expressed in
+        FLU body frame). The same logic is followed for the accelerometer and the accelerations.
 
         Args:
             state (State): The current state of the vehicle.
@@ -101,10 +93,10 @@ class Imu(Sensor):
             (dict) A dictionary containing the current state of the sensor (the data produced by the sensor)
         """
 
-        # Gyroscopic terms
+        # Gyroscopic terms.
         tau_g: float = self._accelerometer_bias_correlation_time
 
-        # Discrete-time standard deviation equivalent to an "integrating" sampler with integration time dt
+        # Discrete-time standard deviation equivalent to an "integrating" sampler with integration time dt.
         sigma_g_d: float = 1 / np.sqrt(dt) * self._gyroscope_noise_density
         sigma_b_g: float = self._gyroscope_random_walk
 
@@ -139,14 +131,14 @@ class Imu(Sensor):
         linear_acceleration_inertial = (state.linear_velocity - self._prev_linear_velocity) / dt
         linear_acceleration_inertial = linear_acceleration_inertial - GRAVITY_VECTOR
 
-        # Update the previous linear velocity for the next computation
+        # Update the previous linear velocity for the next computation.
         self._prev_linear_velocity = state.linear_velocity
 
         # Compute the linear acceleration of the body frame, with respect to the inertial frame, expressed in the body
         # frame.
         linear_acceleration = np.array(Rotation.from_quat(state.attitude).inv().apply(linear_acceleration_inertial))
 
-        # Simulate the accelerometer noise processes and add them to the true linear aceleration values
+        # Simulate the accelerometer noise processes and add them to the true linear aceleration values.
         for i in range(3):
             self._accelerometer_bias[i] = phi_a_d * self._accelerometer_bias[i] + sigma_b_a_d * np.random.rand()
             linear_acceleration[i] = (
@@ -156,25 +148,16 @@ class Imu(Sensor):
         # TODO - Add small "noisy" to the attitude
 
         # --------------------------------------------------------------------------------------------
-        # Apply rotations such that we express the Imu data according to the FRD body frame convention
+        # Apply rotations such that we express the Imu data according to the FLU body frame convention
         # --------------------------------------------------------------------------------------------
 
-        # Convert the orientation to the FRD-NED standard
+        # Convert the orientation to the FLU-ENU standard
         attitude_flu_enu = Rotation.from_quat(state.attitude)
-        attitude_frd_enu = attitude_flu_enu * rot_FLU_to_FRD
-        attitude_frd_ned = rot_ENU_to_NED * attitude_frd_enu
 
-        # Convert the angular velocity from FLU to FRD standard
-        angular_velocity_frd = rot_FLU_to_FRD.apply(angular_velocity)
-
-        # Convert the linear acceleration in the body frame from FLU to FRD standard
-        linear_acceleration_frd = rot_FLU_to_FRD.apply(linear_acceleration)
-
-        # Add the values to the dictionary and return it
         self._state = {
-            "orientation": attitude_frd_ned.as_quat(),
-            "angular_velocity": angular_velocity_frd,
-            "linear_acceleration": linear_acceleration_frd,
+            "orientation": attitude_flu_enu.as_quat(),
+            "angular_velocity": angular_velocity,
+            "linear_acceleration": linear_acceleration,
         }
 
         return self._state

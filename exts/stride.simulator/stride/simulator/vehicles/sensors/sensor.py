@@ -1,6 +1,6 @@
 __all__ = ["Sensor"]
 
-from stride.simulator.logic.state import State
+from stride.simulator.vehicles import State
 
 class Sensor:
     """The base class for implementing a sensor.
