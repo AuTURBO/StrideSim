@@ -4,7 +4,7 @@ import numpy as np
 from scipy.spatial.transform import Rotation
 
 from stride.simulator.vehicles import State
-from stride.simulator.vehicles.sensors import Sensor
+from stride.simulator.vehicles.sensors.sensor import Sensor
 from stride.simulator.vehicles.sensors.geo_mag_utils import GRAVITY_VECTOR
 
 # TODO - test comment

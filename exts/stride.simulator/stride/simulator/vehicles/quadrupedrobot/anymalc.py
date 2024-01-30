@@ -5,7 +5,7 @@ from stride.simulator.vehicles.quadrupedrobot.quadrupedrobot import QuadrupedRob
 
 # Get the location of the asset
 from stride.simulator.params import ROBOTS_ENVIRONMNETS
-from stride.simulator.vehicles.sensors import Imu
+from stride.simulator.vehicles.sensors.imu import Imu
 from stride.simulator.interfaces import StrideInterface
 
 
