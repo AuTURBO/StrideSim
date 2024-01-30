@@ -3,7 +3,7 @@ import numpy as np
 from scipy.spatial.transform import Rotation
 
 # Low level APIs
-# import carb
+import carb
 from pxr import Usd, Gf
 
 # High level Isaac sim APIs
@@ -73,6 +73,10 @@ class Vehicle(Robot):
         self._prim = define_prim(self._stage_prefix, "Xform")
         self._prim = get_prim_at_path(self._stage_prefix)
         self._prim.GetReferences().AddReference(self._usd_file)
+        
+        carb.log_info("=====================================================")
+        carb.log_info(f"Vehicle stage_prefix: {self._stage_prefix}")
+        carb.log_info(f"Vehicle prim: {self._prim}")
 
         # Initialize the "Robot" class
         # Note: we need to change the rotation to have qw first, because NVidia
