@@ -114,7 +114,7 @@ class StrideInterface:
         # Check if we already have a physics environment activated. If not, then activate it
         # and only after spawn the vehicle. This is to avoid trying to spawn a vehicle without a physics
         # environment setup. This way we can even spawn a vehicle in an empty world and it won't care
-        if hasattr(self._stride_sim.world, "_physics_context") == False:
+        if hasattr(self._world, "_physics_context") is False:
             asyncio.ensure_future(self._world.initialize_simulation_context_async())
 
     def get_vehicle(self, stage_prefix: str):
