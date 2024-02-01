@@ -19,7 +19,7 @@ class AnymalCConfig(QuadrupedRobotConfig):
         super().__init__()
 
         # Stage prefix of the vehicle when spawning in the world
-        self.stage_prefix = "AnymalC"
+        self.stage_prefix = "/World/AnymalC"
 
         # The USD file that describes the visual aspect of the vehicle
         self.usd_file = ROBOTS_ENVIRONMNETS["Anymal C"]
