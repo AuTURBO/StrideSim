@@ -59,14 +59,16 @@ class StrideSimulatorExtension(omni.ext.IExt):
                         self.autoload_helper()
 
                     label.text = "Initialize world"
-                    
-                    asyncio.ensure_future(self._stride_sim.load_environment_async(SIMULATION_ENVIRONMENTS["Default Environment"], force_clear=True))
+
+                    asyncio.ensure_future(self._stride_sim.load_environment_async(
+                        SIMULATION_ENVIRONMENTS["Default Environment"], force_clear=True))
 
                 def on_spawn():
-                    
+
                     self._anymal_config = AnymalCConfig()
 
-                    self._anymal = AnymalC(id=ext_id, init_pos=[0.0, 0.0, 0.5], init_orientation=[0.0, 0.0, 0.0, 1.0], config=self._anymal_config)
+                    self._anymal = AnymalC(id=ext_id, init_pos=[0.0, 0.0, 0.5],init_orientation=[0.0, 0.0, 0.0, 1.0],
+                                           config=self._anymal_config)
 
                     label.text = "Open environment"
 

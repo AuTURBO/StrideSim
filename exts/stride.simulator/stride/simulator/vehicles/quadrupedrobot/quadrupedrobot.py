@@ -58,7 +58,7 @@ class QuadrupedRobot(Vehicle):
                                     Defaults to [0.0, 0.0, 0.0, 1.0].
             config (_type_, optional): _description_. Defaults to QuadrupedRobotConfig().
         """
-        
+
 
         # 1. Initiate the vehicle object itself
         super().__init__(stage_prefix, usd_file, init_pos, init_orientation)
@@ -71,8 +71,9 @@ class QuadrupedRobot(Vehicle):
             pass
 
         # debug tool
-        import ipdb; ipdb.set_trace()
-        
+        import ipdb # pylint: disable=import-outside-toplevel
+        ipdb.set_trace()
+
         # Add callbacks to the physics engine to update each sensor at every timestep
         # and let the sensor decide depending on its internal update rate whether to generate new data
         self._world.add_physics_callback(self._stage_prefix + "/Sensors", self.update_sensors)
