@@ -14,9 +14,10 @@ from omni import ui
 from omni.kit.viewport.utility import get_active_viewport
 
 from stride.simulator.interfaces.stride_sim_interface import StrideInterface
-from stride.simulator.vehicles.quadrupedrobot.anymalc import AnymalC
+from stride.simulator.vehicles.quadrupedrobot.anymalc import AnymalC, AnymalCConfig
 from stride.simulator.params import SIMULATION_ENVIRONMENTS
 
+import asyncio
 
 # Functions and vars are available to other extension as usual in python: `example.python_ext.some_public_function(x)`
 def some_public_function(x: int):
@@ -59,16 +60,21 @@ class StrideSimulatorExtension(omni.ext.IExt):
 
                     label.text = "Initialize world"
 
-                def on_reset():
-                    self._stride_sim.load_environment(SIMULATION_ENVIRONMENTS["Default Environment"])
+                    asyncio.ensure_future(self._stride_sim.load_environment_async(
+                        SIMULATION_ENVIRONMENTS["Default Environment"], force_clear=True))
 
-                    self._anymal = AnymalC(id=ext_id, init_pos=[0.0, 0.0, 0.5], init_orientation=[0.0, 0.0, 0.0, 1.0])
+                def on_spawn():
+
+                    self._anymal_config = AnymalCConfig()
+
+                    self._anymal = AnymalC(id=ext_id, init_pos=[0.0, 0.0, 0.5],init_orientation=[0.0, 0.0, 0.0, 1.0],
+                                           config=self._anymal_config)
 
                     label.text = "Open environment"
 
                 with ui.HStack():
                     ui.Button("Init", clicked_fn=on_click)
-                    ui.Button("Env", clicked_fn=on_reset)
+                    ui.Button("Env", clicked_fn=on_spawn)
 
     def autoload_helper(self):
         # Check if we already have a viewport and a camera of interest
