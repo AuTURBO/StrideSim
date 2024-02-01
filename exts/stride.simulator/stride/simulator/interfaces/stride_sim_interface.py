@@ -104,7 +104,14 @@ class StrideInterface:
     def initialize_world(self):
         """Method that initializes the world object
         """
+
         self._world = World(**self._world_settings)
+
+    def initialize_simulation(self):
+        """Method that initializes the simulation context
+        """
+
+        asyncio.ensure_future(self._world.initialize_simulation_context_async())
 
     def get_vehicle(self, stage_prefix: str):
         """Method that returns the vehicle object given its 'stage_prefix', i.e.,
