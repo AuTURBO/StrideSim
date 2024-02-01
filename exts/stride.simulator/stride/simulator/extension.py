@@ -60,8 +60,11 @@ class StrideSimulatorExtension(omni.ext.IExt):
 
                     label.text = "Initialize world"
 
-                    asyncio.ensure_future(self._stride_sim.load_environment_async(
-                        SIMULATION_ENVIRONMENTS["Default Environment"], force_clear=True))
+                    asyncio.ensure_future(
+                        self._stride_sim.load_environment_async(SIMULATION_ENVIRONMENTS["Default Environment"],
+                                                                force_clear=True))
+                    self._stride_sim.initialize_simulation()
+
 
                 def on_spawn():
 

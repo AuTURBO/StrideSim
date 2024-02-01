@@ -10,7 +10,7 @@ class LoggerBackendConfig:
     An auxiliary data class used to store all the configurations for the LoggerBackend communications.
     """
 
-    def __init__(self, config={}):
+    def __init__(self, config=None):
         """
         Initialize the LoggerBackendConfig class
 
@@ -25,6 +25,10 @@ class LoggerBackendConfig:
             >>>  "update_rate": 250.0
             >>> }
         """
+        if config is None:
+            config = {}
+        else:
+            assert isinstance(config, dict), "The config parameter must be a dictionary."
 
         self.vehicle_id = config.get("vehicle_id", 0)
         self.update_rate: float = config.get("update_rate", 250.0)  # [Hz]
