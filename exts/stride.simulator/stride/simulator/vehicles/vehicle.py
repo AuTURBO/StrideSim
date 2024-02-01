@@ -101,18 +101,19 @@ class Vehicle(Robot):
         self._state = State()
 
         # Add a callback to the physics engine to update the current state of the system
-        # self._world.add_physics_callback(self._stage_prefix + "/state", self.update_state)
+        self._world.add_physics_callback(self._stage_prefix + "/state", self.update_state)
 
         # Add the update method to the physics callback if the world was received
         # so that we can apply forces and torques to the vehicle. Note, this method should
         # be implemented in classes that inherit the vehicle object
-        # self._world.add_physics_callback(self._stage_prefix + "/update", self.update)
+        self._world.add_physics_callback(self._stage_prefix + "/update", self.update)
 
         # Set the flag that signals if the simulation is running or not
         self._sim_running = False
 
         # Add a callback to start/stop of the simulation once the play/stop button is hit
-        # self._world.add_timeline_callback(self._stage_prefix + "/start_stop_sim", self.sim_start_stop)
+        self._world.add_timeline_callback(self._stage_prefix + "/start_sim", self.sim_start)
+        self._world.add_timeline_callback(self._stage_prefix + "/stop_sim", self.sim_stop)
 
     def __del__(self):
         """

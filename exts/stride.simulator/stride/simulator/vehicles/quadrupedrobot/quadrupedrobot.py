@@ -140,6 +140,9 @@ class QuadrupedRobot(Vehicle):
         Args:
             dt (float): The time elapsed between the previous and current function calls (s).
         """
+        
+        import ipdb # pylint: disable=import-outside-toplevel
+        ipdb.set_trace()
 
         # Get the desired base velocity for robot from the first backend (can be mavlink or other) expressed in m/s
         if len(self._backends) != 0:
