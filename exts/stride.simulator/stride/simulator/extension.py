@@ -60,19 +60,16 @@ class StrideSimulatorExtension(omni.ext.IExt):
                         self.autoload_helper()
 
                     label.text = "Initialize world"
-                    
-                    asyncio.ensure_future(self._stride_sim.load_environment_async(
-                        SIMULATION_ENVIRONMENTS["Default Environment"], force_clear=True))
+
+                    asyncio.ensure_future(
+                        self._stride_sim.load_environment_async(SIMULATION_ENVIRONMENTS["Default Environment"],
+                                                                force_clear=True))
+                    self._stride_sim.initialize_simulation()
+
 
                 def on_spawn():
                     
                     async def async_load_vehicle():
-
-                        # Check if we already have a physics environment activated. If not, then activate it
-                        # and only after spawn the vehicle. This is to avoid trying to spawn a vehicle without a physics
-                        # environment setup. This way we can even spawn a vehicle in an empty world and it won't care
-                        if hasattr(self._stride_sim.world, "_physics_context") == False:
-                                await self._stride_sim.world.initialize_simulation_context_async()
 
                         self._anymal_config = AnymalCConfig()
 

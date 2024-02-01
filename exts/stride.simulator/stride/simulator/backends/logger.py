@@ -1,16 +1,54 @@
+__all__ = ["LoggerBackend", "LoggerBackendConfig"]
+
 import carb
 
 from stride.simulator.backends.backend import Backend
 
 
-class Logger(Backend):
+class LoggerBackendConfig:
     """
-    Logger backend that just prints the state of the vehicle to the console.
+    An auxiliary data class used to store all the configurations for the LoggerBackend communications.
     """
 
-    def __init__(self, vehicle_id: int):
+    def __init__(self, config=None):
+        """
+        Initialize the LoggerBackendConfig class
+
+        Args:
+            config (dict): A Dictionary that contains all the parameters for configuring the LoggerBackend interface
+                           - it can be empty or only have some of the parameters used by this backend.
+        
+        Examples:
+            The dictionary default parameters are
+
+            >>> {"vehicle_id": 0,           
+            >>>  "update_rate": 250.0
+            >>> }
+        """
+        if config is None:
+            config = {}
+        else:
+            assert isinstance(config, dict), "The config parameter must be a dictionary."
+
+        self.vehicle_id = config.get("vehicle_id", 0)
+        self.update_rate: float = config.get("update_rate", 250.0)  # [Hz]
+
+
+class LoggerBackend(Backend):
+    """
+    Logger Backend that just prints the state of the vehicle to the console.
+    """
+
+    def __init__(self, config=LoggerBackendConfig()):
+        """Initialize the Logger
+
+        Args:
+            config (LoggerBackendConfig): The configuration class for the LoggerBackend. Defaults to
+                                          LoggerBackendConfig().
+        """
+
         super().__init__()
-        self._id = vehicle_id
+        self._id = config.vehicle_id
 
     def update_state(self, state):
         """
@@ -28,7 +66,7 @@ class Logger(Backend):
         Method that when implemented, should handle the receival of sensor data
         """
 
-        if sensor_type == "IMU":
+        if sensor_type == "Imu":
             self.update_imu_data(data)
 
         # TODO: Add support for other sensors

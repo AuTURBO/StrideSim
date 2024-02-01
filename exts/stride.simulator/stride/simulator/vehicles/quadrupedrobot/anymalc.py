@@ -4,9 +4,11 @@ from stride.simulator.vehicles.quadrupedrobot.quadrupedrobot import QuadrupedRob
 # from stride.simulator.logic.backends.mavlink_backend import MavlinkBackend
 
 # Get the location of the asset
+from stride.simulator.backends import LoggerBackend
 from stride.simulator.params import ROBOTS_ENVIRONMNETS
 from stride.simulator.vehicles.sensors.imu import Imu
-# from stride.simulator.interfaces import StrideInterface
+
+from stride.simulator.vehicles.controllers.anymal_controller import AnyamlController
 
 
 class AnymalCConfig(QuadrupedRobotConfig):
@@ -29,7 +31,7 @@ class AnymalCConfig(QuadrupedRobotConfig):
 
         # The backends for actually sending commands to the vehicle.
         # It can also be a ROS2 backend or your own custom Backend implementation!
-        self.backends = []  # pylint: disable=use-list-literal FIXME
+        self.backends = [LoggerBackend()]  # pylint: disable=use-list-literal FIXME
 
 
 class AnymalC(QuadrupedRobot):
@@ -45,11 +47,7 @@ class AnymalC(QuadrupedRobot):
 
         super().__init__(config.stage_prefix, config.usd_file, id, init_pos, init_orientation, config=config)
 
-
-        # Add callbacks to the physics engine to update each sensor at every timestep and let the sensor decide
-        # depending on its internal update rate whether to generate new data.
-        # TODO: Uncomment this when the physics engine is implemented.
-        # self._world.add_physics_callback(self._stage_prefix + "/Sensors", self.update_sensors)
+        self.controller = AnyamlController()
 
     def update_sensors(self, dt: float):
         """Callback that is called at every physics steps and will call the sensor.update method to generate new
@@ -67,3 +65,76 @@ class AnymalC(QuadrupedRobot):
 
             if sensor_data is not None:
                 print("TODO: Implement backend code.")
+
+    def _compute_observation(self, command):
+        """[summary]
+        
+        compute the observation vector for the policy
+        
+        Argument:
+        command {np.ndarray} -- the robot command (v_x, v_y, w_z)
+
+        Returns:
+        np.ndarray -- The observation vector.
+
+        """
+        lin_vel_I = self.get_linear_velocity()
+        ang_vel_I = self.get_angular_velocity()
+        pos_IB, q_IB = self.get_world_pose()
+
+        R_IB = quat_to_rot_matrix(q_IB)
+        R_BI = R_IB.transpose()
+        lin_vel_b = np.matmul(R_BI, lin_vel_I)
+        ang_vel_b = np.matmul(R_BI, ang_vel_I)
+        gravity_b = np.matmul(R_BI, np.array([0.0, 0.0, -1.0]))
+
+        obs = np.zeros(235)
+        # Base lin vel
+        obs[:3] = self._base_vel_lin_scale * lin_vel_b
+        # Base ang vel
+        obs[3:6] = self._base_vel_ang_scale * ang_vel_b
+        # Gravity
+        obs[6:9] = gravity_b
+        # Command
+        obs[9] = self._base_vel_lin_scale * command[0]
+        obs[10] = self._base_vel_lin_scale * command[1]
+        obs[11] = self._base_vel_ang_scale * command[2]
+        # Joint states
+        # joint_state from the DC interface now has the order of
+        # 'FL_hip_joint',   'FR_hip_joint',   'RL_hip_joint',   'RR_hip_joint',
+        # 'FL_thigh_joint', 'FR_thigh_joint', 'RL_thigh_joint', 'RR_thigh_joint',
+        # 'FL_calf_joint',  'FR_calf_joint',  'RL_calf_joint',  'RR_calf_joint'
+
+        # while the learning controller uses the order of
+        # FL_hip_joint FL_thigh_joint FL_calf_joint
+        # FR_hip_joint FR_thigh_joint FR_calf_joint
+        # RL_hip_joint RL_thigh_joint RL_calf_joint
+        # RR_hip_joint RR_thigh_joint RR_calf_joint
+        # Convert DC order to controller order for joint info
+        current_joint_pos = self.get_joint_positions()
+        current_joint_vel = self.get_joint_velocities()
+        current_joint_pos = np.array(current_joint_pos.reshape([3, 4]).T.flat)
+        current_joint_vel = np.array(current_joint_vel.reshape([3, 4]).T.flat)
+        obs[12:24] = self._joint_pos_scale * (current_joint_pos - self._default_joint_pos)
+        obs[24:36] = self._joint_vel_scale * current_joint_vel
+
+        obs[36:48] = self._previous_action
+
+        # height_scanner
+        rpy = -quat_to_euler_angles(q_IB)
+        rpy[:2] = 0.0
+        yaw_rot = np.array(Gf.Matrix3f(euler_to_rot_matrix(rpy)))
+
+        world_scan_points = np.matmul(yaw_rot, self._scan_points.T).T + pos_IB
+
+        for i in range(world_scan_points.shape[0]):
+            self._query_info.clear()
+            self.physx_query_interface.raycast_all(
+                tuple(world_scan_points[i]), (0.0, 0.0, -1.0), 100, self._hit_report_callback
+            )
+            if self._query_info:
+                distance = min(self._query_info)
+                obs[48 + i] = np.clip(distance - 0.5, -1.0, 1.0)
+            else:
+                print("No hit")
+        return obs
