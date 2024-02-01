@@ -70,9 +70,9 @@ class QuadrupedRobot(Vehicle):
                                             StrideInterface().altitude)
             pass
 
-        # debug tool
-        import ipdb # pylint: disable=import-outside-toplevel
-        ipdb.set_trace()
+        # FIXME: remove this code later...
+        # import ipdb # pylint: disable=import-outside-toplevel
+        # ipdb.set_trace()
 
         # Add callbacks to the physics engine to update each sensor at every timestep
         # and let the sensor decide depending on its internal update rate whether to generate new data
