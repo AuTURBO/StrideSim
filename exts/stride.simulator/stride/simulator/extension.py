@@ -33,6 +33,8 @@ class StrideSimulatorExtension(omni.ext.IExt):
 
         self._window = ui.Window("Stride Simulator", width=300, height=300)
 
+        self._window.deferred_dock_in("Property", ui.DockPolicy.CURRENT_WINDOW_IS_ACTIVE)
+
         # Start the extension backend
         self._stride_sim = StrideInterface()
 
@@ -58,7 +60,7 @@ class StrideSimulatorExtension(omni.ext.IExt):
                         self._anymal_config = AnymalCConfig()
 
                         self._anymal = AnymalC(id=0,
-                                               init_pos=[0.0, 0.0, 0.8],
+                                               init_pos=[0.0, 0.0, 0.7],
                                                init_orientation=[0.0, 0.0, 0.0, 1.0],
                                                config=self._anymal_config)
 

@@ -6,6 +6,7 @@ import omni
 from omni.isaac.core.utils.rotations import quat_to_rot_matrix, quat_to_euler_angles, euler_to_rot_matrix
 from pxr import Gf
 import numpy as np
+import asyncio
 
 
 class QuadrupedRobotConfig:
@@ -141,6 +142,12 @@ class QuadrupedRobot(Vehicle):
         """
         for backend in self._backends:
             backend.stop()
+
+        async def reset_async():
+            await self._world.reset_async()
+            await self._world.pause_async()
+
+        asyncio.ensure_future(reset_async())
 
     def update(self, dt: float):
         """
