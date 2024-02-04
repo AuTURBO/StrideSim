@@ -41,11 +41,11 @@ class Vehicle(Robot):
     """
 
     def __init__(  # pylint: disable=dangerous-default-value FIXME
-            self,
-            stage_prefix: str,
-            usd_path: str = None,
-            init_pos=[0.0, 0.0, 0.0],
-            init_orientation=[0.0, 0.0, 0.0, 1.0],
+        self,
+        stage_prefix: str,
+        usd_path: str = None,
+        init_pos=[0.0, 0.0, 0.0],
+        init_orientation=[0.0, 0.0, 0.0, 1.0],
     ):
         """
         Class that initializes a vehicle in the isaac sim's curent stage
@@ -173,13 +173,13 @@ class Vehicle(Robot):
 
         # Get the body frame interface of the vehicle
         # (this will be the frame used to get the position, orientation, etc.)
-        body = self._world.dc_interface.get_rigid_body(self._stage_prefix + "/body")
+        body = self._world.dc_interface.get_rigid_body(self._stage_prefix + "/base")
 
         # Get the current position and orientation in the inertial frame
         pose = self._world.dc_interface.get_rigid_body_pose(body)
 
         # Get the attitude according to the convention [w, x, y, z]
-        prim = self._world.stage.GetPrimAtPath(self._stage_prefix + "/body")
+        prim = self._world.stage.GetPrimAtPath(self._stage_prefix + "/base")
         rotation_quat = get_world_transform_xform(prim).GetQuaternion()
         rotation_quat_real = rotation_quat.GetReal()
         rotation_quat_img = rotation_quat.GetImaginary()

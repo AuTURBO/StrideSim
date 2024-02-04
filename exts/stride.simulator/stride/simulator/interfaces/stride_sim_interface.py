@@ -10,6 +10,7 @@ import carb
 from omni.isaac.core.world import World
 from omni.isaac.core.utils.stage import clear_stage
 from omni.isaac.core.utils.viewports import set_camera_view
+from omni.isaac.core.utils.stage import create_new_stage_async
 from omni.isaac.core.utils import nucleus
 
 # Stride Simulator internal API
@@ -105,17 +106,15 @@ class StrideInterface:
         """Method that initializes the world object
         """
 
-        self._world = World(**self._world_settings)
+        async def _on_load_world_async():
+            if World.instance() is None:
+                await create_new_stage_async()
+                self._world = World(**self._world_settings)
+                await self._world.initialize_simulation_context_async()
+            else:
+                self._world = World.instance()
 
-    def initialize_simulation(self):
-        """Method that initializes the simulation context
-        """
-
-        # Check if we already have a physics environment activated. If not, then activate it
-        # and only after spawn the vehicle. This is to avoid trying to spawn a vehicle without a physics
-        # environment setup. This way we can even spawn a vehicle in an empty world and it won't care
-        if hasattr(self.world, "_physics_context") == False:
-            asyncio.ensure_future(self._world.initialize_simulation_context_async())
+        asyncio.ensure_future(_on_load_world_async())
 
     def get_vehicle(self, stage_prefix: str):
         """Method that returns the vehicle object given its 'stage_prefix', i.e.,

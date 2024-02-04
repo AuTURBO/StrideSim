@@ -2,6 +2,7 @@ __all__ = ["Controller"]
 
 # import numpy as np
 
+
 class Controller:
     """
     Controller.
@@ -12,7 +13,7 @@ class Controller:
     def __init__(self):
         self._torque = None
 
-    def advance(self, state):
+    def advance(self, dt, obs, command):
         """
         Add your algorithm to make torque
 
