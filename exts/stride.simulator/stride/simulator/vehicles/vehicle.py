@@ -217,6 +217,9 @@ class Vehicle(Robot):
         # The acceleration of the vehicle expressed in the inertial frame X_ddot = [x_ddot, y_ddot, z_ddot]
         self._state.linear_acceleration = linear_acceleration
 
+        self._state.joint_angles = self.get_joint_positions()
+        self._state.joint_velocities = self.get_joint_velocities()
+
     def start(self):
         """
         Method that should be implemented by the class that inherits the vehicle object.

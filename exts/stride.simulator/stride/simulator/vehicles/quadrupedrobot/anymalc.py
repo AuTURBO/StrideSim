@@ -62,11 +62,11 @@ class AnymalC(QuadrupedRobot):
         # Call the update method for the sensor to update its values internally (if applicable)
         for sensor in self._sensors:
             # TODO: sensor update 부분 구현 필요
-            try:
-                sensor_data = sensor.update(self._state, dt)
-            except Exception as e:
-                print(f"Error updating sensor: {e}")
-                continue
+            # try:
+            sensor_data = sensor.update(self._state, dt)
+            # except Exception as e:
+            #     print(f"Error updating sensor: {e}")
+            #     continue
 
             if sensor_data is not None:
                 print("TODO: Implement backend code.")

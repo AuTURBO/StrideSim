@@ -53,6 +53,12 @@ class State:
         # expressed in the inertial frame
         self.linear_acceleration = np.array([0.0, 0.0, 0.0])
 
+        # The joint angles
+        self.joint_angles = np.zeros(12)  #FIXME: need to be generalized for any number of joints
+
+        # The joint velocities
+        self.joint_velocities = np.zeros(12)  #FIXME: need to be generalized for any number of joints
+
     def get_position_ned(self):
         """
         Method that, assuming that a state is encoded in ENU standard (the Isaac Sim standard), converts the position
