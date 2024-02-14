@@ -49,10 +49,12 @@ class AnyamlController(Controller):
         self._actuator_network.reset()
         self._state = {}  # FIXME: change this variable to state class..
 
-    def get_state(self, joint_positions, joint_velocities):
-        # FIXME: change this variable to state class..
-        self._state["joint_positions"] = joint_positions
-        self._state["joint_velocities"] = joint_velocities
+    @property
+    def state(self):
+        return self._state
+
+    def update_state(self, state):
+        self._state = state
         pass
 
     def advance(self, dt, obs, command):
@@ -83,8 +85,9 @@ class AnyamlController(Controller):
         # RL_hip_joint RL_thigh_joint RL_calf_joint
         # RR_hip_joint RR_thigh_joint RR_calf_joint
         # Convert DC order to controller order for joint info
-        current_joint_pos = self._state["joint_positions"]
-        current_joint_vel = self._state["joint_velocities"]
+
+        current_joint_pos = self.state.joint_angles
+        current_joint_vel = self.state.joint_velocities
         current_joint_pos = np.array(current_joint_pos.reshape([3, 4]).T.flat)
         current_joint_vel = np.array(current_joint_vel.reshape([3, 4]).T.flat)
         joint_torques, _ = self._actuator_network.compute_torques(current_joint_pos, current_joint_vel,

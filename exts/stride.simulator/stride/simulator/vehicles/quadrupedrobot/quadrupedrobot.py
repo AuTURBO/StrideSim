@@ -169,7 +169,7 @@ class QuadrupedRobot(Vehicle):
 
         obs = self._compute_observation(command)
 
-        self.controller.get_state(self.get_joint_positions(), self.get_joint_velocities())
+        self.controller.update_state(self.state)
 
         torque = self.controller.advance(dt, obs, command)
 
@@ -199,9 +199,12 @@ class QuadrupedRobot(Vehicle):
         np.ndarray -- The observation vector.
 
         """
-        lin_vel_I = self.get_linear_velocity()  #pylint: disable=invalid-name
-        ang_vel_I = self.get_angular_velocity()  #pylint: disable=invalid-name
-        pos_IB, q_IB = self.get_world_pose()  #pylint: disable=invalid-name
+        lin_vel_I = self.state.linear_velocity  #pylint: disable=invalid-name
+        ang_vel_I = self.state.angular_velocity  #pylint: disable=invalid-name
+        pos_IB = self.state.position #pylint: disable=invalid-name
+        # Convert quaternion from XYZW to WXYZ format
+        q_IB = np.array( #pylint: disable=invalid-name
+            [self.state.attitude[-1], self.state.attitude[0], self.state.attitude[1], self.state.attitude[2]])
 
         R_IB = quat_to_rot_matrix(q_IB)  #pylint: disable=invalid-name
         R_BI = R_IB.transpose()  #pylint: disable=invalid-name
@@ -232,8 +235,8 @@ class QuadrupedRobot(Vehicle):
         # RL_hip_joint RL_thigh_joint RL_calf_joint
         # RR_hip_joint RR_thigh_joint RR_calf_joint
         # Convert DC order to controller order for joint info
-        current_joint_pos = self.get_joint_positions()
-        current_joint_vel = self.get_joint_velocities()
+        current_joint_pos = self.state.joint_angles
+        current_joint_vel = self.state.joint_velocities
         current_joint_pos = np.array(current_joint_pos.reshape([3, 4]).T.flat)
         current_joint_vel = np.array(current_joint_vel.reshape([3, 4]).T.flat)
         obs[12:24] = self.controller.joint_pos_scale * (current_joint_pos - self.controller.default_joint_pos)
