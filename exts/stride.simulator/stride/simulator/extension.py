@@ -1,23 +1,19 @@
 # TODO: 나중에 UI코드 부분을 빼서 ui folder에 정리해야 함
 
-# Python garbage collenction and asyncronous API
-from threading import Timer
-
 # Omniverse general API
-import pxr
+import omni
 import omni.ext
 import omni.usd
 import omni.kit.ui
 import omni.kit.app
 from omni import ui
 
-from omni.kit.viewport.utility import get_active_viewport
-
 from stride.simulator.interfaces.stride_sim_interface import StrideInterface
 from stride.simulator.vehicles.quadrupedrobot.anymalc import AnymalC, AnymalCConfig
 from stride.simulator.params import SIMULATION_ENVIRONMENTS
 
 import asyncio
+
 
 # Functions and vars are available to other extension as usual in python: `example.python_ext.some_public_function(x)`
 def some_public_function(x: int):
@@ -37,55 +33,54 @@ class StrideSimulatorExtension(omni.ext.IExt):
 
         self._window = ui.Window("Stride Simulator", width=300, height=300)
 
+        self._window.deferred_dock_in("Property", ui.DockPolicy.CURRENT_WINDOW_IS_ACTIVE)
+
         # Start the extension backend
         self._stride_sim = StrideInterface()
 
         with self._window.frame:
             with ui.VStack():
-                label = ui.Label("")
 
-                def on_click():
-                    # Check if we already have a stage loaded (when using autoload feature, it might not be ready yet)
-                    # This is a limitation of the simulator, and we are doing this to make sure that the
-                    # extension does no crash when using the GUI with autoload feature
-                    # If autoload was not enabled, and we are enabling the extension from the Extension widget, then
-                    # we will always have a state open, and the auxiliary timer will never run
+                def on_world():
 
-                    if omni.usd.get_context().get_stage_state() != omni.usd.StageState.CLOSED:
-                        self._stride_sim.initialize_world()
-                    else:
-                        # We need to create a timer to check until the window is properly open and the stage created.
-                        # This is a limitation of the current Isaac Sim simulator and the way it loads extensions :(
-                        self.autoload_helper()
+                    self._stride_sim.initialize_world()
 
                     label.text = "Initialize world"
 
-                    asyncio.ensure_future(
-                        self._stride_sim.load_environment_async(SIMULATION_ENVIRONMENTS["Default Environment"],
-                                                                force_clear=True))
-                    self._stride_sim.initialize_simulation()
+                def on_environment():
 
+                    self._stride_sim.load_asset(SIMULATION_ENVIRONMENTS["Default Environment"], "/World/layout")
 
-                def on_spawn():
+                    label.text = "Load environment"
 
-                    self._anymal_config = AnymalCConfig()
+                def on_simulation():
 
-                    self._anymal = AnymalC(id=ext_id, init_pos=[0.0, 0.0, 0.5],init_orientation=[0.0, 0.0, 0.0, 1.0],
-                                           config=self._anymal_config)
+                    async def respawn():
 
-                    label.text = "Open environment"
+                        self._anymal_config = AnymalCConfig()
+
+                        self._anymal = AnymalC(id=0,
+                                               init_pos=[0.0, 0.0, 0.7],
+                                               init_orientation=[0.0, 0.0, 0.0, 1.0],
+                                               config=self._anymal_config)
+
+                        self._current_tasks = self._stride_sim.world.get_current_tasks()
+                        await self._stride_sim.world.reset_async()
+                        await self._stride_sim.world.pause_async()
+
+                        if len(self._current_tasks) > 0:
+                            self._stride_sim.world.add_physics_callback("tasks_step", self._world.step_async)
+
+                    asyncio.ensure_future(respawn())
+
+                    label.text = "Load simulation"
 
                 with ui.HStack():
-                    ui.Button("Init", clicked_fn=on_click)
-                    ui.Button("Env", clicked_fn=on_spawn)
+                    ui.Button("Init World", clicked_fn=on_world)
+                    ui.Button("Environment", clicked_fn=on_environment)
+                    ui.Button("Simulation", clicked_fn=on_simulation)
 
-    def autoload_helper(self):
-        # Check if we already have a viewport and a camera of interest
-        if get_active_viewport() is not None and isinstance(get_active_viewport().stage) == pxr.Usd.Stage and str(
-                get_active_viewport().stage.GetPrimAtPath("/OmniverseKit_Persp")) != "invalid null prim":
-            self._stride_sim.initialize_world()
-        else:
-            Timer(0.1, self.autoload_helper).start()
+                label = ui.Label("")
 
     def on_shutdown(self):
         print("[stride.simulator] stride simulator shutdown")

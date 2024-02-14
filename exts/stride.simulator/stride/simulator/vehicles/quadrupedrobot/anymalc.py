@@ -5,8 +5,10 @@ from stride.simulator.vehicles.quadrupedrobot.quadrupedrobot import QuadrupedRob
 
 # Get the location of the asset
 from stride.simulator.backends import LoggerBackend
-from stride.simulator.params import ROBOTS_ENVIRONMNETS
+from stride.simulator.params import ROBOTS
 from stride.simulator.vehicles.sensors.imu import Imu
+
+from stride.simulator.vehicles.controllers.anymal_controller import AnyamlController
 
 
 class AnymalCConfig(QuadrupedRobotConfig):
@@ -22,7 +24,7 @@ class AnymalCConfig(QuadrupedRobotConfig):
         self.stage_prefix = "/World/AnymalC"
 
         # The USD file that describes the visual aspect of the vehicle
-        self.usd_file = ROBOTS_ENVIRONMNETS["Anymal C"]
+        self.usd_file = ROBOTS["Anymal C"]
 
         # The default sensors for a Anymal C
         self.sensors = [Imu()]  # pylint: disable=use-list-literal FIXME
@@ -45,11 +47,7 @@ class AnymalC(QuadrupedRobot):
 
         super().__init__(config.stage_prefix, config.usd_file, id, init_pos, init_orientation, config=config)
 
-
-        # Add callbacks to the physics engine to update each sensor at every timestep and let the sensor decide
-        # depending on its internal update rate whether to generate new data.
-        # TODO: Uncomment this when the physics engine is implemented.
-        # self._world.add_physics_callback(self._stage_prefix + "/Sensors", self.update_sensors)
+        self.controller = AnyamlController()
 
     def update_sensors(self, dt: float):
         """Callback that is called at every physics steps and will call the sensor.update method to generate new
@@ -63,7 +61,21 @@ class AnymalC(QuadrupedRobot):
 
         # Call the update method for the sensor to update its values internally (if applicable)
         for sensor in self._sensors:
-            sensor_data = sensor.update(self._state, dt)
+            # TODO: sensor update 부분 구현 필요
+            try:
+                sensor_data = sensor.update(self._state, dt)
+            except Exception as e:
+                print(f"Error updating sensor: {e}")
+                continue
 
             if sensor_data is not None:
                 print("TODO: Implement backend code.")
+
+    def initialize(self, physics_sim_view=None) -> None:
+        """[summary]
+
+        initialize the dc interface, set up drive mode
+        """
+        super().initialize(physics_sim_view=physics_sim_view)
+        self.get_articulation_controller().set_effort_modes("force")
+        self.get_articulation_controller().switch_control_mode("effort")
