@@ -107,7 +107,7 @@ class StrideInterface:
         """
 
         async def _on_load_world_async():
-            if World.instance() is None:
+            if self._world is None:
                 await create_new_stage_async()
                 self._world = World(**self._world_settings)
                 await self._world.initialize_simulation_context_async()
