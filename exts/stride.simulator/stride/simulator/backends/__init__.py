@@ -1,2 +1,2 @@
 from .backend import Backend
-from .logger import LoggerBackend
+from .logger_backend import LoggerBackend
