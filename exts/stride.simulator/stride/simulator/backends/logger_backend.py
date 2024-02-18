@@ -66,9 +66,13 @@ class LoggerBackend(Backend):
         Method that when implemented, should handle the receival of sensor data
         """
 
+        carb.log_info(f"sensor type: {sensor_type}")
+
         if sensor_type == "Imu":
             self.update_imu_data(data)
-
+        else:
+            carb.log_warn(f"Sensor type {sensor_type} is not supported by the ROS2 backend.")
+            pass
         # TODO: Add support for other sensors
 
     def update_imu_data(self, data):
