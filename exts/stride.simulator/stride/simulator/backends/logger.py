@@ -65,7 +65,9 @@ class LoggerBackend(Backend):
         """
         Method that when implemented, should handle the receival of sensor data
         """
-
+        
+        carb.log_info(f"sensor type: {sensor_type}")
+                      
         if sensor_type == "Imu":
             self.update_imu_data(data)
 
