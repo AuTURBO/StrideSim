@@ -4,7 +4,7 @@ from stride.simulator.vehicles.quadrupedrobot.quadrupedrobot import QuadrupedRob
 # from stride.simulator.logic.backends.mavlink_backend import MavlinkBackend
 
 # Get the location of the asset
-from stride.simulator.backends import LoggerBackend
+from stride.simulator.backends import LoggerBackend, ROS2Backend
 from stride.simulator.params import ROBOTS
 from stride.simulator.vehicles.sensors.imu import Imu
 
@@ -20,6 +20,8 @@ class AnymalCConfig(QuadrupedRobotConfig):
 
         super().__init__()
 
+        self.vehicle_name = "anymal_c"
+
         # Stage prefix of the vehicle when spawning in the world
         self.stage_prefix = "/World/AnymalC"
 
@@ -31,7 +33,7 @@ class AnymalCConfig(QuadrupedRobotConfig):
 
         # The backends for actually sending commands to the vehicle.
         # It can also be a ROS2 backend or your own custom Backend implementation!
-        self.backends = [LoggerBackend()]  # pylint: disable=use-list-literal FIXME
+        self.backends = [LoggerBackend(), ROS2Backend(self.vehicle_name)]  # pylint: disable=use-list-literal FIXME
 
 
 class AnymalC(QuadrupedRobot):
@@ -70,7 +72,6 @@ class AnymalC(QuadrupedRobot):
             if sensor_data is not None:
                 for backend in self._backends:
                     backend.update_sensor(sensor.sensor_type, sensor_data)
-                
 
     def initialize(self, physics_sim_view=None) -> None:
         """[summary]

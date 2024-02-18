@@ -86,6 +86,9 @@ class QuadrupedRobot(Vehicle):
         for backend in self._backends:
             backend.initialize(self)
 
+        # Add a callback to the physics engine to update the state of the vehicle at every timestep.
+        self._world.add_physics_callback(self._stage_prefix + "/sim_state", self.update_sim_state)
+
         # Height scaner
         y = np.arange(-0.5, 0.6, 0.1)
         x = np.arange(-0.8, 0.9, 0.1)
@@ -124,6 +127,7 @@ class QuadrupedRobot(Vehicle):
         Args:
             dt (float): The time elapsed between the previous and current function calls (s).
         """
+
         for backend in self._backends:
             backend.update_state(self._state)
 
@@ -201,9 +205,9 @@ class QuadrupedRobot(Vehicle):
         """
         lin_vel_I = self.state.linear_velocity  #pylint: disable=invalid-name
         ang_vel_I = self.state.angular_velocity  #pylint: disable=invalid-name
-        pos_IB = self.state.position #pylint: disable=invalid-name
+        pos_IB = self.state.position  #pylint: disable=invalid-name
         # Convert quaternion from XYZW to WXYZ format
-        q_IB = np.array( #pylint: disable=invalid-name
+        q_IB = np.array(  #pylint: disable=invalid-name
             [self.state.attitude[-1], self.state.attitude[0], self.state.attitude[1], self.state.attitude[2]])
 
         R_IB = quat_to_rot_matrix(q_IB)  #pylint: disable=invalid-name
