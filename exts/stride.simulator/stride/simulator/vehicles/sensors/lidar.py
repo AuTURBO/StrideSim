@@ -47,7 +47,7 @@ class Lidar(Sensor):
         if self.lidar_flag_ is True:
             pointcloud = self.lidar_interface.get_point_cloud_data(self.config.get("prim_path"))
             print(pointcloud)
-            self._state['points'] = pointcloud
+            self._state = pointcloud
         
         else:
             my_world = World.instance()
