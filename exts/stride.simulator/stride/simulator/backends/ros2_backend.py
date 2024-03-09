@@ -1,10 +1,12 @@
+
+import os
 import carb
 from stride.simulator.backends.backend import Backend
 from omni.isaac.core.utils.extensions import disable_extension, enable_extension
 
 # # Perform some checks, because Isaac Sim some times does not play nice when using ROS/ROS2
 disable_extension("omni.isaac.ros_bridge")
-enable_extension("omni.isaac.ros2_bridge")
+enable_extension("omni.isaac.ros2_bridge-humble")
 
 # Inform the user that now we are actually import the ROS2 dependencies
 # Note: we are performing the imports here to make sure that ROS2 extension was load correctly
@@ -15,6 +17,9 @@ from sensor_msgs.msg import (  # pylint: disable=unused-import, wrong-import-pos
 )
 from geometry_msgs.msg import PoseStamped, TwistStamped, AccelStamped  # pylint: disable=wrong-import-position
 
+# set environment variable to use ROS2
+os.environ["RMW_IMPLEMENTATION"] = "rmw_cyclonedds_cpp"
+os.environ["ROS_DOMAIN_ID"] = "15"
 
 class ROS2Backend(Backend):
     """
@@ -32,7 +37,7 @@ class ROS2Backend(Backend):
         imu_pub: Publisher for the IMU sensor data.
 
     Methods:
-        update(dt: float): Updates the state of the backend and the information being sent/received 
+        update(dt: float): Updates the state of the backend and the information being sent/received
                             from the communication interface.
         update_imu_data(data): Updates the IMU sensor data.
         update_sensor(sensor_type: str, data): Handles the receival of sensor data.
@@ -52,6 +57,8 @@ class ROS2Backend(Backend):
         if not rclpy.ok():  # Check if the ROS2 context is already initialized
             rclpy.init()
         self.node = rclpy.create_node(node_name)
+
+
 
         # Create publishers for the state of the vehicle in ENU
         self.pose_pub = self.node.create_publisher(PoseStamped, node_name + "/state/pose", 10)

@@ -17,11 +17,11 @@ class LoggerBackendConfig:
         Args:
             config (dict): A Dictionary that contains all the parameters for configuring the LoggerBackend interface
                            - it can be empty or only have some of the parameters used by this backend.
-        
+
         Examples:
             The dictionary default parameters are
 
-            >>> {"vehicle_id": 0,           
+            >>> {"vehicle_id": 0,
             >>>  "update_rate": 250.0
             >>> }
         """

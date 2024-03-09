@@ -193,9 +193,9 @@ class QuadrupedRobot(Vehicle):
 
     def _compute_observation(self, command):
         """[summary]
-        
+
         compute the observation vector for the policy
-        
+
         Argument:
         command {np.ndarray} -- the robot command (v_x, v_y, w_z)
 

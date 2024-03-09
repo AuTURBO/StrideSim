@@ -65,7 +65,7 @@ class AnymalC(QuadrupedRobot):
         for sensor in self._sensors:
             try:
                 sensor_data = sensor.update(self._state, dt)
-            except Exception as e:
+            except Exception as e: # pylint: disable=broad-except
                 print(f"Error updating sensor: {e}")
                 continue
 
