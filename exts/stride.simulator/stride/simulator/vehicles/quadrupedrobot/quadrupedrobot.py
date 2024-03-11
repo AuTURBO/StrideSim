@@ -89,7 +89,7 @@ class QuadrupedRobot(Vehicle):
         # Add a callback to the physics engine to update the state of the vehicle at every timestep.
         self._world.add_physics_callback(self._stage_prefix + "/sim_state", self.update_sim_state)
 
-        # Height scaner
+        # Height scanner
         y = np.arange(-0.5, 0.6, 0.1)
         x = np.arange(-0.8, 0.9, 0.1)
         grid_x, grid_y = np.meshgrid(x, y)
@@ -193,9 +193,9 @@ class QuadrupedRobot(Vehicle):
 
     def _compute_observation(self, command):
         """[summary]
-        
+
         compute the observation vector for the policy
-        
+
         Argument:
         command {np.ndarray} -- the robot command (v_x, v_y, w_z)
 

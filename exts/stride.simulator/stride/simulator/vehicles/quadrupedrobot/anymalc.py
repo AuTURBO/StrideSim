@@ -4,12 +4,16 @@ from stride.simulator.vehicles.quadrupedrobot.quadrupedrobot import QuadrupedRob
 # from stride.simulator.logic.backends.mavlink_backend import MavlinkBackend
 
 # Get the location of the asset
-from stride.simulator.backends import LoggerBackend, ROS2Backend
+# from stride.simulator.backends import LoggerBackend
+from stride.simulator.backends import ROS2Backend
 from stride.simulator.params import ROBOTS
 from stride.simulator.vehicles.sensors.imu import Imu
+from stride.simulator.vehicles.sensors.lidar import Lidar
 
 from stride.simulator.vehicles.controllers.anymal_controller import AnyamlController
 
+import yaml
+import os
 
 class AnymalCConfig(QuadrupedRobotConfig):
     """
@@ -28,12 +32,17 @@ class AnymalCConfig(QuadrupedRobotConfig):
         # The USD file that describes the visual aspect of the vehicle
         self.usd_file = ROBOTS["Anymal C"]
 
+        # read config file
+        with open(os.getcwd() + "/exts/stride.simulator/config/anymalc_cfg.yaml", "r", encoding="utf-8") as file:
+            self.config = yaml.safe_load(file)
+
         # The default sensors for a Anymal C
-        self.sensors = [Imu()]  # pylint: disable=use-list-literal FIXME
+        self.sensors = [Imu(self.config["sensor"]["imu"]), Lidar(self.config["sensor"]["lidar"])]  # pylint: disable=use-list-literal FIXME
 
         # The backends for actually sending commands to the vehicle.
         # It can also be a ROS2 backend or your own custom Backend implementation!
-        self.backends = [LoggerBackend(), ROS2Backend(self.vehicle_name)]  # pylint: disable=use-list-literal FIXME
+        self.backends = [ROS2Backend(self.vehicle_name)]  # pylint: disable=use-list-literal
+
 
 
 class AnymalC(QuadrupedRobot):
@@ -65,7 +74,7 @@ class AnymalC(QuadrupedRobot):
         for sensor in self._sensors:
             try:
                 sensor_data = sensor.update(self._state, dt)
-            except Exception as e:
+            except Exception as e: # pylint: disable=broad-except
                 print(f"Error updating sensor: {e}")
                 continue
 
