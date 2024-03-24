@@ -7,20 +7,12 @@
 StrideSim is a Nvidia Isaac Sim-based robot simulator, offering a realistic environment and compatibility with ROS2 for efficient robotics development.
 We are implementing a **quadruped robot** as our first target.
 
-## Folders
+## Directories
 
 -   `app` - It is a folder link to the location of your _Omniverse Kit_ based app. When you clone this repository, there is no app folder.
 -   `exts` - It is a folder where you can add new extensions. It was automatically added to extension search path. (Extension Manager -> Gear Icon -> Extension Search Path).
 
 Open this folder using Visual Studio Code. It will suggest you to install few extensions that will make python experience better.
-
-Look for "stride.simulator" extension in extension manager and enable it. Try applying changes to any python files, it will hot-reload and you can observe results immediately.
-
-Alternatively, you can launch your app from console with this folder added to search path and your extension enabled, e.g.:
-
-```
-> app/isaac-sim.sh --ext-folder exts --enable stride.simulator
-```
 
 ## App Link Setup
 
@@ -55,6 +47,16 @@ alias ISAACSIM_PYTHON="${ISAACSIM_PATH}/python.sh"
 alias ISAACSIM="${ISAACSIM_PATH}/isaac-sim.sh"
 ```
 
+## Run Stride Simulator  
+
+After [the installation](https://github.com/AuTURBO/StrideSim/wiki/01.-Before-started), Look for the "stride.simulator" extension in the extension manager and enable it. Try applying changes to any Python files on your workspace. The simulator will hot-reload, and you can observe results immediately.
+
+Alternatively, you can launch your app from the console with this folder added to the search path and your extension enabled, e.g.:
+
+```
+> app/isaac-sim.sh --ext-folder exts --enable stride.simulator
+```
+
 ## Run Linter
 
 Install required packages.
@@ -71,7 +73,6 @@ Run linter.
 ```bash
 $ . run_pylint.sh
 ```
-
 
 ## Acknowledge
 
