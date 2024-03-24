@@ -41,11 +41,11 @@ class Vehicle(Robot):
     """
 
     def __init__(  # pylint: disable=dangerous-default-value FIXME
-            self,
-            stage_prefix: str,
-            usd_path: str = None,
-            init_pos=[0.0, 0.0, 0.0],
-            init_orientation=[0.0, 0.0, 0.0, 1.0],
+        self,
+        stage_prefix: str,
+        usd_path: str = None,
+        init_pos=[0.0, 0.0, 0.0],
+        init_orientation=[0.0, 0.0, 0.0, 1.0],
     ):
         """
         Class that initializes a vehicle in the isaac sim's curent stage
@@ -101,18 +101,19 @@ class Vehicle(Robot):
         self._state = State()
 
         # Add a callback to the physics engine to update the current state of the system
-        # self._world.add_physics_callback(self._stage_prefix + "/state", self.update_state)
+        self._world.add_physics_callback(self._stage_prefix + "/state", self.update_state)
 
         # Add the update method to the physics callback if the world was received
         # so that we can apply forces and torques to the vehicle. Note, this method should
         # be implemented in classes that inherit the vehicle object
-        # self._world.add_physics_callback(self._stage_prefix + "/update", self.update)
+        self._world.add_physics_callback(self._stage_prefix + "/update", self.update)
 
         # Set the flag that signals if the simulation is running or not
         self._sim_running = False
 
         # Add a callback to start/stop of the simulation once the play/stop button is hit
-        # self._world.add_timeline_callback(self._stage_prefix + "/start_stop_sim", self.sim_start_stop)
+        self._world.add_timeline_callback(self._stage_prefix + "/start_sim", self.sim_start)
+        self._world.add_timeline_callback(self._stage_prefix + "/stop_sim", self.sim_stop)
 
     def __del__(self):
         """
@@ -172,13 +173,13 @@ class Vehicle(Robot):
 
         # Get the body frame interface of the vehicle
         # (this will be the frame used to get the position, orientation, etc.)
-        body = self._world.dc_interface.get_rigid_body(self._stage_prefix + "/body")
+        body = self._world.dc_interface.get_rigid_body(self._stage_prefix + "/base")
 
         # Get the current position and orientation in the inertial frame
         pose = self._world.dc_interface.get_rigid_body_pose(body)
 
         # Get the attitude according to the convention [w, x, y, z]
-        prim = self._world.stage.GetPrimAtPath(self._stage_prefix + "/body")
+        prim = self._world.stage.GetPrimAtPath(self._stage_prefix + "/base")
         rotation_quat = get_world_transform_xform(prim).GetQuaternion()
         rotation_quat_real = rotation_quat.GetReal()
         rotation_quat_img = rotation_quat.GetImaginary()
@@ -215,6 +216,9 @@ class Vehicle(Robot):
 
         # The acceleration of the vehicle expressed in the inertial frame X_ddot = [x_ddot, y_ddot, z_ddot]
         self._state.linear_acceleration = linear_acceleration
+
+        self._state.joint_angles = self.get_joint_positions()
+        self._state.joint_velocities = self.get_joint_velocities()
 
     def start(self):
         """

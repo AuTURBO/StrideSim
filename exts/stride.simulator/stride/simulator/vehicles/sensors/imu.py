@@ -7,11 +7,11 @@ from stride.simulator.vehicles import State
 from stride.simulator.vehicles.sensors.sensor import Sensor
 from stride.simulator.vehicles.sensors.geo_mag_utils import GRAVITY_VECTOR
 
-# TODO - test comment
 
 class Imu(Sensor):
     """The class that implements the Imu sensor. This class inherits the base class Sensor.
     """
+
     def __init__(self, config=None):
         """Initialize the Imu class
 
@@ -141,9 +141,8 @@ class Imu(Sensor):
         # Simulate the accelerometer noise processes and add them to the true linear aceleration values.
         for i in range(3):
             self._accelerometer_bias[i] = phi_a_d * self._accelerometer_bias[i] + sigma_b_a_d * np.random.rand()
-            linear_acceleration[i] = (
-                linear_acceleration[i] + sigma_a_d * np.random.randn()
-            ) #+ self._accelerometer_bias[i]
+            linear_acceleration[i] = (linear_acceleration[i] + sigma_a_d * np.random.randn()
+                                     )  #+ self._accelerometer_bias[i]
 
         # TODO - Add small "noisy" to the attitude
 

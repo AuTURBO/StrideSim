@@ -2,6 +2,7 @@ __all__ = ["Sensor"]
 
 from stride.simulator.vehicles import State
 
+
 class Sensor:
     """The base class for implementing a sensor.
 
@@ -11,6 +12,7 @@ class Sensor:
         origin_longitude (float): The longitude of the origin of the world in degrees.
         origin_altitude (float): The altitude of the origin of the world relative to sea water level in meters.
     """
+
     def __init__(self, sensor_type: str, update_frequency: float):
         """Initialize the Sensor class
 
@@ -25,7 +27,7 @@ class Sensor:
         self._update_period = 1.0 / self._update_frequency
 
         # Auxiliary variables used to control whether to update the sensor or not, given the time elapsed.
-        self._first_update = True
+        self.first_update = True
         self._total_time = 0.0
 
         # Set the spherical coordinate of the world - some sensors might need it.
@@ -80,22 +82,31 @@ class Sensor:
         # Define a wrapper function so that the "self" of the object can be passed to the function as well.
 
         def wrapper(self, state: State, dt: float):
+
             # Add the total time passed between the last time the sensor was updated and the current call.
-            self.total_time += dt
+            self._total_time += dt
 
             # If it is time to update the sensor data, then just call the update function of the sensor.
             if self.total_time >= self.update_period or self.first_update:
 
                 # Result of the update function for the sensor.
-                result = fnc(self, state, self.total_time) # pylint: disable=not-callable, TODO: enable this.
+                result = fnc(self, state, self.total_time)  # pylint: disable=not-callable, TODO: enable this.
 
                 # Reset the auxiliary counter variables.
                 self.first_update = False
-                self.total_time = 0.0
+                self.initialize()
 
                 return result
             return None
+
         return wrapper
+
+    def initialize(self):
+        """Method that should be implemented by the class that inherits Sensor. This is where the initialization of the
+        sensor should be performed.
+        """
+        self._total_time = 0.0
+        pass
 
     @property
     def sensor_type(self):
@@ -117,13 +128,6 @@ class Sensor:
         (float) The period for each sensor update: update_period = 1 / update_frequency (in seconds).
         """
         return self._update_period
-
-    @property
-    def first_update(self):
-        """
-        (bool) A flag that indicates whether this is the first time the sensor is being updated.
-        """
-        return self._first_update
 
     @property
     def total_time(self):

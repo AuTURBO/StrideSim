@@ -17,11 +17,11 @@ class LoggerBackendConfig:
         Args:
             config (dict): A Dictionary that contains all the parameters for configuring the LoggerBackend interface
                            - it can be empty or only have some of the parameters used by this backend.
-        
+
         Examples:
             The dictionary default parameters are
 
-            >>> {"vehicle_id": 0,           
+            >>> {"vehicle_id": 0,
             >>>  "update_rate": 250.0
             >>> }
         """
@@ -66,9 +66,15 @@ class LoggerBackend(Backend):
         Method that when implemented, should handle the receival of sensor data
         """
 
+        carb.log_info(f"sensor type: {sensor_type}")
+
         if sensor_type == "Imu":
             self.update_imu_data(data)
-
+        elif sensor_type == "Lidar":
+            self.update_lidar_data(data)
+        else:
+            carb.log_warn(f"Sensor type {sensor_type} is not supported by the ROS2 backend.")
+            pass
         # TODO: Add support for other sensors
 
     def update_imu_data(self, data):
@@ -78,6 +84,13 @@ class LoggerBackend(Backend):
         carb.log_info(f"Received IMU data for vehicle {self._id}")
         carb.log_info(f"Angular velocity: {data['angular_velocity']}")
         carb.log_info(f"Linear acceleration: {data['linear_acceleration']}")
+
+    def update_lidar_data(self, data):
+        """
+        Method that handles the receival of Lidar data. It just prints the data to the console.
+        """
+        carb.log_info(f"Received Lidar data for vehicle {self._id}")
+        carb.log_info(f"Points: {data['points']}")
 
     def update(self, dt: float):
         """

@@ -41,11 +41,11 @@ NVIDIA_SIMULATION_ENVIRONMENTS = {
     "Stairs Plane": "Terrains/stairs.usd",
 }
 
-ROBOTS_ENVIRONMNETS = {}
+ROBOTS = {}
 
 # Add the Isaac Sim assets to the list
 for asset, path in NVIDIA_SIMULATION_ROBOTS.items():
-    ROBOTS_ENVIRONMNETS[asset] = NVIDIA_ASSETS_PATH + ISAAC_SIM_ROBOTS + "/" + path
+    ROBOTS[asset] = NVIDIA_ASSETS_PATH + ISAAC_SIM_ROBOTS + "/" + path
 
 SIMULATION_ENVIRONMENTS = {}
 
@@ -54,4 +54,4 @@ for asset, path in NVIDIA_SIMULATION_ENVIRONMENTS.items():
     SIMULATION_ENVIRONMENTS[asset] = NVIDIA_ASSETS_PATH + ISAAC_SIM_ENVIRONMENTS + "/" + path
 
 # Define the default settings for the simulation environment
-DEFAULT_WORLD_SETTINGS = {"physics_dt": 1.0 / 250.0, "stage_units_in_meters": 1.0, "rendering_dt": 1.0 / 60.0}
+DEFAULT_WORLD_SETTINGS = {"physics_dt": 1.0 / 200.0, "stage_units_in_meters": 1.0, "rendering_dt": 1.0 / 60.0}
