@@ -26,6 +26,11 @@ class AnymalCConfig(QuadrupedRobotConfig):
 
         self.vehicle_name = "anymal_c"
 
+        # Get the path to the "" directory
+        stridesim_dir = os.path.abspath(__file__)
+        for _ in range(5):
+            stridesim_dir = os.path.dirname(stridesim_dir)
+
         # Stage prefix of the vehicle when spawning in the world
         self.stage_prefix = "/World/AnymalC"
 
@@ -33,7 +38,7 @@ class AnymalCConfig(QuadrupedRobotConfig):
         self.usd_file = ROBOTS["Anymal C"]
 
         # read config file
-        with open(os.getcwd() + "/exts/stride.simulator/config/anymalc_cfg.yaml", "r", encoding="utf-8") as file:
+        with open(stridesim_dir + "/config/anymalc_cfg.yaml", "r", encoding="utf-8") as file:
             self.config = yaml.safe_load(file)
 
         # The default sensors for a Anymal C
