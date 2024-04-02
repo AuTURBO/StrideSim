@@ -1,4 +1,7 @@
-from stride.simulator.vehicles.quadrupedrobot.quadrupedrobot import QuadrupedRobot, QuadrupedRobotConfig
+from stride.simulator.vehicles.quadrupedrobot.quadrupedrobot import (
+    QuadrupedRobot,
+    QuadrupedRobotConfig,
+)
 
 # Mavlink interface
 # from stride.simulator.logic.backends.mavlink_backend import MavlinkBackend
@@ -14,6 +17,7 @@ from stride.simulator.vehicles.controllers.anymal_controller import AnyamlContro
 
 import yaml
 import os
+
 
 class AnymalCConfig(QuadrupedRobotConfig):
     """
@@ -38,21 +42,26 @@ class AnymalCConfig(QuadrupedRobotConfig):
         self.usd_file = ROBOTS["Anymal C"]
 
         # read config file
-        with open(stridesim_dir + "/config/anymalc_cfg.yaml", "r", encoding="utf-8") as file:
+        with open(
+            stridesim_dir + "/config/anymalc_cfg.yaml", "r", encoding="utf-8"
+        ) as file:
             self.config = yaml.safe_load(file)
 
         # The default sensors for a Anymal C
-        self.sensors = [Imu(self.config["sensor"]["imu"]), Lidar(self.config["sensor"]["lidar"])]  # pylint: disable=use-list-literal FIXME
+        self.sensors = [
+            Imu(self.config["sensor"]["imu"]),
+            Lidar(self.config["sensor"]["lidar"]),
+        ]  # pylint: disable=use-list-literal FIXME
 
         # The backends for actually sending commands to the vehicle.
         # It can also be a ROS2 backend or your own custom Backend implementation!
-        self.backends = [ROS2Backend(self.vehicle_name)]  # pylint: disable=use-list-literal
-
+        self.backends = [
+            ROS2Backend(self.vehicle_name)
+        ]  # pylint: disable=use-list-literal
 
 
 class AnymalC(QuadrupedRobot):
-    """AnymalC class - It is a child class of QuadrupedRobot class to implement a AnymalC robot in the simulator.
-    """
+    """AnymalC class - It is a child class of QuadrupedRobot class to implement a AnymalC robot in the simulator."""
 
     def __init__(self, id: int, init_pos, init_orientation, config=AnymalCConfig()):
 
@@ -61,7 +70,14 @@ class AnymalC(QuadrupedRobot):
         if init_orientation is None:
             init_orientation = [0.0, 0.0, 0.0, 1.0]
 
-        super().__init__(config.stage_prefix, config.usd_file, id, init_pos, init_orientation, config=config)
+        super().__init__(
+            config.stage_prefix,
+            config.usd_file,
+            id,
+            init_pos,
+            init_orientation,
+            config=config,
+        )
 
         self.controller = AnyamlController()
 
@@ -79,7 +95,7 @@ class AnymalC(QuadrupedRobot):
         for sensor in self._sensors:
             try:
                 sensor_data = sensor.update(self._state, dt)
-            except Exception as e: # pylint: disable=broad-except
+            except Exception as e:  # pylint: disable=broad-except
                 print(f"Error updating sensor: {e}")
                 continue
 

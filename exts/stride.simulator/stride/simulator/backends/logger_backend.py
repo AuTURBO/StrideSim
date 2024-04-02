@@ -28,7 +28,9 @@ class LoggerBackendConfig:
         if config is None:
             config = {}
         else:
-            assert isinstance(config, dict), "The config parameter must be a dictionary."
+            assert isinstance(
+                config, dict
+            ), "The config parameter must be a dictionary."
 
         self.vehicle_id = config.get("vehicle_id", 0)
         self.update_rate: float = config.get("update_rate", 250.0)  # [Hz]
@@ -73,7 +75,9 @@ class LoggerBackend(Backend):
         elif sensor_type == "Lidar":
             self.update_lidar_data(data)
         else:
-            carb.log_warn(f"Sensor type {sensor_type} is not supported by the ROS2 backend.")
+            carb.log_warn(
+                f"Sensor type {sensor_type} is not supported by the ROS2 backend."
+            )
             pass
         # TODO: Add support for other sensors
 

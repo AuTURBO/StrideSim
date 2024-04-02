@@ -66,7 +66,9 @@ class Vehicle(Robot):
 
         # Save the name with which the vehicle will appear in the stage
         # and the name of the .usd file that contains its description
-        self._stage_prefix = get_stage_next_free_path(self._current_stage, stage_prefix, False)
+        self._stage_prefix = get_stage_next_free_path(
+            self._current_stage, stage_prefix, False
+        )
         self._usd_file = usd_path
 
         # Spawn the vehicle primitive in the world's stage
@@ -85,7 +87,12 @@ class Vehicle(Robot):
             prim_path=self._stage_prefix,
             name=self._stage_prefix,
             position=init_pos,
-            orientation=[init_orientation[3], init_orientation[0], init_orientation[1], init_orientation[2]],
+            orientation=[
+                init_orientation[3],
+                init_orientation[0],
+                init_orientation[1],
+                init_orientation[2],
+            ],
             articulation_controller=None,
         )
 
@@ -101,7 +108,9 @@ class Vehicle(Robot):
         self._state = State()
 
         # Add a callback to the physics engine to update the current state of the system
-        self._world.add_physics_callback(self._stage_prefix + "/state", self.update_state)
+        self._world.add_physics_callback(
+            self._stage_prefix + "/state", self.update_state
+        )
 
         # Add the update method to the physics callback if the world was received
         # so that we can apply forces and torques to the vehicle. Note, this method should
@@ -112,8 +121,12 @@ class Vehicle(Robot):
         self._sim_running = False
 
         # Add a callback to start/stop of the simulation once the play/stop button is hit
-        self._world.add_timeline_callback(self._stage_prefix + "/start_sim", self.sim_start)
-        self._world.add_timeline_callback(self._stage_prefix + "/stop_sim", self.sim_stop)
+        self._world.add_timeline_callback(
+            self._stage_prefix + "/start_sim", self.sim_start
+        )
+        self._world.add_timeline_callback(
+            self._stage_prefix + "/stop_sim", self.sim_stop
+        )
 
     def __del__(self):
         """
@@ -201,18 +214,29 @@ class Vehicle(Robot):
 
         # Get the quaternion according in the [qx,qy,qz,qw] standard
         self._state.attitude = np.array(
-            [rotation_quat_img[0], rotation_quat_img[1], rotation_quat_img[2], rotation_quat_real])
+            [
+                rotation_quat_img[0],
+                rotation_quat_img[1],
+                rotation_quat_img[2],
+                rotation_quat_real,
+            ]
+        )
 
         # Express the velocity of the vehicle in the inertial frame X_dot = [x_dot, y_dot, z_dot]
         self._state.linear_velocity = np.array(linear_vel)
 
         # The linear velocity V =[u,v,w] of the vehicle's body frame expressed in the body frame of reference
         # Note that: x_dot = Rot * V
-        self._state.linear_body_velocity = (Rotation.from_quat(self._state.attitude).inv().apply(
-            self._state.linear_velocity))
+        self._state.linear_body_velocity = (
+            Rotation.from_quat(self._state.attitude)
+            .inv()
+            .apply(self._state.linear_velocity)
+        )
 
         # omega = [p,q,r]
-        self._state.angular_velocity = Rotation.from_quat(self._state.attitude).inv().apply(np.array(ang_vel))
+        self._state.angular_velocity = (
+            Rotation.from_quat(self._state.attitude).inv().apply(np.array(ang_vel))
+        )
 
         # The acceleration of the vehicle expressed in the inertial frame X_ddot = [x_ddot, y_ddot, z_ddot]
         self._state.linear_acceleration = linear_acceleration

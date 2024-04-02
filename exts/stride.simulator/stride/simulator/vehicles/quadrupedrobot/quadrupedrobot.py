@@ -3,7 +3,11 @@ from stride.simulator.vehicles.vehicle import Vehicle
 from stride.simulator.interfaces.stride_sim_interface import StrideInterface
 
 import omni
-from omni.isaac.core.utils.rotations import quat_to_rot_matrix, quat_to_euler_angles, euler_to_rot_matrix
+from omni.isaac.core.utils.rotations import (
+    quat_to_rot_matrix,
+    quat_to_euler_angles,
+    euler_to_rot_matrix,
+)
 from pxr import Gf
 import numpy as np
 import asyncio
@@ -37,19 +41,18 @@ class QuadrupedRobotConfig:
 
 
 class QuadrupedRobot(Vehicle):
-    """QuadrupedRobot class - It defines a base interface for creating a QuadrupedRobot
-    """
+    """QuadrupedRobot class - It defines a base interface for creating a QuadrupedRobot"""
 
     def __init__(  # pylint: disable=dangerous-default-value FIXME
-            self,
-            # Simulation specific configurations
-            stage_prefix: str = "quadrupedrobot",
-            usd_file: str = "",
-            vehicle_id: int = 0,
-            # Spawning pose of the vehicle
-            init_pos=[0.0, 0.0, 0.07],
-            init_orientation=[0.0, 0.0, 0.0, 1.0],
-            config=QuadrupedRobotConfig(),
+        self,
+        # Simulation specific configurations
+        stage_prefix: str = "quadrupedrobot",
+        usd_file: str = "",
+        vehicle_id: int = 0,
+        # Spawning pose of the vehicle
+        init_pos=[0.0, 0.0, 0.07],
+        init_orientation=[0.0, 0.0, 0.0, 1.0],
+        config=QuadrupedRobotConfig(),
     ):
         """Initializes the quadrupedrobot object
 
@@ -71,14 +74,18 @@ class QuadrupedRobot(Vehicle):
         # 2. Initialize all the vehicle sensors
         self._sensors = config.sensors
         for sensor in self._sensors:
-            sensor.set_spherical_coordinate(StrideInterface().latitude,
-                                            StrideInterface().longitude,
-                                            StrideInterface().altitude)
+            sensor.set_spherical_coordinate(
+                StrideInterface().latitude,
+                StrideInterface().longitude,
+                StrideInterface().altitude,
+            )
             pass
 
         # Add callbacks to the physics engine to update each sensor at every timestep
         # and let the sensor decide depending on its internal update rate whether to generate new data
-        self._world.add_physics_callback(self._stage_prefix + "/Sensors", self.update_sensors)
+        self._world.add_physics_callback(
+            self._stage_prefix + "/Sensors", self.update_sensors
+        )
 
         # 4. Save the backend interface (if given in the configuration of the vehicle)
         # and initialize them
@@ -87,7 +94,9 @@ class QuadrupedRobot(Vehicle):
             backend.initialize(self)
 
         # Add a callback to the physics engine to update the state of the vehicle at every timestep.
-        self._world.add_physics_callback(self._stage_prefix + "/sim_state", self.update_sim_state)
+        self._world.add_physics_callback(
+            self._stage_prefix + "/sim_state", self.update_sim_state
+        )
 
         # Height scanner
         y = np.arange(-0.5, 0.6, 0.1)
@@ -203,15 +212,21 @@ class QuadrupedRobot(Vehicle):
         np.ndarray -- The observation vector.
 
         """
-        lin_vel_I = self.state.linear_velocity  #pylint: disable=invalid-name
-        ang_vel_I = self.state.angular_velocity  #pylint: disable=invalid-name
-        pos_IB = self.state.position  #pylint: disable=invalid-name
+        lin_vel_I = self.state.linear_velocity  # pylint: disable=invalid-name
+        ang_vel_I = self.state.angular_velocity  # pylint: disable=invalid-name
+        pos_IB = self.state.position  # pylint: disable=invalid-name
         # Convert quaternion from XYZW to WXYZ format
-        q_IB = np.array(  #pylint: disable=invalid-name
-            [self.state.attitude[-1], self.state.attitude[0], self.state.attitude[1], self.state.attitude[2]])
+        q_IB = np.array(  # pylint: disable=invalid-name
+            [
+                self.state.attitude[-1],
+                self.state.attitude[0],
+                self.state.attitude[1],
+                self.state.attitude[2],
+            ]
+        )
 
-        R_IB = quat_to_rot_matrix(q_IB)  #pylint: disable=invalid-name
-        R_BI = R_IB.transpose()  #pylint: disable=invalid-name
+        R_IB = quat_to_rot_matrix(q_IB)  # pylint: disable=invalid-name
+        R_BI = R_IB.transpose()  # pylint: disable=invalid-name
         lin_vel_b = np.matmul(R_BI, lin_vel_I)
         ang_vel_b = np.matmul(R_BI, ang_vel_I)
         gravity_b = np.matmul(R_BI, np.array([0.0, 0.0, -1.0]))
@@ -243,7 +258,9 @@ class QuadrupedRobot(Vehicle):
         current_joint_vel = self.state.joint_velocities
         current_joint_pos = np.array(current_joint_pos.reshape([3, 4]).T.flat)
         current_joint_vel = np.array(current_joint_vel.reshape([3, 4]).T.flat)
-        obs[12:24] = self.controller.joint_pos_scale * (current_joint_pos - self.controller.default_joint_pos)
+        obs[12:24] = self.controller.joint_pos_scale * (
+            current_joint_pos - self.controller.default_joint_pos
+        )
         obs[24:36] = self.controller.joint_vel_scale * current_joint_vel
 
         obs[36:48] = self.controller.previous_action
@@ -257,8 +274,12 @@ class QuadrupedRobot(Vehicle):
 
         for i in range(world_scan_points.shape[0]):
             self._query_info.clear()
-            self.physx_query_interface.raycast_all(tuple(world_scan_points[i]), (0.0, 0.0, -1.0), 100,
-                                                   self._hit_report_callback)
+            self.physx_query_interface.raycast_all(
+                tuple(world_scan_points[i]),
+                (0.0, 0.0, -1.0),
+                100,
+                self._hit_report_callback,
+            )
             if self._query_info:
                 distance = min(self._query_info)
                 obs[48 + i] = np.clip(distance - 0.5, -1.0, 1.0)

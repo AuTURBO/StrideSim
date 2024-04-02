@@ -9,8 +9,7 @@ from stride.simulator.vehicles.sensors.geo_mag_utils import GRAVITY_VECTOR
 
 
 class Imu(Sensor):
-    """The class that implements the Imu sensor. This class inherits the base class Sensor.
-    """
+    """The class that implements the Imu sensor. This class inherits the base class Sensor."""
 
     def __init__(self, config=None):
         """Initialize the Imu class
@@ -38,10 +37,14 @@ class Imu(Sensor):
         if config is None:
             config = {}
         else:
-            assert isinstance(config, dict), "The config parameter must be a dictionary."
+            assert isinstance(
+                config, dict
+            ), "The config parameter must be a dictionary."
 
         # Initialize the Super class "object" attributes.
-        super().__init__(sensor_type="Imu", update_frequency=config.get("update_frequency", 250.0))
+        super().__init__(
+            sensor_type="Imu", update_frequency=config.get("update_frequency", 250.0)
+        )
 
         # Orientation noise constant.
         self._orientation_noise: float = 0.0
@@ -49,18 +52,32 @@ class Imu(Sensor):
         # Gyroscope noise constants
         self._gyroscope_bias: np.ndarray = np.zeros((3,))
         gyroscope_config = config.get("gyroscope", {})
-        self._gyroscope_noise_density = gyroscope_config.get("noise_density", 0.0003393695767766752)
-        self._gyroscope_random_walk = gyroscope_config.get("random_walk", 3.878509448876288E-05)
-        self._gyroscope_bias_correlation_time = gyroscope_config.get("bias_correlation_time", 1.0E3)
-        self._gyroscope_turn_on_bias_sigma = gyroscope_config.get("turn_on_bias_sigma", 0.008726646259971648)
+        self._gyroscope_noise_density = gyroscope_config.get(
+            "noise_density", 0.0003393695767766752
+        )
+        self._gyroscope_random_walk = gyroscope_config.get(
+            "random_walk", 3.878509448876288e-05
+        )
+        self._gyroscope_bias_correlation_time = gyroscope_config.get(
+            "bias_correlation_time", 1.0e3
+        )
+        self._gyroscope_turn_on_bias_sigma = gyroscope_config.get(
+            "turn_on_bias_sigma", 0.008726646259971648
+        )
 
         # Accelerometer noise constants.
         self._accelerometer_bias: np.ndarray = np.zeros((3,))
         accelerometer_config = config.get("accelerometer", {})
-        self._accelerometer_noise_density = accelerometer_config.get("noise_density", 0.004)
+        self._accelerometer_noise_density = accelerometer_config.get(
+            "noise_density", 0.004
+        )
         self._accelerometer_random_walk = accelerometer_config.get("random_walk", 0.006)
-        self._accelerometer_bias_correlation_time = accelerometer_config.get("bias_correlation_time", 300.0)
-        self._accelerometer_turn_on_bias_sigma = accelerometer_config.get("turn_on_bias_sigma", 0.196)
+        self._accelerometer_bias_correlation_time = accelerometer_config.get(
+            "bias_correlation_time", 300.0
+        )
+        self._accelerometer_turn_on_bias_sigma = accelerometer_config.get(
+            "turn_on_bias_sigma", 0.196
+        )
 
         # Auxiliar variable used to compute the linear acceleration of the vehicle.
         self._prev_linear_velocity = np.zeros((3,))
@@ -101,7 +118,9 @@ class Imu(Sensor):
         sigma_b_g: float = self._gyroscope_random_walk
 
         # Compute exact covariance of the process after dt [Maybeck 4-114]
-        sigma_b_g_d: float = np.sqrt(-sigma_b_g * sigma_b_g * tau_g / 2.0 * (np.exp(-2.0 * dt / tau_g) - 1.0))
+        sigma_b_g_d: float = np.sqrt(
+            -sigma_b_g * sigma_b_g * tau_g / 2.0 * (np.exp(-2.0 * dt / tau_g) - 1.0)
+        )
 
         # Compute state-transition
         phi_g_d: float = np.exp(-1.0 / tau_g * dt)
@@ -110,8 +129,14 @@ class Imu(Sensor):
         angular_velocity: np.ndarray = np.zeros((3,))
 
         for i in range(3):
-            self._gyroscope_bias[i] = phi_g_d * self._gyroscope_bias[i] + sigma_b_g_d * np.random.randn()
-            angular_velocity[i] = state.angular_velocity[i] + sigma_g_d * np.random.randn() + self._gyroscope_bias[i]
+            self._gyroscope_bias[i] = (
+                phi_g_d * self._gyroscope_bias[i] + sigma_b_g_d * np.random.randn()
+            )
+            angular_velocity[i] = (
+                state.angular_velocity[i]
+                + sigma_g_d * np.random.randn()
+                + self._gyroscope_bias[i]
+            )
 
         # Accelerometer terms.
         tau_a: float = self._accelerometer_bias_correlation_time
@@ -121,14 +146,18 @@ class Imu(Sensor):
         sigma_b_a: float = self._accelerometer_random_walk
 
         # Compute exact covariance of the process after dt [Maybeck 4-114].
-        sigma_b_a_d: float = np.sqrt(-sigma_b_a * sigma_b_a * tau_a / 2.0 * (np.exp(-2.0 * dt / tau_a) - 1.0))
+        sigma_b_a_d: float = np.sqrt(
+            -sigma_b_a * sigma_b_a * tau_a / 2.0 * (np.exp(-2.0 * dt / tau_a) - 1.0)
+        )
 
         # Compute state-transition.
         phi_a_d: float = np.exp(-1.0 / tau_a * dt)
 
         # Compute the linear acceleration from diferentiating the velocity of the vehicle expressed in the inertial
         # frame.
-        linear_acceleration_inertial = (state.linear_velocity - self._prev_linear_velocity) / dt
+        linear_acceleration_inertial = (
+            state.linear_velocity - self._prev_linear_velocity
+        ) / dt
         linear_acceleration_inertial = linear_acceleration_inertial - GRAVITY_VECTOR
 
         # Update the previous linear velocity for the next computation.
@@ -136,13 +165,18 @@ class Imu(Sensor):
 
         # Compute the linear acceleration of the body frame, with respect to the inertial frame, expressed in the body
         # frame.
-        linear_acceleration = np.array(Rotation.from_quat(state.attitude).inv().apply(linear_acceleration_inertial))
+        linear_acceleration = np.array(
+            Rotation.from_quat(state.attitude).inv().apply(linear_acceleration_inertial)
+        )
 
         # Simulate the accelerometer noise processes and add them to the true linear aceleration values.
         for i in range(3):
-            self._accelerometer_bias[i] = phi_a_d * self._accelerometer_bias[i] + sigma_b_a_d * np.random.rand()
-            linear_acceleration[i] = (linear_acceleration[i] + sigma_a_d * np.random.randn()
-                                     )  #+ self._accelerometer_bias[i]
+            self._accelerometer_bias[i] = (
+                phi_a_d * self._accelerometer_bias[i] + sigma_b_a_d * np.random.rand()
+            )
+            linear_acceleration[i] = (
+                linear_acceleration[i] + sigma_a_d * np.random.randn()
+            )  # + self._accelerometer_bias[i]
 
         # TODO - Add small "noisy" to the attitude
 

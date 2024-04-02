@@ -26,7 +26,6 @@ class Test(omni.kit.test.AsyncTestCase):
         result = stride.simulator.some_public_function(4)
         self.assertEqual(result, 256)
 
-
     async def test_window_button(self):
 
         # Find a label in our window
@@ -34,7 +33,9 @@ class Test(omni.kit.test.AsyncTestCase):
 
         # Find buttons in our window
         add_button = ui_test.find("Stride Simulator//Frame/**/Button[*].text=='Add'")
-        reset_button = ui_test.find("Stride Simulator//Frame/**/Button[*].text=='Reset'")
+        reset_button = ui_test.find(
+            "Stride Simulator//Frame/**/Button[*].text=='Reset'"
+        )
 
         # Click reset button
         await reset_button.click()

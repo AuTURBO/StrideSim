@@ -33,7 +33,9 @@ class StrideSimulatorExtension(omni.ext.IExt):
 
         self._window = ui.Window("Stride Simulator", width=300, height=300)
 
-        self._window.deferred_dock_in("Property", ui.DockPolicy.CURRENT_WINDOW_IS_ACTIVE)
+        self._window.deferred_dock_in(
+            "Property", ui.DockPolicy.CURRENT_WINDOW_IS_ACTIVE
+        )
 
         # Start the extension backend
         self._stride_sim = StrideInterface()
@@ -49,27 +51,32 @@ class StrideSimulatorExtension(omni.ext.IExt):
 
                 def on_environment():
 
-                    self._stride_sim.load_asset(SIMULATION_ENVIRONMENTS["Default Environment"], "/World/layout")
+                    self._stride_sim.load_asset(
+                        SIMULATION_ENVIRONMENTS["Default Environment"], "/World/layout"
+                    )
 
                     label.text = "Load environment"
 
                 def on_simulation():
-
                     async def respawn():
 
                         self._anymal_config = AnymalCConfig()
 
-                        self._anymal = AnymalC(id=0,
-                                               init_pos=[0.0, 0.0, 0.7],
-                                               init_orientation=[0.0, 0.0, 0.0, 1.0],
-                                               config=self._anymal_config)
+                        self._anymal = AnymalC(
+                            id=0,
+                            init_pos=[0.0, 0.0, 0.7],
+                            init_orientation=[0.0, 0.0, 0.0, 1.0],
+                            config=self._anymal_config,
+                        )
 
                         self._current_tasks = self._stride_sim.world.get_current_tasks()
                         await self._stride_sim.world.reset_async()
                         await self._stride_sim.world.pause_async()
 
                         if len(self._current_tasks) > 0:
-                            self._stride_sim.world.add_physics_callback("tasks_step", self._world.step_async)
+                            self._stride_sim.world.add_physics_callback(
+                                "tasks_step", self._world.step_async
+                            )
 
                     asyncio.ensure_future(respawn())
 

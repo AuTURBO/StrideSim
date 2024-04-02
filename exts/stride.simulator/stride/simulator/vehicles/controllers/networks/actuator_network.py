@@ -35,11 +35,15 @@ class LstmSeaNetwork:
             self._cell_state[:, :, :] = 0.0
 
     @torch.no_grad()
-    def compute_torques(self, joint_pos, joint_vel, actions) -> Tuple[np.ndarray, np.ndarray]:
+    def compute_torques(
+        self, joint_pos, joint_vel, actions
+    ) -> Tuple[np.ndarray, np.ndarray]:
         # create sea network input obs
         actions = actions.copy()
         actuator_net_input = torch.zeros((12, 1, 2))
-        actuator_net_input[:, 0, 0] = torch.from_numpy(actions + self._default_joint_pos - joint_pos)
+        actuator_net_input[:, 0, 0] = torch.from_numpy(
+            actions + self._default_joint_pos - joint_pos
+        )
         actuator_net_input[:, 0, 1] = torch.from_numpy(np.clip(joint_vel, -20.0, 20))
         # call the network
         torques, (self._hidden_state, self._cell_state) = self._network(
@@ -106,11 +110,15 @@ class SeaNetwork(torch.nn.Module):
                     data[idx : idx + layer.in_features * layer.out_features],
                     newshape=(layer.in_features, layer.out_features),
                 ).T
-                layer.weight = torch.nn.Parameter(torch.from_numpy(weight.astype(np.float32)))
+                layer.weight = torch.nn.Parameter(
+                    torch.from_numpy(weight.astype(np.float32))
+                )
                 idx += layer.out_features * layer.in_features
                 # layer biases
                 bias = data[idx : idx + layer.out_features]
-                layer.bias = torch.nn.Parameter(torch.from_numpy(bias.astype(np.float32)))
+                layer.bias = torch.nn.Parameter(
+                    torch.from_numpy(bias.astype(np.float32))
+                )
                 idx += layer.out_features
         # set the module in eval mode
         self.eval()
@@ -120,22 +128,44 @@ class SeaNetwork(torch.nn.Module):
         joint_pos = np.asarray(joint_pos)
         joint_vel = np.asarray(joint_vel)
         # compute error in position
-        joint_pos_error = self._action_scale * actions + self._default_joint_pos - joint_pos
+        joint_pos_error = (
+            self._action_scale * actions + self._default_joint_pos - joint_pos
+        )
         # store into history
-        self._joint_pos_history[:, : self._history_size] = self._joint_pos_history[:, 1:]
-        self._joint_vel_history[:, : self._history_size] = self._joint_vel_history[:, 1:]
+        self._joint_pos_history[:, : self._history_size] = self._joint_pos_history[
+            :, 1:
+        ]
+        self._joint_vel_history[:, : self._history_size] = self._joint_vel_history[
+            :, 1:
+        ]
         self._joint_pos_history[:, self._history_size] = joint_pos_error
         self._joint_vel_history[:, self._history_size] = joint_vel
 
     def _compute_sea_torque(self):
         inp = torch.zeros((12, 6))
         for dof in range(12):
-            inp[dof, 0] = self._sea_vel_scale * self._joint_vel_history[dof, self._history_size - self._delays[0]]
-            inp[dof, 1] = self._sea_vel_scale * self._joint_vel_history[dof, self._history_size - self._delays[1]]
-            inp[dof, 2] = self._sea_vel_scale * self._joint_vel_history[dof, self._history_size]
-            inp[dof, 3] = self._sea_pos_scale * self._joint_pos_history[dof, self._history_size - self._delays[0]]
-            inp[dof, 4] = self._sea_pos_scale * self._joint_pos_history[dof, self._history_size - self._delays[1]]
-            inp[dof, 5] = self._sea_pos_scale * self._joint_pos_history[dof, self._history_size]
+            inp[dof, 0] = (
+                self._sea_vel_scale
+                * self._joint_vel_history[dof, self._history_size - self._delays[0]]
+            )
+            inp[dof, 1] = (
+                self._sea_vel_scale
+                * self._joint_vel_history[dof, self._history_size - self._delays[1]]
+            )
+            inp[dof, 2] = (
+                self._sea_vel_scale * self._joint_vel_history[dof, self._history_size]
+            )
+            inp[dof, 3] = (
+                self._sea_pos_scale
+                * self._joint_pos_history[dof, self._history_size - self._delays[0]]
+            )
+            inp[dof, 4] = (
+                self._sea_pos_scale
+                * self._joint_pos_history[dof, self._history_size - self._delays[1]]
+            )
+            inp[dof, 5] = (
+                self._sea_pos_scale * self._joint_pos_history[dof, self._history_size]
+            )
         return self._sea_output_scale * self._sea_network(inp)
 
 

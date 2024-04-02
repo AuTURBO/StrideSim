@@ -35,7 +35,9 @@ class Sensor:
         self._origin_longitude = -999
         self._origin_altitude = 0.0
 
-    def set_spherical_coordinate(self, origin_latitude, origin_longitude, origin_altitude):
+    def set_spherical_coordinate(
+        self, origin_latitude, origin_longitude, origin_altitude
+    ):
         """Method that initializes the sensor shperical coordinate attributes.
 
         Note:
@@ -90,7 +92,9 @@ class Sensor:
             if self.total_time >= self.update_period or self.first_update:
 
                 # Result of the update function for the sensor.
-                result = fnc(self, state, self.total_time)  # pylint: disable=not-callable, TODO: enable this.
+                result = fnc(
+                    self, state, self.total_time
+                )  # pylint: disable=not-callable, TODO: enable this.
 
                 # Reset the auxiliary counter variables.
                 self.first_update = False
