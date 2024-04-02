@@ -92,9 +92,9 @@ class Sensor:
             if self.total_time >= self.update_period or self.first_update:
 
                 # Result of the update function for the sensor.
-                result = fnc(
+                result = fnc(  # pylint: disable=not-callable, TODO: enable this.
                     self, state, self.total_time
-                )  # pylint: disable=not-callable, TODO: enable this.
+                )
 
                 # Reset the auxiliary counter variables.
                 self.first_update = False

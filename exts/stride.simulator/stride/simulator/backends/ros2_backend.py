@@ -22,11 +22,11 @@ from sensor_msgs.msg import (  # pylint: disable=unused-import, wrong-import-pos
     NavSatFix,
     NavSatStatus,
 )
-from geometry_msgs.msg import (
+from geometry_msgs.msg import (  # pylint: disable=wrong-import-position
     PoseStamped,
     TwistStamped,
     AccelStamped,
-)  # pylint: disable=wrong-import-position
+)
 
 
 # set environment variable to use ROS2
