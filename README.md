@@ -7,6 +7,10 @@
 StrideSim is a Nvidia Isaac Sim-based robot simulator, offering a realistic environment and compatibility with ROS2 for efficient robotics development.
 We are implementing a **quadruped robot** as our first target.
 
+## How to guide
+
+You can find a [how to guide](https://github.com/AuTURBO/StrideSim/wiki) on the wiki.
+
 ## Directories
 
 -   `app` - It is a folder link to the location of your _Omniverse Kit_ based app. When you clone this repository, there is no app folder.
@@ -47,13 +51,13 @@ alias ISAACSIM_PYTHON="${ISAACSIM_PATH}/python.sh"
 alias ISAACSIM="${ISAACSIM_PATH}/isaac-sim.sh"
 ```
 
-## Run Stride Simulator  
+## Run Stride Simulator
 
 After [the installation](https://github.com/AuTURBO/StrideSim/wiki/01.-Before-started), Look for the "stride.simulator" extension in the extension manager and enable it. Try applying changes to any Python files on your workspace. The simulator will hot-reload, and you can observe results immediately.
 
 Alternatively, you can launch your app from the console with this folder added to the search path and your extension enabled, e.g.:
 
-```
+```bash
 > app/isaac-sim.sh --ext-folder exts --enable stride.simulator
 ```
 
@@ -91,4 +95,4 @@ We developed this project by referencing the code framework of [the Pegasus simu
 
 ## TODO
 
--   [ ] Implement MVP of quadruped robot simulation until March 2024.
+-   [x] Implement MVP of quadruped robot simulation until March 2024.
