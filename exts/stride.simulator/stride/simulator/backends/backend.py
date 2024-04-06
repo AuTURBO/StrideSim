@@ -11,8 +11,7 @@ class Backend:
     """
 
     def __init__(self):
-        """Initialize the Backend class
-        """
+        """Initialize the Backend class"""
         self._vehicle = None
 
     @property
@@ -70,16 +69,13 @@ class Backend:
         pass
 
     def start(self):
-        """Method that when implemented should handle the begining of the simulation of vehicle
-        """
+        """Method that when implemented should handle the begining of the simulation of vehicle"""
         pass
 
     def stop(self):
-        """Method that when implemented should handle the stopping of the simulation of vehicle
-        """
+        """Method that when implemented should handle the stopping of the simulation of vehicle"""
         pass
 
     def reset(self):
-        """Method that when implemented, should handle the reset of the vehicle simulation to its original state
-        """
+        """Method that when implemented, should handle the reset of the vehicle simulation to its original state"""
         pass

@@ -1,4 +1,3 @@
-
 import os
 import carb
 import numpy as np
@@ -16,14 +15,24 @@ enable_extension("omni.isaac.ros2_bridge-humble")
 import rclpy  # pylint: disable=wrong-import-position
 from std_msgs.msg import Float64  # pylint: disable=unused-import, wrong-import-position
 from sensor_msgs.msg import (  # pylint: disable=unused-import, wrong-import-position
-    Imu, PointCloud2, PointField, MagneticField, NavSatFix, NavSatStatus
+    Imu,
+    PointCloud2,
+    PointField,
+    MagneticField,
+    NavSatFix,
+    NavSatStatus,
 )
-from geometry_msgs.msg import PoseStamped, TwistStamped, AccelStamped  # pylint: disable=wrong-import-position
+from geometry_msgs.msg import (  # pylint: disable=wrong-import-position
+    PoseStamped,
+    TwistStamped,
+    AccelStamped,
+)
 
 
 # set environment variable to use ROS2
 os.environ["RMW_IMPLEMENTATION"] = "rmw_cyclonedds_cpp"
 os.environ["ROS_DOMAIN_ID"] = "15"
+
 
 class ROS2Backend(Backend):
     """
@@ -62,17 +71,25 @@ class ROS2Backend(Backend):
             rclpy.init()
         self.node = rclpy.create_node(node_name)
 
-
-
         # Create publishers for the state of the vehicle in ENU
-        self.pose_pub = self.node.create_publisher(PoseStamped, node_name + "/state/pose", 10)
-        self.twist_pub = self.node.create_publisher(TwistStamped, node_name + "/state/twist", 10)
-        self.twist_inertial_pub = self.node.create_publisher(TwistStamped, node_name + "/state/twist_inertial", 10)
-        self.accel_pub = self.node.create_publisher(AccelStamped, node_name + "/state/accel", 10)
+        self.pose_pub = self.node.create_publisher(
+            PoseStamped, node_name + "/state/pose", 10
+        )
+        self.twist_pub = self.node.create_publisher(
+            TwistStamped, node_name + "/state/twist", 10
+        )
+        self.twist_inertial_pub = self.node.create_publisher(
+            TwistStamped, node_name + "/state/twist_inertial", 10
+        )
+        self.accel_pub = self.node.create_publisher(
+            AccelStamped, node_name + "/state/accel", 10
+        )
 
         # Create publishers for some sensor data
         self.imu_pub = self.node.create_publisher(Imu, node_name + "/sensors/imu", 10)
-        self.point_cloud_pub = self.node.create_publisher(PointCloud2, node_name + "/sensors/points", 10)
+        self.point_cloud_pub = self.node.create_publisher(
+            PointCloud2, node_name + "/sensors/points", 10
+        )
 
     def update(self, dt: float):
         """
@@ -127,7 +144,9 @@ class ROS2Backend(Backend):
         msg = PointCloud2()
 
         # Flatten LiDAR data
-        points_flat = np.array(data["points"]).reshape(-1, 3)  # Adjust based on your data's structure
+        points_flat = np.array(data["points"]).reshape(
+            -1, 3
+        )  # Adjust based on your data's structure
 
         # Create a PointCloud2 message
         msg = PointCloud2()
@@ -139,7 +158,7 @@ class ROS2Backend(Backend):
         msg.fields = [
             PointField(name="x", offset=0, datatype=PointField.FLOAT32, count=1),
             PointField(name="y", offset=4, datatype=PointField.FLOAT32, count=1),
-            PointField(name="z", offset=8, datatype=PointField.FLOAT32, count=1)
+            PointField(name="z", offset=8, datatype=PointField.FLOAT32, count=1),
         ]
         msg.is_bigendian = False
         msg.point_step = 12  # Float32, x, y, z
@@ -170,7 +189,9 @@ class ROS2Backend(Backend):
         elif sensor_type == "Lidar":
             self.update_lidar_data(data)
         else:
-            carb.log_warn(f"Sensor type {sensor_type} is not supported by the ROS2 backend.")
+            carb.log_warn(
+                f"Sensor type {sensor_type} is not supported by the ROS2 backend."
+            )
             pass
 
     def update_state(self, state):
@@ -187,7 +208,9 @@ class ROS2Backend(Backend):
         accel = AccelStamped()
 
         # Update the header
-        pose.header.stamp = (self.node.get_clock().now().to_msg())  # TODO: fill time when the state was measured.
+        pose.header.stamp = (
+            self.node.get_clock().now().to_msg()
+        )  # TODO: fill time when the state was measured.
         twist.header.stamp = pose.header.stamp
         twist_inertial.header.stamp = pose.header.stamp
         accel.header.stamp = pose.header.stamp

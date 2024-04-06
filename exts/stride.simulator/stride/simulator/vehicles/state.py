@@ -54,10 +54,14 @@ class State:
         self.linear_acceleration = np.array([0.0, 0.0, 0.0])
 
         # The joint angles
-        self.joint_angles = np.zeros(12)  #FIXME: need to be generalized for any number of joints
+        self.joint_angles = np.zeros(
+            12
+        )  # FIXME: need to be generalized for any number of joints
 
         # The joint velocities
-        self.joint_velocities = np.zeros(12)  #FIXME: need to be generalized for any number of joints
+        self.joint_velocities = np.zeros(
+            12
+        )  # FIXME: need to be generalized for any number of joints
 
     def get_position_ned(self):
         """
@@ -80,7 +84,9 @@ class State:
                         the attitude of the vehicle's FRD body frame, relative to an NED inertial frame,
                         expressed in the NED inertial frame.
         """
-        attitude_frd_ned = rot_ENU_to_NED * Rotation.from_quat(self.attitude) * rot_FLU_to_FRD
+        attitude_frd_ned = (
+            rot_ENU_to_NED * Rotation.from_quat(self.attitude) * rot_FLU_to_FRD
+        )
         return attitude_frd_ned.as_quat()
 
     def get_linear_body_velocity_ned_frd(self):
@@ -95,7 +101,9 @@ class State:
         """
 
         # Get the linear acceleration in FLU convention
-        linear_acc_body_flu = Rotation.from_quat(self.attitude).inv().apply(self.linear_acceleration)
+        linear_acc_body_flu = (
+            Rotation.from_quat(self.attitude).inv().apply(self.linear_acceleration)
+        )
 
         # Convert the linear acceleration in the body frame expressed in FLU convention to the FRD convention
         return rot_FLU_to_FRD.apply(linear_acc_body_flu)

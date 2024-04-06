@@ -101,7 +101,9 @@ class VehicleManager:
             if cls._instance is None:
                 cls._instance = object.__new__(cls)
             else:
-                carb.log_info("Vehicle Manager is defined already, returning the previously defined one")
+                carb.log_info(
+                    "Vehicle Manager is defined already, returning the previously defined one"
+                )
 
             return VehicleManager._instance
 

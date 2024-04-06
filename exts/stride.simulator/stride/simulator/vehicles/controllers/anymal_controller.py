@@ -2,7 +2,9 @@ import omni
 from omni.isaac.core.utils.nucleus import get_assets_root_path
 
 from stride.simulator.vehicles.controllers.controller import Controller
-from stride.simulator.vehicles.controllers.networks.actuator_network import LstmSeaNetwork
+from stride.simulator.vehicles.controllers.networks.actuator_network import (
+    LstmSeaNetwork,
+)
 
 import io
 import numpy as np
@@ -25,8 +27,9 @@ class AnyamlController(Controller):
         assets_root_path = get_assets_root_path()
 
         # Policy
-        file_content = omni.client.read_file(assets_root_path +
-                                             "/Isaac/Samples/Quadruped/Anymal_Policies/policy_1.pt")[2]
+        file_content = omni.client.read_file(
+            assets_root_path + "/Isaac/Samples/Quadruped/Anymal_Policies/policy_1.pt"
+        )[2]
         file = io.BytesIO(memoryview(file_content).tobytes())
 
         self._policy = torch.jit.load(file)
@@ -36,13 +39,17 @@ class AnyamlController(Controller):
         self.base_vel_ang_scale = 0.25
         self.joint_pos_scale = 1.0
         self.joint_vel_scale = 0.05
-        self.default_joint_pos = np.array([0.0, 0.4, -0.8, 0.0, -0.4, 0.8, -0.0, 0.4, -0.8, -0.0, -0.4, 0.8])
+        self.default_joint_pos = np.array(
+            [0.0, 0.4, -0.8, 0.0, -0.4, 0.8, -0.0, 0.4, -0.8, -0.0, -0.4, 0.8]
+        )
         self.previous_action = np.zeros(12)
         self._policy_counter = 0
 
         # Actuator network
-        file_content = omni.client.read_file(assets_root_path +
-                                             "/Isaac/Samples/Quadruped/Anymal_Policies/sea_net_jit2.pt")[2]
+        file_content = omni.client.read_file(
+            assets_root_path
+            + "/Isaac/Samples/Quadruped/Anymal_Policies/sea_net_jit2.pt"
+        )[2]
         file = io.BytesIO(memoryview(file_content).tobytes())
         self._actuator_network = LstmSeaNetwork()
         self._actuator_network.setup(file, self.default_joint_pos)
@@ -90,8 +97,9 @@ class AnyamlController(Controller):
         current_joint_vel = self.state.joint_velocities
         current_joint_pos = np.array(current_joint_pos.reshape([3, 4]).T.flat)
         current_joint_vel = np.array(current_joint_vel.reshape([3, 4]).T.flat)
-        joint_torques, _ = self._actuator_network.compute_torques(current_joint_pos, current_joint_vel,
-                                                                  self._action_scale * self.action)
+        joint_torques, _ = self._actuator_network.compute_torques(
+            current_joint_pos, current_joint_vel, self._action_scale * self.action
+        )
 
         self._policy_counter += 1
 

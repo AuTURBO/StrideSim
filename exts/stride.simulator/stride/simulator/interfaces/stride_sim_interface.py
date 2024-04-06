@@ -103,8 +103,7 @@ class StrideInterface:
         return self._altitude
 
     def initialize_world(self):
-        """Method that initializes the world object
-        """
+        """Method that initializes the world object"""
 
         async def _on_load_world_async():
             if self._world is None:
@@ -243,7 +242,12 @@ class StrideInterface:
         success = prim.GetReferences().AddReference(usd_asset)
 
         if not success:
-            raise Exception("The usd asset" + usd_asset + "is not load at stage path " + stage_prefix)
+            raise Exception(
+                "The usd asset"
+                + usd_asset
+                + "is not load at stage path "
+                + stage_prefix
+            )
 
     def set_viewport_camera(self, camera_position, camera_target):
         """Sets the viewport camera to given position and makes it point to another target position.
@@ -256,7 +260,9 @@ class StrideInterface:
         # Set the camera view to a fixed value
         set_camera_view(eye=camera_position, target=camera_target)
 
-    def set_world_settings(self, physics_dt=None, stage_units_in_meters=None, rendering_dt=None):
+    def set_world_settings(
+        self, physics_dt=None, stage_units_in_meters=None, rendering_dt=None
+    ):
         """
         Set the current world settings to the pre-defined settings. TODO - finish the implementation of this method.
         For now these new setting will never override the default ones.
