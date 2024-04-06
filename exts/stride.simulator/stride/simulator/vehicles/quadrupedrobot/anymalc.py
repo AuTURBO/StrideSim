@@ -45,7 +45,6 @@ class AnymalCConfig(QuadrupedRobotConfig):
         with open(
             stridesim_dir + "/config/anymalc_cfg.yaml", "r", encoding="utf-8"
         ) as file:
-            self.config = yaml.safe_load(file)
 
         # The default sensors for a Anymal C
         self.sensors = [
