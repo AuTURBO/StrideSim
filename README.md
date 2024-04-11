@@ -42,7 +42,7 @@ Set environment variables to facilitate running Isaac Sim in the `~/.bashrc`.
 
 ```bash
 # ~/.bashrc
-
+export ISAAC_FOLDER=isaac_sim-2022.2.1
 # Isaac Sim root directory
 export ISAACSIM_PATH="${HOME}/.local/share/ov/pkg/${ISAAC_FOLDER}"
 # Isaac Sim python executable
