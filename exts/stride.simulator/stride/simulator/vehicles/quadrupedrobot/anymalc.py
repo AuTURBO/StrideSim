@@ -8,7 +8,6 @@ from stride.simulator.vehicles.quadrupedrobot.quadrupedrobot import (
 
 # Get the location of the asset
 # from stride.simulator.backends import LoggerBackend
-from stride.simulator.backends import ROS2Backend
 from stride.simulator.params import ROBOTS
 from stride.simulator.vehicles.sensors.imu import Imu
 from stride.simulator.vehicles.sensors.lidar import Lidar
@@ -56,7 +55,6 @@ class AnymalCConfig(QuadrupedRobotConfig):
         # The backends for actually sending commands to the vehicle.
         # It can also be a ROS2 backend or your own custom Backend implementation!
         self.backends = [
-            ROS2Backend(self.vehicle_name)
         ]  # pylint: disable=use-list-literal
 
 

@@ -8,10 +8,14 @@ import omni.kit.ui
 import omni.kit.app
 from omni import ui
 
+from stride.simulator.backends import ROS2Backend
+
 from stride.simulator.interfaces.stride_sim_interface import StrideInterface
 
 # from stride.simulator.vehicles.quadrupedrobot.anymalc import AnymalC, AnymalCConfig
-from stride.simulator.vehicles.quadrupedrobot.go1 import Go1Config, Go1
+from stride.simulator.vehicles.quadrupedrobot.go1 import Go1Config
+
+from stride.simulator.vehicles.quadrupedrobot.go1 import Go1
 from stride.simulator.params import SIMULATION_ENVIRONMENTS
 
 import asyncio
@@ -63,10 +67,13 @@ class StrideSimulatorExtension(omni.ext.IExt):
                     async def respawn():
 
                         self._go1_config = Go1Config()
+                        self._go1_config.backends = [
+                            ROS2Backend(self._go1_config.vehicle_name)
+                        ]
 
-                        self._anymal = Go1(
+                        self._go1 = Go1(
                             id=0,
-                            init_pos=[0.0, 0.0, 0.7],
+                            init_pos=[0.0, 0.0, 0.5],
                             init_orientation=[0.0, 0.0, 0.0, 1.0],
                             config=self._go1_config,
                         )
