@@ -1,4 +1,4 @@
-from stride.simulator.vehicles.quadrupedrobot import (
+from stride.simulator.vehicles.quadrupedrobot.quadrupedrobot import (
     QuadrupedRobot,
     QuadrupedRobotConfig,
 )
