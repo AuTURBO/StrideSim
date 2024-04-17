@@ -1,4 +1,4 @@
-from stride.simulator.vehicles.quadrupedrobot.quadrupedrobot import (
+from stride.simulator.vehicles.quadrupedrobot import (
     QuadrupedRobot,
     QuadrupedRobotConfig,
 )
@@ -54,8 +54,7 @@ class AnymalCConfig(QuadrupedRobotConfig):
 
         # The backends for actually sending commands to the vehicle.
         # It can also be a ROS2 backend or your own custom Backend implementation!
-        self.backends = [
-        ]  # pylint: disable=use-list-literal
+        self.backends = []  # pylint: disable=use-list-literal
 
 
 class AnymalC(QuadrupedRobot):
