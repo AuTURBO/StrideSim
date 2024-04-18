@@ -28,7 +28,6 @@ from geometry_msgs.msg import (  # pylint: disable=wrong-import-position
     AccelStamped,
 )
 
-
 # set environment variable to use ROS2
 os.environ["RMW_IMPLEMENTATION"] = "rmw_cyclonedds_cpp"
 os.environ["ROS_DOMAIN_ID"] = "15"
