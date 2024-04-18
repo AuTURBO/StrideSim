@@ -78,7 +78,7 @@ class Lidar(Sensor):
                 self._lidar.set_resolution([0.4, 0.4])
                 self._lidar.set_valid_range([0.1, 6])
                 self._lidar.enable_visualization(
-                    high_lod=True, draw_points=True, draw_lines=False
+                    high_lod=True, draw_points=False, draw_lines=False
                 )
 
                 self.lidar_flag_ = True
