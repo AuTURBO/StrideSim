@@ -8,7 +8,7 @@ from omni.isaac.core.utils.extensions import disable_extension, enable_extension
 
 # # Perform some checks, because Isaac Sim some times does not play nice when using ROS/ROS2
 disable_extension("omni.isaac.ros_bridge")
-enable_extension("omni.isaac.ros2_bridge-humble")
+enable_extension("omni.isaac.ros2_bridge")
 
 # Inform the user that now we are actually import the ROS2 dependencies
 # Note: we are performing the imports here to make sure that ROS2 extension was load correctly
@@ -27,7 +27,6 @@ from geometry_msgs.msg import (  # pylint: disable=wrong-import-position
     TwistStamped,
     AccelStamped,
 )
-
 
 # set environment variable to use ROS2
 os.environ["RMW_IMPLEMENTATION"] = "rmw_cyclonedds_cpp"
@@ -254,20 +253,3 @@ class ROS2Backend(Backend):
         self.twist_pub.publish(twist)
         self.twist_inertial_pub.publish(twist_inertial)
         self.accel_pub.publish(accel)
-
-    # def check_ros_extension(self):
-    #     """
-    #     Method that checks which ROS extension is installed.
-    #     """
-
-    #     # Get the handle for the extension manager
-    #     extension_manager = omni.kit.app.get_app().get_extension_manager()
-
-    #     version = ""
-
-    #     if self._ext_manager.is_extension_enabled("omni.isaac.ros_bridge"):
-    #         version = "ros"
-    #     elif self._ext_manager.is_extension_enabled("omni.isaac.ros2_bridge"):
-    #         version = "ros2"
-    #     else:
-    #         carb.log_warn("Neither extension 'omni.isaac.ros_bridge' nor 'omni.isaac.ros2_bridge' is enabled")

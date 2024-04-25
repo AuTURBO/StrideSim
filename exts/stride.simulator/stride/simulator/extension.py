@@ -8,8 +8,16 @@ import omni.kit.ui
 import omni.kit.app
 from omni import ui
 
+from stride.simulator.backends import ROS2Backend
+
 from stride.simulator.interfaces.stride_sim_interface import StrideInterface
-from stride.simulator.vehicles.quadrupedrobot.anymalc import AnymalC, AnymalCConfig
+
+# from stride.simulator.vehicles.quadrupedrobot.anymalc import AnymalC, AnymalCConfig
+
+from stride.simulator.vehicles.quadrupedrobot.go1 import Go1Config
+
+from stride.simulator.vehicles.quadrupedrobot.go1 import Go1
+
 from stride.simulator.params import SIMULATION_ENVIRONMENTS
 
 import asyncio
@@ -60,14 +68,26 @@ class StrideSimulatorExtension(omni.ext.IExt):
                 def on_simulation():
                     async def respawn():
 
-                        self._anymal_config = AnymalCConfig()
+                        self._go1_config = Go1Config()
 
-                        self._anymal = AnymalC(
+                        self._go1_config.backends = [
+                            ROS2Backend(self._go1_config.vehicle_name)
+                        ]
+
+                        self._go1 = Go1(
                             id=0,
-                            init_pos=[0.0, 0.0, 0.7],
+                            init_pos=[0.0, 0.0, 0.5],
                             init_orientation=[0.0, 0.0, 0.0, 1.0],
-                            config=self._anymal_config,
+                            config=self._go1_config,
                         )
+                        # self._anymal_config = AnymalCConfig()
+
+                        # self._anymal = AnymalC(
+                        #     id=0,
+                        #     init_pos=[0.0, 0.0, 0.7],
+                        #     init_orientation=[0.0, 0.0, 0.0, 1.0],
+                        #     config=self._anymal_config,
+                        # )
 
                         self._current_tasks = self._stride_sim.world.get_current_tasks()
                         await self._stride_sim.world.reset_async()

@@ -10,7 +10,8 @@ from stride.simulator.vehicles.quadrupedrobot.quadrupedrobot import (
 # from stride.simulator.backends import LoggerBackend
 from stride.simulator.params import ROBOTS
 from stride.simulator.vehicles.sensors.imu import Imu
-from stride.simulator.vehicles.sensors.lidar import Lidar
+
+# from stride.simulator.vehicles.sensors.lidar import Lidar
 
 from stride.simulator.vehicles.controllers.anymal_controller import AnyamlController
 
@@ -18,16 +19,16 @@ import yaml
 import os
 
 
-class AnymalCConfig(QuadrupedRobotConfig):
+class Go1Config(QuadrupedRobotConfig):
     """
-    AnymalC configuration class
+    Go1 configuration class
     """
 
     def __init__(self):
 
         super().__init__()
 
-        self.vehicle_name = "anymal_c"
+        self.vehicle_name = "go1"
 
         # Get the path to the "" directory
         stridesim_dir = os.path.abspath(__file__)
@@ -35,21 +36,21 @@ class AnymalCConfig(QuadrupedRobotConfig):
             stridesim_dir = os.path.dirname(stridesim_dir)
 
         # Stage prefix of the vehicle when spawning in the world
-        self.stage_prefix = "/World/AnymalC"
+        self.stage_prefix = "/World/Go1"
 
         # The USD file that describes the visual aspect of the vehicle
-        self.usd_file = ROBOTS["Anymal C"]
+        self.usd_file = ROBOTS["go1"]
 
         # read config file
         with open(
-            stridesim_dir + "/config/anymalc_cfg.yaml", "r", encoding="utf-8"
+            stridesim_dir + "/config/go1_cfg.yaml", "r", encoding="utf-8"
         ) as file:
             self.config = yaml.safe_load(file)
 
-        # The default sensors for a Anymal C
+        # The default sensors for a Go1
         self.sensors = [
             Imu(self.config["sensor"]["imu"]),
-            Lidar(self.config["sensor"]["lidar"]),
+            # Lidar(self.config["sensor"]["lidar"]),
         ]  # pylint: disable=use-list-literal FIXME
 
         # The backends for actually sending commands to the vehicle.
@@ -57,10 +58,10 @@ class AnymalCConfig(QuadrupedRobotConfig):
         self.backends = []  # pylint: disable=use-list-literal
 
 
-class AnymalC(QuadrupedRobot):
-    """AnymalC class - It is a child class of QuadrupedRobot class to implement a AnymalC robot in the simulator."""
+class Go1(QuadrupedRobot):
+    """Go1 class - It is a child class of QuadrupedRobot class to implement a Go1 robot in the simulator."""
 
-    def __init__(self, id: int, init_pos, init_orientation, config=AnymalCConfig()):
+    def __init__(self, id: int, init_pos, init_orientation, config=Go1Config()):
 
         if init_pos is None:
             init_pos = [0.0, 0.0, 0.5]
