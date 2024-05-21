@@ -187,6 +187,7 @@ class Vehicle(Robot):
         # Get the body frame interface of the vehicle
         # (this will be the frame used to get the position, orientation, etc.)
         body = self._world.dc_interface.get_rigid_body(self._stage_prefix + "/base")
+        # TODO(Jeong) : Implement the following methods for the joint positions and velocities
 
         # Get the current position and orientation in the inertial frame
         pose = self._world.dc_interface.get_rigid_body_pose(body)
