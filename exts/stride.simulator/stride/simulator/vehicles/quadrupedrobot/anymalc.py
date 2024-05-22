@@ -89,6 +89,8 @@ class AnymalC(QuadrupedRobot):
         """
 
         # Call the update method for the sensor to update its values internally (if applicable)
+        print("debug2")
+
         for sensor in self._sensors:
             try:
                 sensor_data = sensor.update(self._state, dt)

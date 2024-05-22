@@ -10,6 +10,7 @@ from stride.simulator.vehicles.quadrupedrobot.quadrupedrobot import (
 # from stride.simulator.backends import LoggerBackend
 from stride.simulator.params import ROBOTS
 from stride.simulator.vehicles.sensors.imu import Imu
+from stride.simulator.vehicles.sensors.lidar import Lidar
 
 # from stride.simulator.vehicles.sensors.lidar import Lidar
 
@@ -50,7 +51,7 @@ class Go1Config(QuadrupedRobotConfig):
         # The default sensors for a Go1
         self.sensors = [
             Imu(self.config["sensor"]["imu"]),
-            # Lidar(self.config["sensor"]["lidar"]),
+            Lidar(self.config["sensor"]["lidar"]),
         ]  # pylint: disable=use-list-literal FIXME
 
         # The backends for actually sending commands to the vehicle.
@@ -88,9 +89,13 @@ class Go1(QuadrupedRobot):
         Args:
             dt (float): The time elapsed between the previous and current function calls (s).
         """
+        ## doyoung ##
+        print("debug3")
 
         # Call the update method for the sensor to update its values internally (if applicable)
         for sensor in self._sensors:
+            ## doyoung ##
+            print(sensor)
             try:
                 sensor_data = sensor.update(self._state, dt)
             except Exception as e:  # pylint: disable=broad-except

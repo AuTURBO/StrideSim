@@ -126,6 +126,7 @@ class QuadrupedRobot(Vehicle):
             # If some data was updated and we have a mavlink backend or ros backend (or other), then just update it
             if sensor_data is not None:
                 for backend in self._backends:
+                    print("debug1")
                     backend.update_sensor(sensor.sensor_type, sensor_data)
 
     def update_sim_state(self, dt: float):
@@ -283,8 +284,8 @@ class QuadrupedRobot(Vehicle):
             if self._query_info:
                 distance = min(self._query_info)
                 obs[48 + i] = np.clip(distance - 0.5, -1.0, 1.0)
-            else:
-                print("No hit")
+            # else:
+            #     print("No hit")
 
         return obs
 

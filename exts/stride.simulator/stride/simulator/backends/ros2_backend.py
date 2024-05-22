@@ -106,6 +106,7 @@ class ROS2Backend(Backend):
         rclpy.spin_once(self.node, timeout_sec=0)
 
     def update_imu_data(self, data):
+
         """
         Updates the IMU sensor data.
 
@@ -139,7 +140,7 @@ class ROS2Backend(Backend):
         Args:
             data: The Lidar sensor data.
         """
-
+        print("lidar")
         msg = PointCloud2()
 
         # Flatten LiDAR data
@@ -158,6 +159,12 @@ class ROS2Backend(Backend):
             PointField(name="x", offset=0, datatype=PointField.FLOAT32, count=1),
             PointField(name="y", offset=4, datatype=PointField.FLOAT32, count=1),
             PointField(name="z", offset=8, datatype=PointField.FLOAT32, count=1),
+
+            # 도영 Lidar Property 추가
+            PointField(name="intensity", offset=12, datatype=PointField.FLOAT32, count=1),
+            PointField(name="ring", offset=16, datatype=PointField.FLOAT32, count=1),
+            PointField(name="time", offset=18, datatype=PointField.FLOAT32, count=1),
+
         ]
         msg.is_bigendian = False
         msg.point_step = 12  # Float32, x, y, z
@@ -182,7 +189,8 @@ class ROS2Backend(Backend):
             sensor_type (str): The type of the sensor.
             data: The sensor data.
         """
-
+        print(sensor_type)
+        
         if sensor_type == "Imu":
             self.update_imu_data(data)
         elif sensor_type == "Lidar":
