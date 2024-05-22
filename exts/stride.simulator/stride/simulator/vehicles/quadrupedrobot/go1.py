@@ -90,12 +90,11 @@ class Go1(QuadrupedRobot):
             dt (float): The time elapsed between the previous and current function calls (s).
         """
         ## doyoung ##
-        print("debug3")
 
         # Call the update method for the sensor to update its values internally (if applicable)
         for sensor in self._sensors:
             ## doyoung ##
-            print(sensor)
+            # print(sensor)
             try:
                 sensor_data = sensor.update(self._state, dt)
             except Exception as e:  # pylint: disable=broad-except

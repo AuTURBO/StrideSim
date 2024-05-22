@@ -140,7 +140,6 @@ class ROS2Backend(Backend):
         Args:
             data: The Lidar sensor data.
         """
-        print("lidar")
         msg = PointCloud2()
 
         # Flatten LiDAR data
@@ -189,7 +188,7 @@ class ROS2Backend(Backend):
             sensor_type (str): The type of the sensor.
             data: The sensor data.
         """
-        print(sensor_type)
+        # print(sensor_type)
         
         if sensor_type == "Imu":
             self.update_imu_data(data)

@@ -126,7 +126,6 @@ class QuadrupedRobot(Vehicle):
             # If some data was updated and we have a mavlink backend or ros backend (or other), then just update it
             if sensor_data is not None:
                 for backend in self._backends:
-                    print("debug1")
                     backend.update_sensor(sensor.sensor_type, sensor_data)
 
     def update_sim_state(self, dt: float):
