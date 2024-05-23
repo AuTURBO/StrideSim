@@ -74,9 +74,9 @@ class Lidar(Sensor):
                         rotation_dt=10,
                     )
                 )
-                self._lidar.set_fov([360, 30])
-                self._lidar.set_resolution([0.4, 0.4])
-                self._lidar.set_valid_range([0.1, 6])
+                self._lidar.set_fov([360, 45])  # 수평 FOV: 360도, 수직 FOV: 45도
+                # self._lidar.set_resolution([0.4, 0.4])
+                self._lidar.set_valid_range([0.3, 200])  # 유효 범위: 0.3m ~ 200m
                 self._lidar.enable_visualization(
                     high_lod=True, draw_points=False, draw_lines=False
                 )

@@ -1,3 +1,4 @@
+
 import os
 import carb
 import numpy as np
@@ -8,30 +9,21 @@ from omni.isaac.core.utils.extensions import disable_extension, enable_extension
 
 # # Perform some checks, because Isaac Sim some times does not play nice when using ROS/ROS2
 disable_extension("omni.isaac.ros_bridge")
-enable_extension("omni.isaac.ros2_bridge")
+enable_extension("omni.isaac.ros2_bridge-humble")
 
 # Inform the user that now we are actually import the ROS2 dependencies
 # Note: we are performing the imports here to make sure that ROS2 extension was load correctly
 import rclpy  # pylint: disable=wrong-import-position
 from std_msgs.msg import Float64  # pylint: disable=unused-import, wrong-import-position
 from sensor_msgs.msg import (  # pylint: disable=unused-import, wrong-import-position
-    Imu,
-    PointCloud2,
-    PointField,
-    MagneticField,
-    NavSatFix,
-    NavSatStatus,
+    Imu, PointCloud2, PointField, MagneticField, NavSatFix, NavSatStatus
 )
-from geometry_msgs.msg import (  # pylint: disable=wrong-import-position
-    PoseStamped,
-    TwistStamped,
-    AccelStamped,
-)
+from geometry_msgs.msg import PoseStamped, TwistStamped, AccelStamped  # pylint: disable=wrong-import-position
+
 
 # set environment variable to use ROS2
 os.environ["RMW_IMPLEMENTATION"] = "rmw_cyclonedds_cpp"
 os.environ["ROS_DOMAIN_ID"] = "15"
-
 
 class ROS2Backend(Backend):
     """
@@ -70,25 +62,17 @@ class ROS2Backend(Backend):
             rclpy.init()
         self.node = rclpy.create_node(node_name)
 
+
+
         # Create publishers for the state of the vehicle in ENU
-        self.pose_pub = self.node.create_publisher(
-            PoseStamped, node_name + "/state/pose", 10
-        )
-        self.twist_pub = self.node.create_publisher(
-            TwistStamped, node_name + "/state/twist", 10
-        )
-        self.twist_inertial_pub = self.node.create_publisher(
-            TwistStamped, node_name + "/state/twist_inertial", 10
-        )
-        self.accel_pub = self.node.create_publisher(
-            AccelStamped, node_name + "/state/accel", 10
-        )
+        self.pose_pub = self.node.create_publisher(PoseStamped, node_name + "/state/pose", 10)
+        self.twist_pub = self.node.create_publisher(TwistStamped, node_name + "/state/twist", 10)
+        self.twist_inertial_pub = self.node.create_publisher(TwistStamped, node_name + "/state/twist_inertial", 10)
+        self.accel_pub = self.node.create_publisher(AccelStamped, node_name + "/state/accel", 10)
 
         # Create publishers for some sensor data
-        self.imu_pub = self.node.create_publisher(Imu, node_name + "/sensors/imu", 10)
-        self.point_cloud_pub = self.node.create_publisher(
-            PointCloud2, node_name + "/sensors/points", 10
-        )
+        self.imu_pub = self.node.create_publisher(Imu, "/imu/data", 10)
+        self.point_cloud_pub = self.node.create_publisher(PointCloud2, "/velodyne_points", 10)
 
     def update(self, dt: float):
         """
@@ -106,7 +90,6 @@ class ROS2Backend(Backend):
         rclpy.spin_once(self.node, timeout_sec=0)
 
     def update_imu_data(self, data):
-
         """
         Updates the IMU sensor data.
 
@@ -118,7 +101,7 @@ class ROS2Backend(Backend):
 
         # Update the header
         msg.header.stamp = self.node.get_clock().now().to_msg()
-        msg.header.frame_id = "base_link_frd"
+        msg.header.frame_id = "imu_link"
 
         # Update the angular velocity (NED + FRD)
         msg.angular_velocity.x = data["angular_velocity"][0]
@@ -140,30 +123,27 @@ class ROS2Backend(Backend):
         Args:
             data: The Lidar sensor data.
         """
+
         msg = PointCloud2()
 
         # Flatten LiDAR data
-        points_flat = np.array(data["points"]).reshape(
-            -1, 3
-        )  # Adjust based on your data's structure
+        points_flat = np.array(data["points"]).reshape(-1, 3)  # Adjust based on your data's structure
 
         # Create a PointCloud2 message
         msg = PointCloud2()
         # Update the header
         msg.header.stamp = self.node.get_clock().now().to_msg()
-        msg.header.frame_id = "base_link_frd"
+        msg.header.frame_id = "base_link"
         msg.height = 1  # Unorganized point cloud
         msg.width = len(points_flat)
         msg.fields = [
             PointField(name="x", offset=0, datatype=PointField.FLOAT32, count=1),
             PointField(name="y", offset=4, datatype=PointField.FLOAT32, count=1),
             PointField(name="z", offset=8, datatype=PointField.FLOAT32, count=1),
-
-            # 도영 Lidar Property 추가
             PointField(name="intensity", offset=12, datatype=PointField.FLOAT32, count=1),
             PointField(name="ring", offset=16, datatype=PointField.FLOAT32, count=1),
             PointField(name="time", offset=18, datatype=PointField.FLOAT32, count=1),
-
+            
         ]
         msg.is_bigendian = False
         msg.point_step = 12  # Float32, x, y, z
@@ -188,16 +168,13 @@ class ROS2Backend(Backend):
             sensor_type (str): The type of the sensor.
             data: The sensor data.
         """
-        # print(sensor_type)
-        
+
         if sensor_type == "Imu":
             self.update_imu_data(data)
         elif sensor_type == "Lidar":
             self.update_lidar_data(data)
         else:
-            carb.log_warn(
-                f"Sensor type {sensor_type} is not supported by the ROS2 backend."
-            )
+            carb.log_warn(f"Sensor type {sensor_type} is not supported by the ROS2 backend.")
             pass
 
     def update_state(self, state):
@@ -214,9 +191,7 @@ class ROS2Backend(Backend):
         accel = AccelStamped()
 
         # Update the header
-        pose.header.stamp = (
-            self.node.get_clock().now().to_msg()
-        )  # TODO: fill time when the state was measured.
+        pose.header.stamp = (self.node.get_clock().now().to_msg())  # TODO: fill time when the state was measured.
         twist.header.stamp = pose.header.stamp
         twist_inertial.header.stamp = pose.header.stamp
         accel.header.stamp = pose.header.stamp
@@ -260,3 +235,20 @@ class ROS2Backend(Backend):
         self.twist_pub.publish(twist)
         self.twist_inertial_pub.publish(twist_inertial)
         self.accel_pub.publish(accel)
+
+    # def check_ros_extension(self):
+    #     """
+    #     Method that checks which ROS extension is installed.
+    #     """
+
+    #     # Get the handle for the extension manager
+    #     extension_manager = omni.kit.app.get_app().get_extension_manager()
+
+    #     version = ""
+
+    #     if self._ext_manager.is_extension_enabled("omni.isaac.ros_bridge"):
+    #         version = "ros"
+    #     elif self._ext_manager.is_extension_enabled("omni.isaac.ros2_bridge"):
+    #         version = "ros2"
+    #     else:
+    #         carb.log_warn("Neither extension 'omni.isaac.ros_bridge' nor 'omni.isaac.ros2_bridge' is enabled")

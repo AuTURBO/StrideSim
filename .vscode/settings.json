@@ -218,7 +218,7 @@
         "${workspaceFolder}/app/exts/omni.isaac.synthetic_utils",
         "${workspaceFolder}/app/exts/omni.isaac.cloner",
         "${workspaceFolder}/app/exts/omni.kit.loop-isaac",
-        "${workspaceFolder}/app/exts/omni.isaac.ros2_bridge",
+        // "${workspaceFolder}/app/exts/omni.isaac.ros2_bridge",
         "${workspaceFolder}/app/exts/omni.isaac.version",
         "${workspaceFolder}/app/exts/omni.isaac.examples_nodes",
         "${workspaceFolder}/app/exts/omni.isaac.motion_planning",
