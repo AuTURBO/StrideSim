@@ -293,5 +293,6 @@ class QuadrupedRobot(Vehicle):
         if "/World/layout/GroundPlane" in current_hit_body:
             self._query_info.append(hit.distance)
         return True
-    
-    # TODO(Jeong) : Implement the function for the joint positions and velocities related to the quadrupedrobot
+
+
+# TODO(Jeong) : Implement the function for the joint positions and velocities related to the quadrupedrobot

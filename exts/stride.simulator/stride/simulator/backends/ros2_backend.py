@@ -3,7 +3,6 @@ import carb
 import numpy as np
 import struct
 
-import rclpy.logging
 from stride.simulator.backends.backend import Backend
 from omni.isaac.core.utils.extensions import disable_extension, enable_extension
 
@@ -14,6 +13,8 @@ enable_extension("omni.isaac.ros2_bridge")
 # Inform the user that now we are actually import the ROS2 dependencies
 # Note: we are performing the imports here to make sure that ROS2 extension was load correctly
 import rclpy  # pylint: disable=wrong-import-position
+import rclpy.logging  # pylint: disable=wrong-import-position
+
 from std_msgs.msg import Float64  # pylint: disable=unused-import, wrong-import-position
 from sensor_msgs.msg import (  # pylint: disable=unused-import, wrong-import-position
     Imu,
@@ -29,8 +30,12 @@ from geometry_msgs.msg import (  # pylint: disable=wrong-import-position
     AccelStamped,
     TransformStamped,
 )
-from tf2_ros.static_transform_broadcaster import StaticTransformBroadcaster
-from tf2_ros.transform_broadcaster import TransformBroadcaster
+from tf2_ros.static_transform_broadcaster import (  # pylint: disable=wrong-import-position
+    StaticTransformBroadcaster,
+)
+from tf2_ros.transform_broadcaster import (  # pylint: disable=wrong-import-position
+    TransformBroadcaster,
+)
 
 
 # set environment variable to use ROS2
@@ -99,7 +104,7 @@ class ROS2Backend(Backend):
         # Create a static transform broadcaster for the base_link to map transform
         self.tf_static_broadcaster = StaticTransformBroadcaster(self.node)
 
-        #Initialize the transform from base_link to map
+        # Initialize the transform from base_link to map
         self.send_static_transform()
 
         # Create a transform broadcaster for the base_link to map transform
@@ -111,8 +116,8 @@ class ROS2Backend(Backend):
         """
         t = TransformStamped()
         t.header.stamp = self.node.get_clock().now().to_msg()
-        t.header.frame_id = 'base_link'
-        t.child_frame_id = 'base_link_frd'
+        t.header.frame_id = "base_link"
+        t.child_frame_id = "base_link_frd"
         # TODO(Jeong) : if the state update function is implemented, the position and orientation should be updated
         # Converts from FLU to FRD
         t.transform.translation.x = 0.0
@@ -125,12 +130,13 @@ class ROS2Backend(Backend):
 
         self.tf_static_broadcaster.sendTransform(t)
 
-        # Create the transform from map, i.e inertial frame (ROS standard) to map_ned (standard in airborn or marine vehicles)
+        # Create the transform from map, i.e inertial frame (ROS standard) to map_ned
+        # (standard in airborn or marine vehicles)
         t = TransformStamped()
         t.header.stamp = self.node.get_clock().now().to_msg()
         t.header.frame_id = "map"
         t.child_frame_id = "map_ned"
-        
+
         # Converts ENU to NED
         t.transform.translation.x = 0.0
         t.transform.translation.y = 0.0
@@ -141,7 +147,6 @@ class ROS2Backend(Backend):
         t.transform.rotation.w = 0.0
 
         self.tf_static_broadcaster.sendTransform(t)
-
 
     def update(self, dt: float):
         """
@@ -319,4 +324,3 @@ class ROS2Backend(Backend):
         t.transform.rotation.z = state.attitude[2]
         t.transform.rotation.w = state.attitude[3]
         self.tf_broadcaster.sendTransform(t)
-
