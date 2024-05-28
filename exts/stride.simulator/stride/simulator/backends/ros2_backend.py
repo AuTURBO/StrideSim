@@ -13,6 +13,8 @@ enable_extension("omni.isaac.ros2_bridge")
 # Inform the user that now we are actually import the ROS2 dependencies
 # Note: we are performing the imports here to make sure that ROS2 extension was load correctly
 import rclpy  # pylint: disable=wrong-import-position
+import rclpy.logging  # pylint: disable=wrong-import-position
+
 from std_msgs.msg import Float64  # pylint: disable=unused-import, wrong-import-position
 from sensor_msgs.msg import (  # pylint: disable=unused-import, wrong-import-position
     Imu,
@@ -26,7 +28,15 @@ from geometry_msgs.msg import (  # pylint: disable=wrong-import-position
     PoseStamped,
     TwistStamped,
     AccelStamped,
+    TransformStamped,
 )
+from tf2_ros.static_transform_broadcaster import (  # pylint: disable=wrong-import-position
+    StaticTransformBroadcaster,
+)
+from tf2_ros.transform_broadcaster import (  # pylint: disable=wrong-import-position
+    TransformBroadcaster,
+)
+
 
 # set environment variable to use ROS2
 os.environ["RMW_IMPLEMENTATION"] = "rmw_cyclonedds_cpp"
@@ -68,6 +78,7 @@ class ROS2Backend(Backend):
         # Start the actual ROS2 setup here
         if not rclpy.ok():  # Check if the ROS2 context is already initialized
             rclpy.init()
+        print("ROS2 context initialized")
         self.node = rclpy.create_node(node_name)
 
         # Create publishers for the state of the vehicle in ENU
@@ -89,6 +100,53 @@ class ROS2Backend(Backend):
         self.point_cloud_pub = self.node.create_publisher(
             PointCloud2, node_name + "/sensors/points", 10
         )
+
+        # Create a static transform broadcaster for the base_link to map transform
+        self.tf_static_broadcaster = StaticTransformBroadcaster(self.node)
+
+        # Initialize the transform from base_link to map
+        self.send_static_transform()
+
+        # Create a transform broadcaster for the base_link to map transform
+        self.tf_broadcaster = TransformBroadcaster(self.node)
+
+    def send_static_transform(self):
+        """
+        send the static transform from base_link to vehicle_link
+        """
+        t = TransformStamped()
+        t.header.stamp = self.node.get_clock().now().to_msg()
+        t.header.frame_id = "base_link"
+        t.child_frame_id = "base_link_frd"
+        # TODO(Jeong) : if the state update function is implemented, the position and orientation should be updated
+        # Converts from FLU to FRD
+        t.transform.translation.x = 0.0
+        t.transform.translation.y = 0.0
+        t.transform.translation.z = 0.0
+        t.transform.rotation.x = 1.0
+        t.transform.rotation.y = 0.0
+        t.transform.rotation.z = 0.0
+        t.transform.rotation.w = 0.0
+
+        self.tf_static_broadcaster.sendTransform(t)
+
+        # Create the transform from map, i.e inertial frame (ROS standard) to map_ned
+        # (standard in airborn or marine vehicles)
+        t = TransformStamped()
+        t.header.stamp = self.node.get_clock().now().to_msg()
+        t.header.frame_id = "map"
+        t.child_frame_id = "map_ned"
+
+        # Converts ENU to NED
+        t.transform.translation.x = 0.0
+        t.transform.translation.y = 0.0
+        t.transform.translation.z = 0.0
+        t.transform.rotation.x = -0.7071068
+        t.transform.rotation.y = -0.7071068
+        t.transform.rotation.z = 0.0
+        t.transform.rotation.w = 0.0
+
+        self.tf_static_broadcaster.sendTransform(t)
 
     def update(self, dt: float):
         """
@@ -253,3 +311,16 @@ class ROS2Backend(Backend):
         self.twist_pub.publish(twist)
         self.twist_inertial_pub.publish(twist_inertial)
         self.accel_pub.publish(accel)
+
+        t = TransformStamped()
+        t.header.stamp = self.node.get_clock().now().to_msg()
+        t.header.frame_id = "map"
+        t.child_frame_id = "base_link"
+        t.transform.translation.x = state.position[0]
+        t.transform.translation.y = state.position[1]
+        t.transform.translation.z = state.position[2]
+        t.transform.rotation.x = state.attitude[0]
+        t.transform.rotation.y = state.attitude[1]
+        t.transform.rotation.z = state.attitude[2]
+        t.transform.rotation.w = state.attitude[3]
+        self.tf_broadcaster.sendTransform(t)
