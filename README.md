@@ -1,98 +1,82 @@
-# StrideSim
+# Template for Isaac Lab Projects
 
-<p align="center">
-  <img src="exts/stride.simulator/data/icon.png" alt="" width="300" />
-</p>
+[![IsaacSim](https://img.shields.io/badge/IsaacSim-4.0.0-silver.svg)](https://docs.omniverse.nvidia.com/isaacsim/latest/overview.html)
+[![Isaac Lab](https://img.shields.io/badge/IsaacLab-1.0.0-silver)](https://isaac-sim.github.io/IsaacLab)
+[![Python](https://img.shields.io/badge/python-3.10-blue.svg)](https://docs.python.org/3/whatsnew/3.10.html)
+[![Linux platform](https://img.shields.io/badge/platform-linux--64-orange.svg)](https://releases.ubuntu.com/20.04/)
+[![Windows platform](https://img.shields.io/badge/platform-windows--64-orange.svg)](https://www.microsoft.com/en-us/)
+[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://pre-commit.com/)
+[![License](https://img.shields.io/badge/license-MIT-yellow.svg)](https://opensource.org/license/mit)
 
-StrideSim is a Nvidia Isaac Sim-based robot simulator, offering a realistic environment and compatibility with ROS2 for efficient robotics development.
-We are implementing a **quadruped robot** as our first target.
+## Overview
 
-## How to guide
+This repository serves as a template for building projects or extensions based on Isaac Lab. It allows you to develop in an isolated environment, outside of the core Isaac Lab repository.
 
-You can find a [how to guide](https://github.com/AuTURBO/StrideSim/wiki) on the wiki.
+**Key Features:**
 
-## Directories
+- `Isolation` Work outside the core Isaac Lab repository, ensuring that your development efforts remain self-contained.
+- `Flexibility` This template is set up to allow your code to be run as an extension in Omniverse.
 
--   `app` - It is a folder link to the location of your _Omniverse Kit_ based app. When you clone this repository, there is no app folder.
--   `exts` - It is a folder where you can add new extensions. It was automatically added to extension search path. (Extension Manager -> Gear Icon -> Extension Search Path).
+**Keywords:** extension, template, isaaclab
 
-Open this folder using Visual Studio Code. It will suggest you to install few extensions that will make python experience better.
 
-## App Link Setup
+### Installation
 
-If `app` folder link doesn't exist or broken it can be created again. For better developer experience it is recommended to create a folder link named `app` to the _Omniverse Kit_ app installed from _Omniverse Launcher_. Convenience script to use is included.
 
-Run:
-
-```
-> ./link_app.sh
-```
-
-If successful you should see `app` folder link in the root of this repo.
-
-If multiple Omniverse apps is installed script will select recommended one. Or you can explicitly pass an app:
+- Throughout the repository, the name `StrideSim` only serves as an example and we provide a script to rename all the references to it automatically:
 
 ```
-> ./link_app.sh --path "/home/${USER}/.local/share/ov/pkg/${ISAAC_FOLDER}"
+# Rename all occurrences of StrideSim (in files/directories) to your_fancy_extension_name
+python scripts/rename_template.py your_fancy_extension_name
 ```
 
-## Set Environment Variables
+- Install Isaac Lab, see the [installation guide](https://isaac-sim.github.io/IsaacLab/source/setup/installation/index.html).
 
-Set environment variables to facilitate running Isaac Sim in the `~/.bashrc`.
+- Using a python interpreter that has Isaac Lab installed, install the library
+
+```
+cd exts/StrideSim
+python -m pip install -e .
+```
+
+#### Set up IDE (Optional)
+
+To setup the IDE, please follow these instructions:
+
+- Run VSCode Tasks, by pressing `Ctrl+Shift+P`, selecting `Tasks: Run Task` and running the `setup_python_env` in the drop down menu. When running this task, you will be prompted to add the absolute path to your Isaac Lab installation.
+
+If everything executes correctly, it should create a file .python.env in the .vscode directory. The file contains the python paths to all the extensions provided by Isaac Sim and Omniverse. This helps in indexing all the python modules for intelligent suggestions while writing code.
+
+
+#### Setup as Omniverse Extension (Optional)
+
+We provide an example UI extension that will load upon enabling your extension defined in `exts/StrideSim/StrideSim/ui_extension_example.py`. For more information on UI extensions, enable and check out the source code of the `omni.isaac.ui_template` extension and refer to the introduction on [Isaac Sim Workflows 1.2.3. GUI](https://docs.omniverse.nvidia.com/isaacsim/latest/introductory_tutorials/tutorial_intro_workflows.html#gui).
+
+To enable your extension, follow these steps:
+
+1. **Add the search path of your repository** to the extension manager:
+    - Navigate to the extension manager using `Window` -> `Extensions`.
+    - Click on the **Hamburger Icon** (☰), then go to `Settings`.
+    - In the `Extension Search Paths`, enter the absolute path to `IsaacLabExtensionTemplate/exts`
+    - If not already present, in the `Extension Search Paths`, enter the path that leads to Isaac Lab's extension directory directory (`IsaacLab/source/extensions`)
+    - Click on the **Hamburger Icon** (☰), then click `Refresh`.
+
+2. **Search and enable your extension**:
+    - Find your extension under the `Third Party` category.
+    - Toggle it to enable your extension.
+
+
+## Code formatting
+
+We have a pre-commit template to automatically format your code.
+To install pre-commit:
 
 ```bash
-# ~/.bashrc
-export ISAAC_FOLDER=isaac_sim-2022.2.1
-# Isaac Sim root directory
-export ISAACSIM_PATH="${HOME}/.local/share/ov/pkg/${ISAAC_FOLDER}"
-# Isaac Sim python executable
-alias ISAACSIM_PYTHON="${ISAACSIM_PATH}/python.sh"
-# Isaac Sim app
-alias ISAACSIM="${ISAACSIM_PATH}/isaac-sim.sh"
+pip install pre-commit
 ```
 
-## Run Stride Simulator
-
-After [the installation](https://github.com/AuTURBO/StrideSim/wiki/01.-Before-started), Look for the "stride.simulator" extension in the extension manager and enable it. Try applying changes to any Python files on your workspace. The simulator will hot-reload, and you can observe results immediately.
-
-Alternatively, you can launch your app from the console with this folder added to the search path and your extension enabled, e.g.:
+Then you can run pre-commit with:
 
 ```bash
-> app/isaac-sim.sh --ext-folder exts --enable stride.simulator
+pre-commit run --all-files
 ```
-
-## Run Linter
-
-Install required packages.
-
-```bash
-$ python -m pip install --upgrade pip
-$ pip install pylint
-$ pylint --version
-pylint 3.0.3
-```
-
-Run linter.
-
-```bash
-$ . run_pylint.sh
-```
-
-## Acknowledge
-
-We developed this project by referencing the code framework of [the Pegasus simulator](https://github.com/PegasusSimulator/PegasusSimulator).
-
-```
-@misc{jacinto2023pegasus,
-      title={Pegasus Simulator: An Isaac Sim Framework for Multiple Aerial Vehicles Simulation},
-      author={Marcelo Jacinto and João Pinto and Jay Patrikar and John Keller and Rita Cunha and Sebastian Scherer and António Pascoal},
-      year={2023},
-      eprint={2307.05263},
-      archivePrefix={arXiv},
-      primaryClass={cs.RO}
-}
-```
-
-## TODO
-
--   [x] Implement MVP of quadruped robot simulation until March 2024.

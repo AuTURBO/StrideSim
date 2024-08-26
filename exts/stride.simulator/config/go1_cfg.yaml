@@ -1,8 +1,0 @@
-
-sensor: 
-  imu:
-    update_frequency: 250
-
-  lidar:
-    update_frequency: 25
-    prim_path: /World/go1/lidar/lidar_PhysX
