@@ -1,4 +1,5 @@
 import omni.ext
+import subprocess
 
 
 # Functions and vars are available to other extension as usual in python: `example.python_ext.some_public_function(x)`
@@ -16,26 +17,24 @@ class ExampleExtension(omni.ext.IExt):
     def on_startup(self, ext_id):
         print("[StrideSim] startup")
 
-        self._count = 0
-
         self._window = omni.ui.Window("My Window", width=300, height=300)
         with self._window.frame:
             with omni.ui.VStack():
                 label = omni.ui.Label("")
 
-                def on_click():
-                    self._count += 1
-                    label.text = f"count: {self._count}"
-
-                def on_reset():
-                    self._count = 0
+                def on_train():
+                    label.text = f"start training"
+                    
+                    # Execute the specified Python command
+                    subprocess.run(["python", "scripts/rsl_rl/train.py", "--task", "Isaac-Velocity-Rough-Anymal-D-v0", "--headless"])
+                    
+                def on_play():
                     label.text = "empty"
 
-                on_reset()
-
                 with omni.ui.HStack():
-                    omni.ui.Button("Add", clicked_fn=on_click)
-                    omni.ui.Button("Reset", clicked_fn=on_reset)
+                    omni.ui.Button("Train", clicked_fn=on_train)
+                    omni.ui.Button("Reset", clicked_fn=on_play)
+
 
     def on_shutdown(self):
         print("[StrideSim] shutdown")
