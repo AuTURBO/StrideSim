@@ -44,7 +44,7 @@ from datetime import datetime
 from rsl_rl.runners import OnPolicyRunner
 
 # Import extensions to set up environment tasks
-import StrideSim.tasks  # noqa: F401
+# import StrideSim.tasks  # noqa: F401
 
 from omni.isaac.lab.envs import ManagerBasedRLEnvCfg
 from omni.isaac.lab.utils.dict import print_dict
@@ -62,7 +62,7 @@ def main():
     """Train with RSL-RL agent."""
     # parse configuration
     env_cfg: ManagerBasedRLEnvCfg = parse_env_cfg(
-        args_cli.task, use_gpu=True, num_envs=args_cli.num_envs, use_fabric=not args_cli.disable_fabric
+        args_cli.task, num_envs=args_cli.num_envs, use_fabric=not args_cli.disable_fabric
     )
     agent_cfg: RslRlOnPolicyRunnerCfg = cli_args.parse_rsl_rl_cfg(args_cli.task, args_cli)
 
