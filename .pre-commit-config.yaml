@@ -47,3 +47,5 @@ repos:
       - id: rst-backticks
       - id: rst-directive-colons
       - id: rst-inline-touching-normal
+
+exclude: '^3rdparty/.*'
