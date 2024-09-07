@@ -1,5 +1,6 @@
-import omni.ext
 import subprocess
+
+import omni.ext
 
 
 # Functions and vars are available to other extension as usual in python: `example.python_ext.some_public_function(x)`
@@ -23,18 +24,25 @@ class ExampleExtension(omni.ext.IExt):
                 label = omni.ui.Label("")
 
                 def on_train():
-                    label.text = f"start training"
-                    
+                    label.text = "start training"
+
                     # Execute the specified Python command
-                    subprocess.run(["python", "scripts/rsl_rl/train.py", "--task", "Isaac-Velocity-Rough-Anymal-D-v0", "--headless"])
-                    
+                    subprocess.run(
+                        [
+                            "python",
+                            "scripts/rsl_rl/train.py",
+                            "--task",
+                            "Isaac-Velocity-Rough-Anymal-D-v0",
+                            "--headless",
+                        ]
+                    )
+
                 def on_play():
                     label.text = "empty"
 
                 with omni.ui.HStack():
                     omni.ui.Button("Train", clicked_fn=on_train)
                     omni.ui.Button("Reset", clicked_fn=on_play)
-
 
     def on_shutdown(self):
         print("[StrideSim] shutdown")
