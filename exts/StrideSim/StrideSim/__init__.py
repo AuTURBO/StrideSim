@@ -2,8 +2,11 @@
 Python module serving as a project/extension template.
 """
 
-# Register Gym environments.
-from .tasks import *
+from .base_sample import *
 
 # Register UI extensions.
-from .ui import *
+from .quadruped import *
+from .quadruped_extension import *
+
+# Register Gym environments.
+from .tasks import *
