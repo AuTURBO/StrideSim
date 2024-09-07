@@ -14,7 +14,7 @@ from omni.isaac.core.scenes.scene import Scene
 from omni.isaac.core.utils.stage import create_new_stage_async, update_stage_async
 
 
-class BaseSample(object):
+class BaseSample:
     def __init__(self) -> None:
         self._world = None
         self._current_tasks = None
@@ -35,7 +35,7 @@ class BaseSample(object):
         return
 
     async def load_world_async(self):
-        """Function called when clicking load buttton"""
+        """Function called when clicking load button"""
         if World.instance() is None:
             await create_new_stage_async()
             self._world = World(**self._world_settings)
@@ -52,7 +52,7 @@ class BaseSample(object):
         return
 
     async def reset_async(self):
-        """Function called when clicking reset buttton"""
+        """Function called when clicking reset button"""
         if self._world.is_tasks_scene_built() and len(self._current_tasks) > 0:
             self._world.remove_physics_callback("tasks_step")
         await self._world.play_async()
@@ -77,7 +77,7 @@ class BaseSample(object):
     @abstractmethod
     async def setup_post_load(self):
         """called after first reset of the world when pressing load,
-        intializing provate variables happen here.
+        initializing private variables happen here.
         """
         return
 
@@ -116,7 +116,7 @@ class BaseSample(object):
         return
 
     async def clear_async(self):
-        """Function called when clicking clear buttton"""
+        """Function called when clicking clear button"""
         await create_new_stage_async()
         if self._world is not None:
             self._world_cleanup()

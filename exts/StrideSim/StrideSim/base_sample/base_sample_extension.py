@@ -16,7 +16,7 @@ import omni.ui as ui
 from omni.isaac.core import World
 from omni.isaac.examples.base_sample import BaseSample
 from omni.isaac.ui.menu import make_menu_item_description
-from omni.isaac.ui.ui_utils import btn_builder, get_style, scrolling_frame_builder, setup_ui_headers
+from omni.isaac.ui.ui_utils import btn_builder, get_style, setup_ui_headers  # scrolling_frame_builder
 from omni.kit.menu.utils import MenuItemDescription, add_menu_items, remove_menu_items
 
 
@@ -80,7 +80,7 @@ class BaseSampleExtension(omni.ext.IExt):
 
     def get_frame(self, index):
         if index >= len(self._extra_frames):
-            raise Exception("there were {} extra frames created only".format(len(self._extra_frames)))
+            raise Exception(f"there were {len(self._extra_frames)} extra frames created only")
         return self._extra_frames[index]
 
     def get_world(self):

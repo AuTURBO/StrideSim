@@ -7,12 +7,14 @@
 # license agreement from NVIDIA CORPORATION is strictly prohibited.
 #
 
-import carb
 import numpy as np
+
+import carb
 import omni
 import omni.appwindow  # Contains handle to keyboard
-from .base_sample import BaseSample
 from omni.isaac.quadruped.robots import Unitree
+
+from .base_sample import BaseSample
 
 
 class QuadrupedExample(BaseSample):
