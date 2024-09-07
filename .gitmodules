@@ -1,0 +1,3 @@
+[submodule "3rdparty/nvblox"]
+	path = 3rdparty/nvblox
+	url = https://github.com/nvidia-isaac/nvblox.git
