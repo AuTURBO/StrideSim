@@ -2,9 +2,9 @@ name: 코드 품질 검사
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, devel ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, devel ]
 
 jobs:
   pre-commit:
