@@ -8,20 +8,21 @@
 #
 
 import io
+import numpy as np
+import torch
 from typing import List, Optional
 
 import carb
-import numpy as np
 import omni
 import omni.kit.commands
-import torch
 from omni.isaac.core.articulations import Articulation
 from omni.isaac.core.utils.prims import define_prim, get_prim_at_path
 from omni.isaac.core.utils.rotations import euler_to_rot_matrix, quat_to_euler_angles, quat_to_rot_matrix
 from omni.isaac.core.utils.stage import get_current_stage
 from omni.isaac.nucleus import get_assets_root_path
 from omni.isaac.quadruped.utils import LstmSeaNetwork
-from pxr import Gf
+
+# from pxr import Gf
 
 
 class AnymalD_Atriculation(Articulation):

@@ -14,10 +14,11 @@ from abc import abstractmethod
 import omni.ext
 import omni.ui as ui
 from omni.isaac.core import World
-from StrideSim.base_sample import BaseSample
 from omni.isaac.ui.menu import make_menu_item_description
 from omni.isaac.ui.ui_utils import btn_builder, get_style, setup_ui_headers  # scrolling_frame_builder
 from omni.kit.menu.utils import MenuItemDescription, add_menu_items, remove_menu_items
+
+from StrideSim.base_sample import BaseSample
 
 
 class BaseSampleExtension(omni.ext.IExt):

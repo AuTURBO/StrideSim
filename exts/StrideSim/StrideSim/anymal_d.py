@@ -12,8 +12,8 @@ import numpy as np
 import carb
 import omni
 import omni.appwindow  # Contains handle to keyboard
-from StrideSim.anymal_articulation import AnymalD_Atriculation
 
+from StrideSim.anymal_articulation import AnymalD_Atriculation
 from StrideSim.base_sample import BaseSample
 
 

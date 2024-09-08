@@ -34,7 +34,7 @@ python -m pip install -e .
 2. 강화학습 라이브러리 실행
 
 ```bash
-python rl/train.py --task Template-Isaac-Velocity-Rough-Anymal-D-v0 
+python rl/train.py --task Template-Isaac-Velocity-Rough-Anymal-D-v0
 ```
 
 TODO

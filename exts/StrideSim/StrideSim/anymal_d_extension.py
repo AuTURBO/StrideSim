@@ -1,7 +1,7 @@
 import os
 
-from StrideSim.base_sample import BaseSampleExtension
 from StrideSim.anymal_d import AnymalD
+from StrideSim.base_sample import BaseSampleExtension
 
 
 class AnyamlDExtension(BaseSampleExtension):
