@@ -12,16 +12,16 @@ import numpy as np
 import carb
 import omni
 import omni.appwindow  # Contains handle to keyboard
-from omni.isaac.quadruped.robots import Unitree
+from StrideSim.anymal_articulation import AnymalD_Atriculation
 
-from .base_sample import BaseSample
+from StrideSim.base_sample import BaseSample
 
 
-class QuadrupedExample(BaseSample):
+class AnymalD(BaseSample):
     def __init__(self) -> None:
         super().__init__()
         self._world_settings["stage_units_in_meters"] = 1.0
-        self._world_settings["physics_dt"] = 1.0 / 400.0
+        self._world_settings["physics_dt"] = 1.0 / 800.0
         self._world_settings["rendering_dt"] = 5.0 / 400.0
         self._enter_toggled = 0
         self._base_command = [0.0, 0.0, 0.0, 0]
@@ -60,12 +60,11 @@ class QuadrupedExample(BaseSample):
             dynamic_friction=0.2,
             restitution=0.01,
         )
-        self._a1 = world.scene.add(
-            Unitree(
-                prim_path="/World/A1",
-                name="A1",
-                position=np.array([0, 0, 0.400]),
-                physics_dt=self._world_settings["physics_dt"],
+        self._anymalD = world.scene.add(
+            AnymalD_Atriculation(
+                prim_path="/World/anymal_d",
+                name="AnymalD",
+                position=np.array([0, 0, 0.800]),
             )
         )
         timeline = omni.timeline.get_timeline_interface()
@@ -87,15 +86,13 @@ class QuadrupedExample(BaseSample):
     async def setup_post_reset(self) -> None:
         self._event_flag = False
         await self._world.play_async()
-        self._a1.set_state(self._a1._default_a1_state)
-        self._a1.post_reset()
+        self._anymalD.post_reset()
         return
 
     def on_physics_step(self, step_size) -> None:
         if self._event_flag:
-            self._a1._qp_controller.switch_mode()
             self._event_flag = False
-        self._a1.advance(step_size, self._base_command)
+        self._anymalD.advance(step_size, self._base_command)
 
     def _sub_keyboard_event(self, event, *args, **kwargs) -> bool:
         """Subscriber callback to when kit is updated."""
@@ -129,8 +126,8 @@ class QuadrupedExample(BaseSample):
         return True
 
     def _timeline_timer_callback_fn(self, event) -> None:
-        if self._a1:
-            self._a1.post_reset()
+        if self._anymalD:
+            self._anymalD.post_reset()
         return
 
     def world_cleanup(self):

@@ -24,6 +24,19 @@ StrideSim은 Isaac Lab을 기반으로 한 프로젝트입니다. 이 저장소�
 
 ## 사용법
 
+1. 강화학습 라이브러리 설치 (Optional)
+
+```bash
+cd rl
+python -m pip install -e .
+```
+
+2. 강화학습 라이브러리 실행
+
+```bash
+python rl/train.py --task Template-Isaac-Velocity-Rough-Anymal-D-v0 
+```
+
 TODO
 
 ## 코드 포맷팅
