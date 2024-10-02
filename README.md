@@ -80,3 +80,17 @@ Then you can run pre-commit with:
 ```bash
 pre-commit run --all-files
 ```
+
+## How to Train and Play trained policy
+1. Train:  
+  ```python StrideSim/scripts/rsl_rl/train.py --task=<task_name> --headless```
+    -  To run  rendering remove `--headless`.
+    - The trained policy is saved in `script/rsl_rl/logs/rsl_rl/<experiment_name>/<date_time>_<run_name>/model_<iteration>.pt`. Where `<experiment_name>` and `<run_name>` are defined in the train config.
+    - The tasks defined in
+    `StrideSim/StrideSim/tasks/locomotion/velocity/config/<robot_name>/__init__.py`
+        - Anymal(train):`Isaac-Velocity-Rough-Anymal-D-v0`
+        - Anymal(play):`Isaac-Velocity-Rough-Anymal-D-Play-v0`    
+2. Play a trained policy:  
+```python StrideSim/scripts/rsl_rl/play.py --task=Isaac-Velocity-Rough-Anymal-D-Play-v0```
+    - By default, the loaded policy is the last model of the last run of the experiment folder.
+    - Other runs/model iteration can be selected by setting `load_run` and `checkpoint` in the train config.
