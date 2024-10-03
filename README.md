@@ -31,25 +31,29 @@ cd rl
 python -m pip install -e .
 ```
 
-2. 강화학습 라이브러리 실행
-Train
+2. 강화학습 라이브러리 실행 - Train
 ```bash
+cd StrideSim/rl
 python train.py --task=<task_name> --headless
 ```
-tasks list
+
+Train Tasks list
 - Anymal-D(Rough): `Isaac-Velocity-Rough-Anymal-D-v0`
 - Anymal-D(Flat): `Isaac-Velocity-Rough-Anymal-D-v0`
 - Go2(Rough): `Isaac-Velocity-Rough-Unitree-Go2-v0`
 - Go2(Flat): `Isaac-Velocity-Flat-Unitree-Go2-v0`
 
-Play
-`python play.py --task=<task_name>`
+3. 강화학습 라이브러리 실행 - Play
+```bash
+cd StrideSim/rl
+python play.py --task=<task_name>
+```
+Play Tasks list
 - Anymal-D(Rough): `Isaac-Velocity-Rough-Anymal-D-Play-v0`
 - Anymal-D(Flat): `Isaac-Velocity-Rough-Anymal-D-Play-v0`
 - Go2(Rough): `Isaac-Velocity-Rough-Unitree-Go2-Play-v0`
 - Go2(Flat): `Isaac-Velocity-Flat-Unitree-Go2-Play-v0`
 
-TODO
 
 ## 코드 포맷팅
 
@@ -67,22 +71,6 @@ pre-commit 실행:
 pre-commit run --all-files
 ```
 
-<<<<<<< HEAD
-## How to Train and Play trained policy
-1. Train:  
-  ```python StrideSim/scripts/rsl_rl/train.py --task=<task_name> --headless```
-    -  To run  rendering remove `--headless`.
-    - The trained policy is saved in `script/rsl_rl/logs/rsl_rl/<experiment_name>/<date_time>_<run_name>/model_<iteration>.pt`. Where `<experiment_name>` and `<run_name>` are defined in the train config.
-    - The tasks defined in
-    `StrideSim/StrideSim/tasks/locomotion/velocity/config/<robot_name>/__init__.py`
-        - Anymal(train):`Isaac-Velocity-Rough-Anymal-D-v0`
-        - Anymal(play):`Isaac-Velocity-Rough-Anymal-D-Play-v0`    
-2. Play a trained policy:  
-```python StrideSim/scripts/rsl_rl/play.py --task=Isaac-Velocity-Rough-Anymal-D-Play-v0```
-    - By default, the loaded policy is the last model of the last run of the experiment folder.
-    - Other runs/model iteration can be selected by setting `load_run` and `checkpoint` in the train config.
-=======
 ## 라이선스
 
 이 프로젝트는 MIT 라이선스 하에 배포됩니다.
->>>>>>> upstream/devel
