@@ -39,10 +39,13 @@ import gymnasium as gym
 import os
 import torch
 
-from rsl_rl.runners import OnPolicyRunner
-
 # Import extensions to set up environment tasks
+<<<<<<< HEAD:scripts/rsl_rl/play.py
 # import StrideSim.tasks  # noqa: F401
+=======
+import StrideSim_RL.tasks  # noqa: F401
+from rsl_rl.runners import OnPolicyRunner
+>>>>>>> upstream/devel:rl/play.py
 
 from omni.isaac.lab.utils.dict import print_dict
 from omni.isaac.lab_tasks.utils import get_checkpoint_path, parse_env_cfg

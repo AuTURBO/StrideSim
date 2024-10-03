@@ -41,10 +41,9 @@ import os
 import torch
 from datetime import datetime
 
-from rsl_rl.runners import OnPolicyRunner
-
 # Import extensions to set up environment tasks
-# import StrideSim.tasks  # noqa: F401
+import StrideSim_RL.tasks  # noqa: F401
+from rsl_rl.runners import OnPolicyRunner
 
 from omni.isaac.lab.envs import ManagerBasedRLEnvCfg
 from omni.isaac.lab.utils.dict import print_dict

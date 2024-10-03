@@ -3,7 +3,7 @@ from __future__ import annotations
 import math
 from dataclasses import MISSING
 
-import StrideSim.tasks.locomotion.velocity.mdp as mdp
+import StrideSim_RL.tasks.locomotion.velocity.mdp as mdp
 
 import omni.isaac.lab.sim as sim_utils
 from omni.isaac.lab.assets import ArticulationCfg, AssetBaseCfg
