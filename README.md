@@ -32,10 +32,22 @@ python -m pip install -e .
 ```
 
 2. 강화학습 라이브러리 실행
-
+Train
 ```bash
-python rl/train.py --task Template-Isaac-Velocity-Rough-Anymal-D-v0
+python train.py --task=<task_name> --headless
 ```
+tasks list
+- Anymal-D(Rough): `Isaac-Velocity-Rough-Anymal-D-v0`
+- Anymal-D(Flat): `Isaac-Velocity-Rough-Anymal-D-v0`
+- Go2(Rough): `Isaac-Velocity-Rough-Unitree-Go2-v0`
+- Go2(Flat): `Isaac-Velocity-Flat-Unitree-Go2-v0`
+
+Play
+`python play.py --task=<task_name>`
+- Anymal-D(Rough): `Isaac-Velocity-Rough-Anymal-D-Play-v0`
+- Anymal-D(Flat): `Isaac-Velocity-Rough-Anymal-D-Play-v0`
+- Go2(Rough): `Isaac-Velocity-Rough-Unitree-Go2-Play-v0`
+- Go2(Flat): `Isaac-Velocity-Flat-Unitree-Go2-Play-v0`
 
 TODO
 
