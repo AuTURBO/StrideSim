@@ -39,10 +39,13 @@ import gymnasium as gym
 import os
 import torch
 
-from rsl_rl.runners import OnPolicyRunner
-
 # Import extensions to set up environment tasks
-import StrideSim.tasks  # noqa: F401
+<<<<<<< HEAD:scripts/rsl_rl/play.py
+# import StrideSim.tasks  # noqa: F401
+=======
+import StrideSim_RL.tasks  # noqa: F401
+from rsl_rl.runners import OnPolicyRunner
+>>>>>>> upstream/devel:rl/play.py
 
 from omni.isaac.lab.utils.dict import print_dict
 from omni.isaac.lab_tasks.utils import get_checkpoint_path, parse_env_cfg
@@ -53,7 +56,7 @@ def main():
     """Play with RSL-RL agent."""
     # parse configuration
     env_cfg = parse_env_cfg(
-        args_cli.task, use_gpu=True, num_envs=args_cli.num_envs, use_fabric=not args_cli.disable_fabric
+        args_cli.task, num_envs=args_cli.num_envs, use_fabric=not args_cli.disable_fabric
     )
     agent_cfg: RslRlOnPolicyRunnerCfg = cli_args.parse_rsl_rl_cfg(args_cli.task, args_cli)
 

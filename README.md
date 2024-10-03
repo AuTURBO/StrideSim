@@ -1,82 +1,76 @@
-# Template for Isaac Lab Projects
+# StrideSim
 
 [![IsaacSim](https://img.shields.io/badge/IsaacSim-4.0.0-silver.svg)](https://docs.omniverse.nvidia.com/isaacsim/latest/overview.html)
 [![Isaac Lab](https://img.shields.io/badge/IsaacLab-1.0.0-silver)](https://isaac-sim.github.io/IsaacLab)
 [![Python](https://img.shields.io/badge/python-3.10-blue.svg)](https://docs.python.org/3/whatsnew/3.10.html)
-[![Linux platform](https://img.shields.io/badge/platform-linux--64-orange.svg)](https://releases.ubuntu.com/20.04/)
-[![Windows platform](https://img.shields.io/badge/platform-windows--64-orange.svg)](https://www.microsoft.com/en-us/)
-[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://pre-commit.com/)
 [![License](https://img.shields.io/badge/license-MIT-yellow.svg)](https://opensource.org/license/mit)
 
-## Overview
+## 개요
 
-This repository serves as a template for building projects or extensions based on Isaac Lab. It allows you to develop in an isolated environment, outside of the core Isaac Lab repository.
+StrideSim은 Isaac Lab을 기반으로 한 프로젝트입니다. 이 저장소는 Isaac Lab의 핵심 저장소 외부에서 독립적인 환경에서 개발할 수 있도록 설계되었습니다.
 
-**Key Features:**
+## 설치
 
-- `Isolation` Work outside the core Isaac Lab repository, ensuring that your development efforts remain self-contained.
-- `Flexibility` This template is set up to allow your code to be run as an extension in Omniverse.
+1. Isaac Sim 설치: [설치 가이드](https://docs.omniverse.nvidia.com/isaacsim/latest/overview.html) 참조
 
-**Keywords:** extension, template, isaaclab
+2. Isaac Lab 설치: [설치 가이드](https://isaac-sim.github.io/IsaacLab/source/setup/installation/index.html) 참조
 
+3. 라이브러리 설치:
 
-### Installation
+   ```bash
+   cd exts/StrideSim
+   python -m pip install -e .
+   ```
 
+## 사용법
 
-- Throughout the repository, the name `StrideSim` only serves as an example and we provide a script to rename all the references to it automatically:
+1. 강화학습 라이브러리 설치 (Optional)
 
-```
-# Rename all occurrences of StrideSim (in files/directories) to your_fancy_extension_name
-python scripts/rename_template.py your_fancy_extension_name
-```
-
-- Install Isaac Lab, see the [installation guide](https://isaac-sim.github.io/IsaacLab/source/setup/installation/index.html).
-
-- Using a python interpreter that has Isaac Lab installed, install the library
-
-```
-cd exts/StrideSim
+```bash
+cd rl
 python -m pip install -e .
 ```
 
-#### Set up IDE (Optional)
+2. 강화학습 라이브러리 실행 - Train
+```bash
+cd StrideSim/rl
+python train.py --task=<task_name> --headless
+```
 
-To setup the IDE, please follow these instructions:
+Train Tasks list
+- Anymal-D(Rough): `Isaac-Velocity-Rough-Anymal-D-v0`
+- Anymal-D(Flat): `Isaac-Velocity-Rough-Anymal-D-v0`
+- Go2(Rough): `Isaac-Velocity-Rough-Unitree-Go2-v0`
+- Go2(Flat): `Isaac-Velocity-Flat-Unitree-Go2-v0`
 
-- Run VSCode Tasks, by pressing `Ctrl+Shift+P`, selecting `Tasks: Run Task` and running the `setup_python_env` in the drop down menu. When running this task, you will be prompted to add the absolute path to your Isaac Lab installation.
-
-If everything executes correctly, it should create a file .python.env in the .vscode directory. The file contains the python paths to all the extensions provided by Isaac Sim and Omniverse. This helps in indexing all the python modules for intelligent suggestions while writing code.
-
-
-#### Setup as Omniverse Extension (Optional)
-
-We provide an example UI extension that will load upon enabling your extension defined in `exts/StrideSim/StrideSim/ui_extension_example.py`. For more information on UI extensions, enable and check out the source code of the `omni.isaac.ui_template` extension and refer to the introduction on [Isaac Sim Workflows 1.2.3. GUI](https://docs.omniverse.nvidia.com/isaacsim/latest/introductory_tutorials/tutorial_intro_workflows.html#gui).
-
-To enable your extension, follow these steps:
-
-1. **Add the search path of your repository** to the extension manager:
-    - Navigate to the extension manager using `Window` -> `Extensions`.
-    - Click on the **Hamburger Icon** (☰), then go to `Settings`.
-    - In the `Extension Search Paths`, enter the absolute path to `IsaacLabExtensionTemplate/exts`
-    - If not already present, in the `Extension Search Paths`, enter the path that leads to Isaac Lab's extension directory directory (`IsaacLab/source/extensions`)
-    - Click on the **Hamburger Icon** (☰), then click `Refresh`.
-
-2. **Search and enable your extension**:
-    - Find your extension under the `Third Party` category.
-    - Toggle it to enable your extension.
+3. 강화학습 라이브러리 실행 - Play
+```bash
+cd StrideSim/rl
+python play.py --task=<task_name>
+```
+Play Tasks list
+- Anymal-D(Rough): `Isaac-Velocity-Rough-Anymal-D-Play-v0`
+- Anymal-D(Flat): `Isaac-Velocity-Rough-Anymal-D-Play-v0`
+- Go2(Rough): `Isaac-Velocity-Rough-Unitree-Go2-Play-v0`
+- Go2(Flat): `Isaac-Velocity-Flat-Unitree-Go2-Play-v0`
 
 
-## Code formatting
+## 코드 포맷팅
 
-We have a pre-commit template to automatically format your code.
-To install pre-commit:
+pre-commit 훅을 사용하여 코드 포맷팅을 자동화합니다.
+
+pre-commit 설치:
 
 ```bash
 pip install pre-commit
 ```
 
-Then you can run pre-commit with:
+pre-commit 실행:
 
 ```bash
 pre-commit run --all-files
 ```
+
+## 라이선스
+
+이 프로젝트는 MIT 라이선스 하에 배포됩니다.
