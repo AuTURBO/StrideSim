@@ -24,6 +24,7 @@ from omni.isaac.quadruped.utils import LstmSeaNetwork
 
 # from pxr import Gf
 
+from omni.isaac.lab.utils.assets import ISAACLAB_NUCLEUS_DIR
 
 class AnymalD_Atriculation(Articulation):
     """The ANYmal quadruped"""
@@ -62,8 +63,8 @@ class AnymalD_Atriculation(Articulation):
                 if assets_root_path is None:
                     carb.log_error("Could not find Isaac Sim assets folder")
 
-                asset_path = assets_root_path + "/Isaac/Robots/ANYbotics/anymal_c.usd"
-
+                asset_path = f"{ISAACLAB_NUCLEUS_DIR}/Robots/ANYbotics/ANYmal-D/anymal_d.usd"
+                
                 carb.log_warn("asset path is: " + asset_path)
                 prim.GetReferences().AddReference(asset_path)
 
