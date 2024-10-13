@@ -19,6 +19,7 @@ from omni.isaac.ui.ui_utils import btn_builder, get_style, setup_ui_headers  # s
 from omni.kit.menu.utils import MenuItemDescription, add_menu_items, remove_menu_items
 
 from StrideSim.base_sample import BaseSample
+from StrideSim.settings import RL_DIR
 
 
 class BaseSampleExtension(omni.ext.IExt):
@@ -104,7 +105,7 @@ class BaseSampleExtension(omni.ext.IExt):
                     title="World Controls",
                     width=ui.Fraction(1),
                     height=0,
-                    collapsed=False,
+                    collapsed=True,
                     style=get_style(),
                     horizontal_scrollbar_policy=ui.ScrollBarPolicy.SCROLLBAR_AS_NEEDED,
                     vertical_scrollbar_policy=ui.ScrollBarPolicy.SCROLLBAR_ALWAYS_ON,
@@ -143,6 +144,43 @@ class BaseSampleExtension(omni.ext.IExt):
                         }
                         self._buttons["Reset"] = btn_builder(**dict)
                         self._buttons["Reset"].enabled = False
+
+                # New panel for Reinforcement Learning
+                self._rl_frame = ui.CollapsableFrame(
+                    title="Reinforcement Learning Panel",
+                    width=ui.Fraction(1),
+                    height=0,
+                    collapsed=False,
+                    style=get_style(),
+                    horizontal_scrollbar_policy=ui.ScrollBarPolicy.SCROLLBAR_AS_NEEDED,
+                    vertical_scrollbar_policy=ui.ScrollBarPolicy.SCROLLBAR_ALWAYS_ON,
+                )
+                with self._rl_frame:
+                    with ui.VStack(style=get_style(), spacing=5, height=0):
+                        ui.Label("Task Name:", width=ui.Fraction(0.3))
+                        self._rl_task_name_field = ui.StringField(height=0, width=ui.Fraction(0.7))
+                        self._rl_task_name_field.model.set_value("Template-Isaac-Velocity-Rough-Anymal-D-v0")
+                        ui.Label("window popup:", width=ui.Fraction(0.3))
+
+                        self._headless_dropdown = ui.ComboBox(0, "on", "off")
+
+                        dict_train = {
+                            "label": "Train",
+                            "type": "button",
+                            "text": "TRAIN",
+                            "tooltip": "Start training",
+                            "on_clicked_fn": self._on_train,
+                        }
+                        self._buttons["Train"] = btn_builder(**dict_train)
+
+                        dict_play = {
+                            "label": "Play",
+                            "type": "button",
+                            "text": "PLAY",
+                            "tooltip": "Start playing",
+                            "on_clicked_fn": self._on_play,
+                        }
+                        self._buttons["Play"] = btn_builder(**dict_play)
         return
 
     def _set_button_tooltip(self, button_name, tool_tip):
@@ -235,4 +273,25 @@ class BaseSampleExtension(omni.ext.IExt):
             self._buttons["Load World"].enabled = False
             self._buttons["Reset"].enabled = True
             self.post_clear_button_event()
+        return
+
+    def _on_train(self):
+        task_name = self._rl_task_name_field.model.get_value_as_string()
+        training_window = self._headless_dropdown.model.get_item_value_model().get_value_as_string()
+
+        command = f"python {RL_DIR}/train.py --task {task_name}"
+        if training_window == "off":
+            command += " --headless"
+
+        import subprocess
+
+        try:
+            subprocess.Popen(command, shell=True)
+            print(f"Started training process: {command}")
+        except Exception as e:
+            print(f"Error starting training process: {e}")
+        return
+
+    def _on_play(self):
+        print("Playing")
         return

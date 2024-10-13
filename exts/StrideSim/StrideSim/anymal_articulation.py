@@ -9,6 +9,7 @@
 
 import io
 import numpy as np
+import sys
 import torch
 from typing import List, Optional
 
@@ -22,9 +23,17 @@ from omni.isaac.core.utils.stage import get_current_stage
 from omni.isaac.nucleus import get_assets_root_path
 from omni.isaac.quadruped.utils import LstmSeaNetwork
 
+from StrideSim.settings import ISAACLAB_LAB, ISAACLAB_LAB_ASSETS, ISAACLAB_LAB_TASKS
+
 # from pxr import Gf
 
+
+sys.path.append(ISAACLAB_LAB)
+sys.path.append(ISAACLAB_LAB_TASKS)
+sys.path.append(ISAACLAB_LAB_ASSETS)
+
 from omni.isaac.lab.utils.assets import ISAACLAB_NUCLEUS_DIR
+
 
 class AnymalD_Atriculation(Articulation):
     """The ANYmal quadruped"""
@@ -64,7 +73,7 @@ class AnymalD_Atriculation(Articulation):
                     carb.log_error("Could not find Isaac Sim assets folder")
 
                 asset_path = f"{ISAACLAB_NUCLEUS_DIR}/Robots/ANYbotics/ANYmal-D/anymal_d.usd"
-                
+
                 carb.log_warn("asset path is: " + asset_path)
                 prim.GetReferences().AddReference(asset_path)
 

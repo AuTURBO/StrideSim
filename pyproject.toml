@@ -64,7 +64,8 @@ exclude = [
     "**/logs",
     ".git",
     ".vscode",
-    "3rdparty/.*"
+    "3rdparty/.*",
+    "guideline/.*"
 ]
 
 typeCheckingMode = "basic"
