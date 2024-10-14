@@ -8,6 +8,7 @@
 #
 
 import asyncio
+import subprocess
 import weakref
 from abc import abstractmethod
 
@@ -280,10 +281,8 @@ class BaseSampleExtension(omni.ext.IExt):
         training_window = self._headless_dropdown.model.get_item_value_model().get_value_as_string()
 
         command = f"python {RL_DIR}/train.py --task {task_name}"
-        if training_window == "off":
+        if training_window == "1":
             command += " --headless"
-
-        import subprocess
 
         try:
             subprocess.Popen(command, shell=True)
@@ -293,5 +292,16 @@ class BaseSampleExtension(omni.ext.IExt):
         return
 
     def _on_play(self):
-        print("Playing")
+        task_name = self._rl_task_name_field.model.get_value_as_string()
+        training_window = self._headless_dropdown.model.get_item_value_model().get_value_as_string()
+
+        command = f"python {RL_DIR}/play.py --task {task_name}"
+
+        command += " --num_envs 10"
+
+        try:
+            subprocess.Popen(command, shell=True)
+            print(f"Started training process: {command}")
+        except Exception as e:
+            print(f"Error starting training process: {e}")
         return
