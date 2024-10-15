@@ -293,7 +293,6 @@ class BaseSampleExtension(omni.ext.IExt):
 
     def _on_play(self):
         task_name = self._rl_task_name_field.model.get_value_as_string()
-        training_window = self._headless_dropdown.model.get_item_value_model().get_value_as_string()
 
         command = f"python {RL_DIR}/play.py --task {task_name}"
 

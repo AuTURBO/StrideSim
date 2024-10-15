@@ -45,7 +45,12 @@ from rsl_rl.runners import OnPolicyRunner
 
 from omni.isaac.lab.utils.dict import print_dict
 from omni.isaac.lab_tasks.utils import get_checkpoint_path, parse_env_cfg
-from omni.isaac.lab_tasks.utils.wrappers.rsl_rl import RslRlOnPolicyRunnerCfg, RslRlVecEnvWrapper, export_policy_as_onnx
+from omni.isaac.lab_tasks.utils.wrappers.rsl_rl import (
+    RslRlOnPolicyRunnerCfg,
+    RslRlVecEnvWrapper,
+    export_policy_as_jit,
+    export_policy_as_onnx,
+)
 
 
 def main():
@@ -91,6 +96,7 @@ def main():
     # export policy to onnx
     export_model_dir = os.path.join(os.path.dirname(resume_path), "exported")
     export_policy_as_onnx(ppo_runner.alg.actor_critic, export_model_dir, filename="policy.onnx")
+    export_policy_as_jit(ppo_runner.alg.actor_critic, normalizer=None, path=export_model_dir, filename="policy.pt")
 
     # reset environment
     obs, _ = env.get_observations()

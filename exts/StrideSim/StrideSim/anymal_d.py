@@ -21,37 +21,33 @@ class AnymalD(BaseSample):
     def __init__(self) -> None:
         super().__init__()
         self._world_settings["stage_units_in_meters"] = 1.0
-        self._world_settings["physics_dt"] = 1.0 / 800.0
-        self._world_settings["rendering_dt"] = 5.0 / 400.0
-        self._enter_toggled = 0
-        self._base_command = [0.0, 0.0, 0.0, 0]
-        self._event_flag = False
+        self._world_settings["physics_dt"] = 1.0 / 500.0
+        self._world_settings["rendering_dt"] = 10.0 / 500.0
+        self._base_command = [0.0, 0.0, 0.0]
 
         # bindings for keyboard to command
         self._input_keyboard_mapping = {
             # forward command
-            "NUMPAD_8": [5, 0.0, 0.0],
-            "UP": [5, 0.0, 0.0],
+            "NUMPAD_8": [2.0, 0.0, 0.0],
+            "UP": [2.0, 0.0, 0.0],
             # back command
-            "NUMPAD_2": [-5, 0.0, 0.0],
-            "DOWN": [-5, 0.0, 0.0],
+            "NUMPAD_2": [-2.0, 0.0, 0.0],
+            "DOWN": [-2.0, 0.0, 0.0],
             # left command
-            "NUMPAD_6": [0.0, -4.0, 0.0],
-            "RIGHT": [0.0, -4.0, 0.0],
+            "NUMPAD_6": [0.0, -2.0, 0.0],
+            "RIGHT": [0.0, -2.0, 0.0],
             # right command
-            "NUMPAD_4": [0.0, 4.0, 0.0],
-            "LEFT": [0.0, 4.0, 0.0],
+            "NUMPAD_4": [0.0, 2.0, 0.0],
+            "LEFT": [0.0, 2.0, 0.0],
             # yaw command (positive)
-            "NUMPAD_7": [0.0, 0.0, 1.0],
-            "N": [0.0, 0.0, 1.0],
+            "NUMPAD_7": [0.0, 0.0, 2.0],
+            "N": [0.0, 0.0, 2.0],
             # yaw command (negative)
-            "NUMPAD_9": [0.0, 0.0, -1.0],
-            "M": [0.0, 0.0, -1.0],
+            "NUMPAD_9": [0.0, 0.0, -2.0],
+            "M": [0.0, 0.0, -2.0],
         }
-        return
 
     def setup_scene(self) -> None:
-        world = self.get_world()
         self._world.scene.add_default_ground_plane(
             z_position=0,
             name="default_ground_plane",
@@ -60,78 +56,60 @@ class AnymalD(BaseSample):
             dynamic_friction=0.2,
             restitution=0.01,
         )
-        self._anymalD = world.scene.add(
-            AnymalD_Atriculation(
-                prim_path="/World/anymal_d",
-                name="AnymalD",
-                position=np.array([0, 0, 0.800]),
-            )
+        self.AnymalD = AnymalD_Atriculation(
+            prim_path="/World/AnymalD",
+            name="AnymalD",
+            position=np.array([0, 0, 0.8]),
         )
         timeline = omni.timeline.get_timeline_interface()
         self._event_timer_callback = timeline.get_timeline_event_stream().create_subscription_to_pop_by_type(
-            int(omni.timeline.TimelineEventType.STOP), self._timeline_timer_callback_fn
+            int(omni.timeline.TimelineEventType.STOP),
+            self._timeline_timer_callback_fn,
         )
-        return
+        self.AnymalD.robot.set_joints_default_state(self.AnymalD._default_joint_pos)
 
     async def setup_post_load(self) -> None:
-        self._world = self.get_world()
         self._appwindow = omni.appwindow.get_default_app_window()
         self._input = carb.input.acquire_input_interface()
         self._keyboard = self._appwindow.get_keyboard()
         self._sub_keyboard = self._input.subscribe_to_keyboard_events(self._keyboard, self._sub_keyboard_event)
-        self._world.add_physics_callback("sending_actions", callback_fn=self.on_physics_step)
+        self._world.add_physics_callback("physics_step", callback_fn=self.on_physics_step)
+        self._physics_ready = False
         await self._world.play_async()
-        return
+        self.AnymalD.initialize()
 
     async def setup_post_reset(self) -> None:
-        self._event_flag = False
         await self._world.play_async()
-        self._anymalD.post_reset()
-        return
+        self._physics_ready = False
+        self.AnymalD.initialize()
 
     def on_physics_step(self, step_size) -> None:
-        if self._event_flag:
-            self._event_flag = False
-        self._anymalD.advance(step_size, self._base_command)
+        if self._physics_ready:
+            self.AnymalD.advance(step_size, self._base_command)
+        else:
+            self._physics_ready = True
 
     def _sub_keyboard_event(self, event, *args, **kwargs) -> bool:
         """Subscriber callback to when kit is updated."""
-        # reset event
-        self._event_flag = False
+
         # when a key is pressedor released  the command is adjusted w.r.t the key-mapping
         if event.type == carb.input.KeyboardEventType.KEY_PRESS:
             # on pressing, the command is incremented
             if event.input.name in self._input_keyboard_mapping:
-                self._base_command[0:3] += np.array(self._input_keyboard_mapping[event.input.name])
-                self._event_flag = True
-
-            # enter, toggle the last command
-            if event.input.name == "ENTER" and self._enter_toggled is False:
-                self._enter_toggled = True
-                if self._base_command[3] == 0:
-                    self._base_command[3] = 1
-                else:
-                    self._base_command[3] = 0
-                self._event_flag = True
+                self._base_command += np.array(self._input_keyboard_mapping[event.input.name])
 
         elif event.type == carb.input.KeyboardEventType.KEY_RELEASE:
             # on release, the command is decremented
             if event.input.name in self._input_keyboard_mapping:
-                self._base_command[0:3] -= np.array(self._input_keyboard_mapping[event.input.name])
-                self._event_flag = True
-            # enter, toggle the last command
-            if event.input.name == "ENTER":
-                self._enter_toggled = False
-        # since no error, we are fine :)
+                self._base_command -= np.array(self._input_keyboard_mapping[event.input.name])
         return True
 
     def _timeline_timer_callback_fn(self, event) -> None:
-        if self._anymalD:
-            self._anymalD.post_reset()
-        return
+        if self.AnymalD:
+            self.AnymalD.post_reset()
+            self._physics_ready = False
 
     def world_cleanup(self):
         self._event_timer_callback = None
-        if self._world.physics_callback_exists("sending_actions"):
-            self._world.remove_physics_callback("sending_actions")
-        return
+        if self._world.physics_callback_exists("physics_step"):
+            self._world.remove_physics_callback("physics_step")
