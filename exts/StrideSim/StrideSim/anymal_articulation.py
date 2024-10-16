@@ -128,12 +128,12 @@ class AnymalD_Atriculation:
         R_IB = quat_to_rot_matrix(q_IB)
         R_BI = R_IB.transpose()
 
-        print("lin_vel_I: ", lin_vel_I)
-        print("ang_vel_I: ", ang_vel_I)
-        print("pos_IB: ", pos_IB)
-        print("q_IB: ", q_IB)
-        print("R_IB: ", R_IB)
-        print("R_BI: ", R_BI)
+        # print("lin_vel_I: ", lin_vel_I)
+        # print("ang_vel_I: ", ang_vel_I)
+        # print("pos_IB: ", pos_IB)
+        # print("q_IB: ", q_IB)
+        # print("R_IB: ", R_IB)
+        # print("R_BI: ", R_BI)
 
         lin_vel_b = np.matmul(R_BI, lin_vel_I)
         ang_vel_b = np.matmul(R_BI, ang_vel_I)
@@ -200,7 +200,7 @@ class AnymalD_Atriculation:
 
         action = ArticulationAction(joint_positions=self._default_joint_pos + (self.action * self._action_scale))
 
-        print("network action: ", self.action)
+        # print("network action: ", self.action)
 
         self.robot.apply_action(action)
 
@@ -213,7 +213,7 @@ class AnymalD_Atriculation:
         self.robot.initialize(physics_sim_view=physics_sim_view)
         self.robot.get_articulation_controller().set_effort_modes("force")
         self.robot.get_articulation_controller().switch_control_mode("position")
-        self.robot._articulation_view.set_gains(np.zeros(12) + 200, np.zeros(12) + 5)
+        self.robot._articulation_view.set_gains(np.zeros(12) + 60, np.zeros(12) + 4)
 
     def post_reset(self) -> None:
         """

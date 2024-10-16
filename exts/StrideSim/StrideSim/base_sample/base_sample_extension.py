@@ -98,6 +98,9 @@ class BaseSampleExtension(omni.ext.IExt):
         self._window = omni.ui.Window(
             name, width=window_width, height=0, visible=keep_window_open, dockPreference=ui.DockPreference.LEFT_BOTTOM
         )
+
+        self._window.deferred_dock_in("Property", ui.DockPolicy.CURRENT_WINDOW_IS_ACTIVE)
+
         with self._window.frame:
             self._main_stack = ui.VStack(spacing=5, height=0)
             with self._main_stack:
@@ -161,7 +164,7 @@ class BaseSampleExtension(omni.ext.IExt):
                         ui.Label("Task Name:", width=ui.Fraction(0.3))
                         self._rl_task_name_field = ui.StringField(height=0, width=ui.Fraction(0.7))
                         self._rl_task_name_field.model.set_value("Template-Isaac-Velocity-Rough-Anymal-D-v0")
-                        ui.Label("window popup:", width=ui.Fraction(0.3))
+                        ui.Label("Window popup:", width=ui.Fraction(0.3))
 
                         self._headless_dropdown = ui.ComboBox(0, "on", "off")
 
