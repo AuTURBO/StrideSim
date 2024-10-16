@@ -1,0 +1,8 @@
+[package]
+version = "0.0.1"
+
+author = "Jinwon Kim"
+maintainer = "Jinwon Kim"
+description="Quadruped robot simulation from A to Z"
+repository = "https://github.com/AuTURBO/StrideSim"
+keywords = ["extension", "quadruped robot", "isaaclab"]
