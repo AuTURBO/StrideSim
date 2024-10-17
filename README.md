@@ -11,16 +11,10 @@ StrideSim은 Isaac Lab을 기반으로 한 프로젝트입니다. 이 저장소�
 
 ## 설치
 
-1. Isaac Sim 설치: [설치 가이드](https://docs.omniverse.nvidia.com/isaacsim/latest/overview.html) 참조
+1. Isaac Sim 4.0.0 설치: [설치 가이드](https://docs.omniverse.nvidia.com/isaacsim/latest/overview.html) 참조
 
-2. Isaac Lab 설치: [설치 가이드](https://isaac-sim.github.io/IsaacLab/source/setup/installation/index.html) 참조
+2. [Isaac Lab v1.0.0](https://github.com/isaac-sim/IsaacLab/tree/v1.0.0) 설치: [설치 가이드](https://isaac-sim.github.io/IsaacLab/source/setup/installation/index.html) 참조
 
-3. 라이브러리 설치:
-
-   ```bash
-   cd exts/StrideSim
-   python -m pip install -e .
-   ```
 
 ## 꿀팁
 
