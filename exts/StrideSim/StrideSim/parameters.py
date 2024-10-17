@@ -56,10 +56,7 @@ SIMULATION_ENVIRONMENTS = {}
 # Add the Isaac Sim assets to the list
 for asset in NVIDIA_SIMULATION_ENVIRONMENTS:
     SIMULATION_ENVIRONMENTS[asset] = (
-        NVIDIA_ASSETS_PATH
-        + ISAAC_SIM_ENVIRONMENTS
-        + "/"
-        + NVIDIA_SIMULATION_ENVIRONMENTS[asset]
+        NVIDIA_ASSETS_PATH + ISAAC_SIM_ENVIRONMENTS + "/" + NVIDIA_SIMULATION_ENVIRONMENTS[asset]
     )
 
 # Define the default settings for the simulation environment

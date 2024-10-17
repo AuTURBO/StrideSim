@@ -1,6 +1,6 @@
 import io
-import os
 import numpy as np
+import os
 import sys
 import torch
 from typing import List, Optional
@@ -76,9 +76,7 @@ class AnymalD_Atriculation:
 
         # Policy
 
-        file_content = omni.client.read_file(
-            os.path.join(os.path.dirname(__file__), "network/policy.pt")
-        )[2]
+        file_content = omni.client.read_file(os.path.join(os.path.dirname(__file__), "network/policy.pt"))[2]
         file = io.BytesIO(memoryview(file_content).tobytes())
 
         self._policy = torch.jit.load(file)

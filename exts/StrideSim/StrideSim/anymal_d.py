@@ -15,8 +15,8 @@ import omni.appwindow  # Contains handle to keyboard
 
 from StrideSim.anymal_articulation import AnymalD_Atriculation
 from StrideSim.base_sample import BaseSample
+from StrideSim.parameters import DEFAULT_WORLD_SETTINGS  # , SIMULATION_ENVIRONMENTS
 
-from StrideSim.parameters import DEFAULT_WORLD_SETTINGS, SIMULATION_ENVIRONMENTS
 
 class AnymalD(BaseSample):
     def __init__(self) -> None:
@@ -54,27 +54,27 @@ class AnymalD(BaseSample):
         if self._world.stage.GetPrimAtPath("/World"):
             raise Exception("A primitive already exists at the specified path")
 
-        # Create the stage primitive and load the usd into it
-        prim = self._world.stage.DefinePrim("/World")
-        success = prim.GetReferences().AddReference(
-            SIMULATION_ENVIRONMENTS["Flat Plane"]
+        # # Create the stage primitive and load the usd into it
+        # prim = self._world.stage.DefinePrim("/World")
+        # success = prim.GetReferences().AddReference(
+        #     SIMULATION_ENVIRONMENTS["Flat Plane"]
+        # )
+
+        # if not success:
+        #     raise Exception(
+        #         "failed to load the usd asset at path "
+        #         + SIMULATION_ENVIRONMENTS["Flat Plane"]
+        #     )
+
+        self._world.scene.add_default_ground_plane(
+            z_position=0,
+            name="default_ground_plane",
+            prim_path="/World/defaultGroundPlane",
+            static_friction=1.0,
+            dynamic_friction=1.0,
+            restitution=0,
         )
 
-        if not success:
-            raise Exception(
-                "failed to load the usd asset at path "
-                + SIMULATION_ENVIRONMENTS["Flat Plane"]
-            )
-
-        # self._world.scene.add_default_ground_plane(
-        #     z_position=0,
-        #     name="default_ground_plane",
-        #     prim_path="/World/defaultGroundPlane",
-        #     static_friction=1.0,
-        #     dynamic_friction=1.0,
-        #     restitution=0,
-        # )
-        
         self.AnymalD = AnymalD_Atriculation(
             prim_path="/World/AnymalD",
             name="AnymalD",
