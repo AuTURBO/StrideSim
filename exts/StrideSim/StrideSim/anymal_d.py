@@ -16,46 +16,65 @@ import omni.appwindow  # Contains handle to keyboard
 from StrideSim.anymal_articulation import AnymalD_Atriculation
 from StrideSim.base_sample import BaseSample
 
+from StrideSim.parameters import DEFAULT_WORLD_SETTINGS, SIMULATION_ENVIRONMENTS
 
 class AnymalD(BaseSample):
     def __init__(self) -> None:
         super().__init__()
-        self._world_settings["stage_units_in_meters"] = 1.0
-        self._world_settings["physics_dt"] = 1.0 / 500.0
-        self._world_settings["rendering_dt"] = 10.0 / 500.0
+        self._world_settings["stage_units_in_meters"] = DEFAULT_WORLD_SETTINGS["stage_units_in_meters"]
+        self._world_settings["physics_dt"] = DEFAULT_WORLD_SETTINGS["physics_dt"]
+        self._world_settings["rendering_dt"] = DEFAULT_WORLD_SETTINGS["rendering_dt"]
         self._base_command = [0.0, 0.0, 0.0]
 
         # bindings for keyboard to command
         self._input_keyboard_mapping = {
             # forward command
-            "NUMPAD_8": [2.0, 0.0, 0.0],
-            "UP": [2.0, 0.0, 0.0],
+            "NUMPAD_8": [1.5, 0.0, 0.0],
+            "UP": [1.5, 0.0, 0.0],
             # back command
-            "NUMPAD_2": [-2.0, 0.0, 0.0],
-            "DOWN": [-2.0, 0.0, 0.0],
+            "NUMPAD_2": [-1.5, 0.0, 0.0],
+            "DOWN": [-1.5, 0.0, 0.0],
             # left command
-            "NUMPAD_6": [0.0, -2.0, 0.0],
-            "RIGHT": [0.0, -2.0, 0.0],
+            "NUMPAD_6": [0.0, -1.5, 0.0],
+            "RIGHT": [0.0, -1.5, 0.0],
             # right command
-            "NUMPAD_4": [0.0, 2.0, 0.0],
-            "LEFT": [0.0, 2.0, 0.0],
+            "NUMPAD_4": [0.0, 1.5, 0.0],
+            "LEFT": [0.0, 1.5, 0.0],
             # yaw command (positive)
-            "NUMPAD_7": [0.0, 0.0, 2.0],
-            "N": [0.0, 0.0, 2.0],
+            "NUMPAD_7": [0.0, 0.0, 1.5],
+            "N": [0.0, 0.0, 1.5],
             # yaw command (negative)
-            "NUMPAD_9": [0.0, 0.0, -2.0],
-            "M": [0.0, 0.0, -2.0],
+            "NUMPAD_9": [0.0, 0.0, -1.5],
+            "M": [0.0, 0.0, -1.5],
         }
 
     def setup_scene(self) -> None:
-        self._world.scene.add_default_ground_plane(
-            z_position=0,
-            name="default_ground_plane",
-            prim_path="/World/defaultGroundPlane",
-            static_friction=0.2,
-            dynamic_friction=0.2,
-            restitution=0.01,
+
+        # Try to check if there is already a prim with the same stage prefix in the stage
+        if self._world.stage.GetPrimAtPath("/World"):
+            raise Exception("A primitive already exists at the specified path")
+
+        # Create the stage primitive and load the usd into it
+        prim = self._world.stage.DefinePrim("/World")
+        success = prim.GetReferences().AddReference(
+            SIMULATION_ENVIRONMENTS["Flat Plane"]
         )
+
+        if not success:
+            raise Exception(
+                "failed to load the usd asset at path "
+                + SIMULATION_ENVIRONMENTS["Flat Plane"]
+            )
+
+        # self._world.scene.add_default_ground_plane(
+        #     z_position=0,
+        #     name="default_ground_plane",
+        #     prim_path="/World/defaultGroundPlane",
+        #     static_friction=1.0,
+        #     dynamic_friction=1.0,
+        #     restitution=0,
+        # )
+        
         self.AnymalD = AnymalD_Atriculation(
             prim_path="/World/AnymalD",
             name="AnymalD",

@@ -1,4 +1,5 @@
 import io
+import os
 import numpy as np
 import sys
 import torch
@@ -14,10 +15,9 @@ from omni.isaac.core.utils.stage import get_current_stage
 from omni.isaac.core.utils.types import ArticulationAction
 from omni.isaac.nucleus import get_assets_root_path
 
-from StrideSim.settings import ISAACLAB_LAB, ISAACLAB_LAB_ASSETS, ISAACLAB_LAB_TASKS
+from StrideSim.parameters import ISAACLAB_LAB, ISAACLAB_LAB_ASSETS, ISAACLAB_LAB_TASKS
 
 # from pxr import Gf
-
 
 sys.path.append(ISAACLAB_LAB)
 sys.path.append(ISAACLAB_LAB_TASKS)
@@ -74,11 +74,10 @@ class AnymalD_Atriculation:
 
         self._dof_control_modes: List[int] = list()
 
-        # print("assets_root_path: ", assets_root_path)
-
         # Policy
+
         file_content = omni.client.read_file(
-            "/home/jin/Documents/StrideSim/exts/StrideSim/StrideSim/network/policy.pt"
+            os.path.join(os.path.dirname(__file__), "network/policy.pt")
         )[2]
         file = io.BytesIO(memoryview(file_content).tobytes())
 
@@ -213,7 +212,7 @@ class AnymalD_Atriculation:
         self.robot.initialize(physics_sim_view=physics_sim_view)
         self.robot.get_articulation_controller().set_effort_modes("force")
         self.robot.get_articulation_controller().switch_control_mode("position")
-        self.robot._articulation_view.set_gains(np.zeros(12) + 60, np.zeros(12) + 4)
+        self.robot._articulation_view.set_gains(np.zeros(12) + 60, np.zeros(12) + 1.5)
 
     def post_reset(self) -> None:
         """

@@ -20,7 +20,7 @@ from omni.isaac.ui.ui_utils import btn_builder, get_style, setup_ui_headers  # s
 from omni.kit.menu.utils import MenuItemDescription, add_menu_items, remove_menu_items
 
 from StrideSim.base_sample import BaseSample
-from StrideSim.settings import RL_DIR
+from StrideSim.parameters import RL_DIR
 
 
 class BaseSampleExtension(omni.ext.IExt):
