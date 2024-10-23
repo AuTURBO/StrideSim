@@ -15,6 +15,7 @@ import omni.appwindow  # Contains handle to keyboard
 
 from StrideSim.anymal_articulation import AnymalD_Atriculation
 from StrideSim.base_sample import BaseSample
+# from StrideSim.omnigraph import ROS2OmniBackend
 from StrideSim.parameters import DEFAULT_WORLD_SETTINGS  # , SIMULATION_ENVIRONMENTS
 
 
@@ -80,6 +81,10 @@ class AnymalD(BaseSample):
             name="AnymalD",
             position=np.array([0, 0, 0.8]),
         )
+        
+        # action graph backend
+        # self._backend = ROS2OmniBackend({})
+        
         timeline = omni.timeline.get_timeline_interface()
         self._event_timer_callback = timeline.get_timeline_event_stream().create_subscription_to_pop_by_type(
             int(omni.timeline.TimelineEventType.STOP),
