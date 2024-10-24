@@ -87,3 +87,32 @@ pre-commit run --all-files
 ## 라이선스
 
 이 프로젝트는 MIT 라이선스 하에 배포됩니다.
+
+
+---
+
+## StrideSim Module 추가
+
+Stridesim의 경로를 python상에서 인식시키기 위함
+
+```
+cd exts/StrideSim
+
+python -m pip install -e .
+```
+
+
+완료 후
+
+
+```
+python -m pip list | grep StrideSim
+```
+
+ex) 아래와 같이 나타나면 완료
+```
+StrideSim                  0.1          /home/sjm/stride_sim_ws/src/StrideSim/exts/StrideSim/StrideSim
+```
+
+
+
