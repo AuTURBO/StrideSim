@@ -7,3 +7,4 @@ from .anymal_d import AnymalD
 from .anymal_d_extension import AnyamlDExtension
 from .base_sample import *
 from .omnigraph import ROS2OmniBackend
+from .parameters import *

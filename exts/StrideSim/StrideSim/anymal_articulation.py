@@ -19,9 +19,9 @@ from StrideSim.parameters import ISAACLAB_LAB, ISAACLAB_LAB_ASSETS, ISAACLAB_LAB
 
 # from pxr import Gf
 
-sys.path.append(ISAACLAB_LAB)
-sys.path.append(ISAACLAB_LAB_TASKS)
-sys.path.append(ISAACLAB_LAB_ASSETS)
+# sys.path.append(ISAACLAB_LAB)
+# sys.path.append(ISAACLAB_LAB_TASKS)
+# sys.path.append(ISAACLAB_LAB_ASSETS)
 
 from omni.isaac.lab.utils.assets import ISAACLAB_NUCLEUS_DIR
 
