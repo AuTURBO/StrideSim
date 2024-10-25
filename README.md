@@ -15,6 +15,19 @@ StrideSim은 Isaac Lab을 기반으로 한 프로젝트입니다. 이 저장소�
 
 2. [Isaac Lab v1.0.0](https://github.com/isaac-sim/IsaacLab/tree/v1.0.0) 설치: [설치 가이드](https://isaac-sim.github.io/IsaacLab/source/setup/installation/index.html) 참조
 
+3. StrideSim 설치
+
+```bash
+git clone https://github.com/AuTURBO/StrideSim.git
+```
+
+```bash
+sudo apt-get install -y git-lfs
+git lfs install
+
+cd StrideSim
+git lfs pull
+```
 
 ## 꿀팁
 

@@ -23,8 +23,6 @@ sys.path.append(ISAACLAB_LAB)
 sys.path.append(ISAACLAB_LAB_TASKS)
 sys.path.append(ISAACLAB_LAB_ASSETS)
 
-from omni.isaac.lab.utils.assets import ISAACLAB_NUCLEUS_DIR
-
 
 class AnymalD_Atriculation:
     """The AnymalD quadruped"""
@@ -61,7 +59,7 @@ class AnymalD_Atriculation:
                 if assets_root_path is None:
                     carb.log_error("Could not find Isaac Sim assets folder")
 
-                asset_path = f"{ISAACLAB_NUCLEUS_DIR}/Robots/ANYbotics/ANYmal-D/anymal_d.usd"
+                asset_path = os.path.join(os.path.dirname(__file__), "assets/AnymalD.usd")
 
                 prim.GetReferences().AddReference(asset_path)
 
@@ -210,7 +208,7 @@ class AnymalD_Atriculation:
         self.robot.initialize(physics_sim_view=physics_sim_view)
         self.robot.get_articulation_controller().set_effort_modes("force")
         self.robot.get_articulation_controller().switch_control_mode("position")
-        self.robot._articulation_view.set_gains(np.zeros(12) + 60, np.zeros(12) + 1.5)
+        self.robot._articulation_view.set_gains(np.zeros(12) + 60, np.zeros(12) + 4)
 
     def post_reset(self) -> None:
         """

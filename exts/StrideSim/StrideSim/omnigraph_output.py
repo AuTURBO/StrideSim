@@ -1,12 +1,12 @@
 import omni.graph.core as og
 
 
-class ROS2OmniBackend():
+class ROS2OmniOutput():
     def __init__(self, prim_paths: dict):
         super().__init__()
         self._prim_paths = self.initialize_prim_paths(prim_paths)
         (self._omni_graph, _, _, _) = og.Controller.edit(
-            {"graph_path": "/action_graph", "evaluator_name": "execution"}, {}
+            {"graph_path": "/action_graph_output", "evaluator_name": "execution"}, {}
         )
         self._omni_controller = og.Controller(self._omni_graph)
 
@@ -15,9 +15,10 @@ class ROS2OmniBackend():
 
     def initialize_prim_paths(self, prim_paths: dict):
         default_paths = {
-            "Lidar_path": "/World/AnymalD/base/lidar_parent/lidar_PhysX",
-            "Imu_path": "/World/AnymalD/base/imu_link/Imu_Sensor",
-            "TF_path": "/World/AnymalD",
+            "Lidar_path": "/World/AnymalD/AnymalD/base/lidar_parent/Lidar",
+            "Imu_path": "/World/AnymalD/AnymalD/base/imu_link/Imu_Sensor",
+            "TF_path": "/World/AnymalD/AnymalD/base",
+            "Joint_states_path": "/World/AnymalD/AnymalD/base",
             "namespace": "AnymalD",
         }
         for key, default in default_paths.items():
@@ -49,6 +50,7 @@ class ROS2OmniBackend():
             ("Lidar_Read", "omni.isaac.range_sensor.IsaacReadLidarPointCloud"),
             ("Ros2_Lidar_Pub", "omni.isaac.ros2_bridge.ROS2PublishPointCloud"),
             ("Ros2_tf_pub", "omni.isaac.ros2_bridge.ROS2PublishTransformTree"),
+            ("Ros2_Joint_states_pub", "omni.isaac.ros2_bridge.ROS2PublishJointState"),
         ]
         self.create_nodes(nodes)
 
@@ -66,15 +68,19 @@ class ROS2OmniBackend():
 
     def set_ros_node_values(self):
         values = [
-            ("Ros_Context.inputs:useDomainIDEnvVar", False),
+            ("Ros_Context.inputs:useDomainIDEnvVar", True),
             ("Imu_Read.inputs:imuPrim", self._prim_paths["Imu_path"]),
             ("Lidar_Read.inputs:lidarPrim", self._prim_paths["Lidar_path"]),
             ("Imu_Read.inputs:readGravity", True),
-            ("Ros2_Imu_Pub.inputs:frameId", "sim_imu"),
+            ("Ros2_Imu_Pub.inputs:frameId", "imu_link"),
             ("Ros2_Imu_Pub.inputs:topicName", "imu"),
-            ("Ros2_Lidar_Pub.inputs:frameId", "sim_lidar"),
+            ("Ros2_Lidar_Pub.inputs:frameId", "lidar_parent"),
             ("Ros2_Lidar_Pub.inputs:topicName", "point_cloud"),
             ("Ros2_tf_pub.inputs:targetPrims", self._prim_paths["TF_path"]),
+            (
+                "Ros2_Joint_states_pub.inputs:targetPrim",
+                self._prim_paths["Joint_states_path"],
+            ),
             ("Namespace_string.inputs:value", self._prim_paths["namespace"]),
         ]
         self.set_node_values(values)
@@ -90,9 +96,11 @@ class ROS2OmniBackend():
             ("PTick.outputs:tick", "Imu_Read.inputs:execIn"),
             ("PTick.outputs:tick", "Lidar_Read.inputs:execIn"),
             ("PTick.outputs:tick", "Ros2_tf_pub.inputs:execIn"),
+            ("PTick.outputs:tick", "Ros2_Joint_states_pub.inputs:execIn"),
             ("Sim_Time.outputs:simulationTime", "Ros2_Imu_Pub.inputs:timeStamp"),
             ("Sim_Time.outputs:simulationTime", "Ros2_Lidar_Pub.inputs:timeStamp"),
             ("Sim_Time.outputs:simulationTime", "Ros2_tf_pub.inputs:timeStamp"),
+            ("Sim_Time.outputs:simulationTime", "Ros2_Joint_states_pub.inputs:timeStamp"),
         ]
         self.connect_nodes(connections)
 
@@ -109,7 +117,7 @@ class ROS2OmniBackend():
             ("Ros_Context.outputs:context", "Ros2_tf_pub.inputs:context"),
             ("Namespace_string.inputs:value", "Ros2_Imu_Pub.inputs:nodeNamespace"),
             ("Namespace_string.inputs:value", "Ros2_Lidar_Pub.inputs:nodeNamespace"),
-            ("Namespace_string.inputs:value", "Ros2_tf_pub.inputs:nodeNamespace"),
+            ("Ros_Context.outputs:context", "Ros2_Joint_states_pub.inputs:context"),
         ]
         self.connect_nodes(connections)
 
