@@ -5,12 +5,18 @@ WORKDIR /
 
 # Update apt-get and install necessary packages
 RUN apt-get update && \
-    apt-get install -y git curl git-lfs && \
+    apt-get install -y git curl git-lfs cmake vim gedit && \
     git lfs install
 
 # Clone the required repositories
 RUN git clone https://github.com/AuTURBO/StrideSim.git && \
     git clone https://github.com/isaac-sim/IsaacLab.git -b v1.0.0
+
+WORKDIR /StrideSim
+
+# update git lfs
+RUN git lfs fetch && \
+    git lfs pull
 
 # Install ROS 2 Humble
 # RUN apt-get update && apt-get install -y locales software-properties-common && \
@@ -23,6 +29,8 @@ RUN git clone https://github.com/AuTURBO/StrideSim.git && \
 #     apt-get install -y ros-humble-desktop
 
 # Install Miniconda (latest version)
+WORKDIR /
+
 RUN curl -sS https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -o miniconda.sh && \
     bash miniconda.sh -b -p /opt/miniconda && \
     rm miniconda.sh && \
@@ -33,9 +41,18 @@ ENV PATH="/opt/miniconda/bin:$PATH"
 
 # Set up IsaacLab
 WORKDIR /IsaacLab
-RUN ln -s /isaac-sim _isaac_sim && \
-    ./isaaclab.sh --conda && \
-    /opt/miniconda/bin/conda run -n isaaclab ./isaaclab.sh --install
+
+# Create symbolic link
+RUN ln -s /isaac-sim _isaac_sim
+
+# Initialize conda
+RUN /bin/bash -c "source /opt/miniconda/etc/profile.d/conda.sh"
+
+# Run conda setup
+RUN /bin/bash -c "./isaaclab.sh --conda"
+
+# Install IsaacLab
+RUN /bin/bash -c "./isaaclab.sh --install"
 
 # Set up StrideSim
 WORKDIR /StrideSim/rl
