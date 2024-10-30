@@ -104,7 +104,7 @@ Dockerfile을 통해 컨테이너를 빌드하고 실행할 수 있습니다.
 ```bash
 docker build -t stride-sim:v0.0.1 docker
 
-docker run --name stride-sim-0.0.1 --entrypoint bash -it --runtime=nvidia --gpus all -e "ACCEPT_EULA=Y" --network=host \
+docker run --name stride-sim-0.0.1 --entrypoint bash -it --runtime=nvidia --gpus all -e "ACCEPT_EULA=Y" --network=host --privileged \
     -e "PRIVACY_CONSENT=Y" \
     -e DISPLAY=$DISPLAY \
     -v /tmp/.X11-unix:/tmp/.X11-unix \
@@ -116,6 +116,7 @@ docker run --name stride-sim-0.0.1 --entrypoint bash -it --runtime=nvidia --gpus
     -v ~/docker/isaac-sim/logs:/root/.nvidia-omniverse/logs:rw \
     -v ~/docker/isaac-sim/data:/root/.local/share/ov/data:rw \
     -v ~/docker/isaac-sim/documents:/root/Documents:rw \
+    -v /dev/shm:/dev/shm \
     stride-sim:v0.0.1
 ```
 
