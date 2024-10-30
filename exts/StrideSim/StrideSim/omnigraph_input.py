@@ -1,5 +1,5 @@
+import carb  # noqa: F401
 import omni.graph.core as og
-import carb
 
 
 class ROS2OmniInput:
@@ -89,25 +89,24 @@ class ROS2OmniInput:
             {self._keys.CONNECT: connections},
         )
 
+
 # TODO: 여기서부터 다시 작업~
-def setup_graph_monitoring():
-    # Get a handle to the graph
-    keys = og.Controller.Keys
-    (graph_handle, _, _, _) = og.Controller.edit({"graph_path": "/action_graph_input"})
+# def setup_graph_monitoring():
+#     # Get a handle to the graph
+#     keys = og.Controller.Keys
+#     (graph_handle, _, _, _) = og.Controller.edit({"graph_path": "/action_graph_input"})
 
-    # Access the output attribute
-    output_attr = og.Controller.attribute(
-        "/action_graph_input/Ros_Twist_sub.outputs:angularVelocity"
-    )
+#     # Access the output attribute
+#     output_attr = og.Controller.attribute("/action_graph_input/Ros_Twist_sub.outputs:angularVelocity")
 
-    # Define callback
-    def on_value_change(attr):
-        new_value = attr.get()
-        carb.log_info(f"Output value updated: {new_value}")
+#     # Define callback
+#     def on_value_change(attr):
+#         new_value = attr.get()
+#         carb.log_info(f"Output value updated: {new_value}")
 
-    # Register callback
-    output_attr.add_value_changed_fn(on_value_change)
+#     # Register callback
+#     output_attr.add_value_changed_fn(on_value_change)
 
-    # Get the initial value
-    initial_value = output_attr.get()
-    carb.log_info(f"Initial value: {initial_value}")
+#     # Get the initial value
+#     initial_value = output_attr.get()
+#     carb.log_info(f"Initial value: {initial_value}")

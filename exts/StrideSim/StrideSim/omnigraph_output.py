@@ -1,7 +1,7 @@
 import omni.graph.core as og
 
 
-class ROS2OmniOutput():
+class ROS2OmniOutput:
     def __init__(self, prim_paths: dict):
         super().__init__()
         self._prim_paths = self.initialize_prim_paths(prim_paths)

@@ -15,21 +15,23 @@ RUN apt-get install -y build-essential gcc g++ sudo wget unzip software-properti
 RUN git clone https://github.com/AuTURBO/StrideSim.git && \
     git clone https://github.com/isaac-sim/IsaacLab.git -b v1.0.0
 
+# pull lfs files in StrideSim
 WORKDIR /StrideSim
 
-# update git lfs
 RUN git lfs fetch && \
     git lfs pull
 
 # Install ROS 2 Humble
-RUN apt-get update && apt-get install -y locales software-properties-common && \
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y tzdata && \
+    apt-get install -y locales software-properties-common && \
     locale-gen en_US en_US.UTF-8 && \
     update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 && \
     add-apt-repository universe && \
     curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg && \
     echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" > /etc/apt/sources.list.d/ros2.list && \
     apt-get update && \
-    apt-get install -y ros-humble-desktop
+    DEBIAN_FRONTEND=noninteractive apt-get install -y ros-humble-desktop
 
 # Install Miniconda (latest version)
 WORKDIR /
