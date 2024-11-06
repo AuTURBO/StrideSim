@@ -69,8 +69,9 @@ RUN /bin/bash -c "source /opt/miniconda/etc/profile.d/conda.sh && \
 
 WORKDIR /isaac-sim
 
-# Add conda environment activation to bashrc
+# Add environment activations to bashrc
 RUN echo "source /opt/miniconda/etc/profile.d/conda.sh && conda activate isaaclab" >> ~/.bashrc
+RUN echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc
 
 # Set default shell to bash
 SHELL ["/bin/bash", "-c"]
