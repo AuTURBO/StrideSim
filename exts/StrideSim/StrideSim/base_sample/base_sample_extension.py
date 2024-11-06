@@ -8,7 +8,6 @@
 #
 
 import asyncio
-import subprocess
 import weakref
 from abc import abstractmethod
 
@@ -16,11 +15,9 @@ import omni.ext
 import omni.ui as ui
 from omni.isaac.core import World
 from omni.isaac.ui.menu import make_menu_item_description
-from omni.isaac.ui.ui_utils import btn_builder, get_style, setup_ui_headers  # scrolling_frame_builder
 from omni.kit.menu.utils import MenuItemDescription, add_menu_items, remove_menu_items
 
 from StrideSim.base_sample import BaseSample
-from StrideSim.parameters import RL_DIR
 
 
 class BaseSampleExtension(omni.ext.IExt):
@@ -65,15 +62,19 @@ class BaseSampleExtension(omni.ext.IExt):
         add_menu_items(self._menu_items, "Isaac Examples")
 
         self._buttons = dict()
+
+        self._window = ui.Window(
+            name, width=window_width, height=0, visible=keep_window_open, dockPreference=ui.DockPreference.LEFT_BOTTOM
+        )
+
+        self._window.deferred_dock_in("Property", ui.DockPolicy.CURRENT_WINDOW_IS_ACTIVE)
+
         self._build_ui(
-            name=name,
             title=title,
             doc_link=doc_link,
             overview=overview,
             file_path=file_path,
             number_of_extra_frames=number_of_extra_frames,
-            window_width=window_width,
-            keep_window_open=keep_window_open,
         )
         return
 
@@ -92,99 +93,8 @@ class BaseSampleExtension(omni.ext.IExt):
     def get_buttons(self):
         return self._buttons
 
-    def _build_ui(
-        self, name, title, doc_link, overview, file_path, number_of_extra_frames, window_width, keep_window_open
-    ):
-        self._window = omni.ui.Window(
-            name, width=window_width, height=0, visible=keep_window_open, dockPreference=ui.DockPreference.LEFT_BOTTOM
-        )
-
-        self._window.deferred_dock_in("Property", ui.DockPolicy.CURRENT_WINDOW_IS_ACTIVE)
-
-        with self._window.frame:
-            self._main_stack = ui.VStack(spacing=5, height=0)
-            with self._main_stack:
-                setup_ui_headers(self._ext_id, file_path, title, doc_link, overview)
-                self._controls_frame = ui.CollapsableFrame(
-                    title="World Controls",
-                    width=ui.Fraction(1),
-                    height=0,
-                    collapsed=True,
-                    style=get_style(),
-                    horizontal_scrollbar_policy=ui.ScrollBarPolicy.SCROLLBAR_AS_NEEDED,
-                    vertical_scrollbar_policy=ui.ScrollBarPolicy.SCROLLBAR_ALWAYS_ON,
-                )
-                with ui.VStack(style=get_style(), spacing=5, height=0):
-                    for i in range(number_of_extra_frames):
-                        self._extra_frames.append(
-                            ui.CollapsableFrame(
-                                title="",
-                                width=ui.Fraction(0.33),
-                                height=0,
-                                visible=False,
-                                collapsed=False,
-                                style=get_style(),
-                                horizontal_scrollbar_policy=ui.ScrollBarPolicy.SCROLLBAR_AS_NEEDED,
-                                vertical_scrollbar_policy=ui.ScrollBarPolicy.SCROLLBAR_ALWAYS_ON,
-                            )
-                        )
-                with self._controls_frame:
-                    with ui.VStack(style=get_style(), spacing=5, height=0):
-                        dict = {
-                            "label": "Load World",
-                            "type": "button",
-                            "text": "Load",
-                            "tooltip": "Load World and Task",
-                            "on_clicked_fn": self._on_load_world,
-                        }
-                        self._buttons["Load World"] = btn_builder(**dict)
-                        self._buttons["Load World"].enabled = True
-                        dict = {
-                            "label": "Reset",
-                            "type": "button",
-                            "text": "Reset",
-                            "tooltip": "Reset robot and environment",
-                            "on_clicked_fn": self._on_reset,
-                        }
-                        self._buttons["Reset"] = btn_builder(**dict)
-                        self._buttons["Reset"].enabled = False
-
-                # New panel for Reinforcement Learning
-                self._rl_frame = ui.CollapsableFrame(
-                    title="Reinforcement Learning Panel",
-                    width=ui.Fraction(1),
-                    height=0,
-                    collapsed=False,
-                    style=get_style(),
-                    horizontal_scrollbar_policy=ui.ScrollBarPolicy.SCROLLBAR_AS_NEEDED,
-                    vertical_scrollbar_policy=ui.ScrollBarPolicy.SCROLLBAR_ALWAYS_ON,
-                )
-                with self._rl_frame:
-                    with ui.VStack(style=get_style(), spacing=5, height=0):
-                        ui.Label("Task Name:", width=ui.Fraction(0.3))
-                        self._rl_task_name_field = ui.StringField(height=0, width=ui.Fraction(0.7))
-                        self._rl_task_name_field.model.set_value("Template-Isaac-Velocity-Rough-Anymal-D-v0")
-                        ui.Label("Window popup:", width=ui.Fraction(0.3))
-
-                        self._headless_dropdown = ui.ComboBox(0, "on", "off")
-
-                        dict_train = {
-                            "label": "Train",
-                            "type": "button",
-                            "text": "TRAIN",
-                            "tooltip": "Start training",
-                            "on_clicked_fn": self._on_train,
-                        }
-                        self._buttons["Train"] = btn_builder(**dict_train)
-
-                        dict_play = {
-                            "label": "Play",
-                            "type": "button",
-                            "text": "PLAY",
-                            "tooltip": "Start playing",
-                            "on_clicked_fn": self._on_play,
-                        }
-                        self._buttons["Play"] = btn_builder(**dict_play)
+    @abstractmethod
+    def _build_ui(self, title, doc_link, overview, file_path, number_of_extra_frames):
         return
 
     def _set_button_tooltip(self, button_name, tool_tip):
@@ -277,33 +187,4 @@ class BaseSampleExtension(omni.ext.IExt):
             self._buttons["Load World"].enabled = False
             self._buttons["Reset"].enabled = True
             self.post_clear_button_event()
-        return
-
-    def _on_train(self):
-        task_name = self._rl_task_name_field.model.get_value_as_string()
-        training_window = self._headless_dropdown.model.get_item_value_model().get_value_as_string()
-
-        command = f"python {RL_DIR}/train.py --task {task_name}"
-        if training_window == "1":
-            command += " --headless"
-
-        try:
-            subprocess.Popen(command, shell=True)
-            print(f"Started training process: {command}")
-        except Exception as e:
-            print(f"Error starting training process: {e}")
-        return
-
-    def _on_play(self):
-        task_name = self._rl_task_name_field.model.get_value_as_string()
-
-        command = f"python {RL_DIR}/play.py --task {task_name}"
-
-        command += " --num_envs 10"
-
-        try:
-            subprocess.Popen(command, shell=True)
-            print(f"Started training process: {command}")
-        except Exception as e:
-            print(f"Error starting training process: {e}")
         return
