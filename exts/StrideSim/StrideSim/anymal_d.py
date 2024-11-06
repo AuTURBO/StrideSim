@@ -111,6 +111,8 @@ class AnymalD(BaseSample):
 
     def on_physics_step(self, step_size) -> None:
         if self._physics_ready:
+            self._base_command[0:2] = self._omni_input.get_linear_velocity()[0:2]
+            self._base_command[2] = self._omni_input.get_angular_velocity()[2]
             self.AnymalD.advance(step_size, self._base_command)
         else:
             self._physics_ready = True
