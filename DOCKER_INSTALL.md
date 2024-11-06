@@ -125,6 +125,24 @@ cd /isaac-sim
 ./isaac-sim.sh --allow-root
 ```
 
+3. Get ROS2 Topic from StrideSim
+
+The StrideSim container runs with administrative privileges. To receive ROS2 messages published by processes within this container, administrative permissions are required. You can choose one of the following methods, command below in host environment:
+
+* Use an administrator prompt.
+
+```
+$ sudo su
+# source /opt/ros/humble/setup.bash
+# ros2 topic list
+```
+
+* Set permissions for /dev/shm.
+
+```
+$ sudo chmod -R 777 /dev/shm
+```
+
 ENJOY!
 
 ## File Structure
