@@ -1,3 +1,7 @@
+import numpy as np
+import threading
+import time
+
 import carb  # noqa: F401
 import omni.graph.core as og
 
@@ -13,6 +17,14 @@ class ROS2OmniInput:
 
         self._keys = og.Controller.Keys
         self.initialize_omnigraph()
+
+        self._angular_velocity_path = "/action_graph_input/Ros_Twist_sub.outputs:angularVelocity"
+        self._linear_velocity_path = "/action_graph_input/Ros_Twist_sub.outputs:linearVelocity"
+        self._linear_vel = np.zeros(3)
+        self._angular_vel = np.zeros(3)
+
+        self._graph_monitor_thread = threading.Thread(target=self.setup_graph_monitoring)
+        self._graph_monitor_thread.start()
 
     def initialize_prim_paths(self, prim_paths: dict):
         default_paths = {
@@ -89,24 +101,16 @@ class ROS2OmniInput:
             {self._keys.CONNECT: connections},
         )
 
+    def get_linear_velocity(self):
+        return self._linear_vel
 
-# TODO: 여기서부터 다시 작업~
-# def setup_graph_monitoring():
-#     # Get a handle to the graph
-#     keys = og.Controller.Keys
-#     (graph_handle, _, _, _) = og.Controller.edit({"graph_path": "/action_graph_input"})
+    def get_angular_velocity(self):
+        return self._angular_vel
 
-#     # Access the output attribute
-#     output_attr = og.Controller.attribute("/action_graph_input/Ros_Twist_sub.outputs:angularVelocity")
+    def setup_graph_monitoring(self):
 
-#     # Define callback
-#     def on_value_change(attr):
-#         new_value = attr.get()
-#         carb.log_info(f"Output value updated: {new_value}")
+        while True:
+            self._linear_vel = og.Controller.get(self._linear_velocity_path)
+            self._angular_vel = og.Controller.get(self._angular_velocity_path)
 
-#     # Register callback
-#     output_attr.add_value_changed_fn(on_value_change)
-
-#     # Get the initial value
-#     initial_value = output_attr.get()
-#     carb.log_info(f"Initial value: {initial_value}")
+            time.sleep(0.02)  # 50Hz = 0.02s period
