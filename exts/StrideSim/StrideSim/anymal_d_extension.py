@@ -1,6 +1,4 @@
 import os
-
-
 import subprocess
 
 import omni.ui as ui
@@ -8,8 +6,8 @@ from omni.isaac.ui.ui_utils import btn_builder, get_style, setup_ui_headers  # s
 
 from StrideSim.anymal_d import AnymalD
 from StrideSim.base_sample import BaseSampleExtension
-
 from StrideSim.parameters import RL_DIR
+
 
 class AnyamlDExtension(BaseSampleExtension):
     def on_startup(self, ext_id: str):
@@ -41,10 +39,7 @@ class AnyamlDExtension(BaseSampleExtension):
         )
         return
 
-    
-    def _build_ui(
-        self, title, doc_link, overview, file_path, number_of_extra_frames
-    ):
+    def _build_ui(self, title, doc_link, overview, file_path, number_of_extra_frames):
         with self._window.frame:
             self._main_stack = ui.VStack(spacing=5, height=0)
             with self._main_stack:
@@ -130,7 +125,6 @@ class AnyamlDExtension(BaseSampleExtension):
                         }
                         self._buttons["Play"] = btn_builder(**dict_play)
         return
-
 
     def _on_train(self):
         task_name = self._rl_task_name_field.model.get_value_as_string()

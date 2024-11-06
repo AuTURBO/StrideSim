@@ -62,20 +62,19 @@ class BaseSampleExtension(omni.ext.IExt):
         add_menu_items(self._menu_items, "Isaac Examples")
 
         self._buttons = dict()
-        
-        
+
         self._window = ui.Window(
             name, width=window_width, height=0, visible=keep_window_open, dockPreference=ui.DockPreference.LEFT_BOTTOM
         )
 
         self._window.deferred_dock_in("Property", ui.DockPolicy.CURRENT_WINDOW_IS_ACTIVE)
-        
+
         self._build_ui(
             title=title,
             doc_link=doc_link,
             overview=overview,
             file_path=file_path,
-            number_of_extra_frames=number_of_extra_frames
+            number_of_extra_frames=number_of_extra_frames,
         )
         return
 
@@ -93,11 +92,9 @@ class BaseSampleExtension(omni.ext.IExt):
 
     def get_buttons(self):
         return self._buttons
-    
+
     @abstractmethod
-    def _build_ui(
-        self, title, doc_link, overview, file_path, number_of_extra_frames
-    ):
+    def _build_ui(self, title, doc_link, overview, file_path, number_of_extra_frames):
         return
 
     def _set_button_tooltip(self, button_name, tool_tip):
@@ -191,5 +188,3 @@ class BaseSampleExtension(omni.ext.IExt):
             self._buttons["Reset"].enabled = True
             self.post_clear_button_event()
         return
-
-    
