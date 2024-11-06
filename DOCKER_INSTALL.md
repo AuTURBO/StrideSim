@@ -117,11 +117,25 @@ Now you can run StrideSim Docker Container.
 
 It contains the Isaac Sim, StrideSim, IsaacLab and ROS2 Humble!!
 
+You can run the following command to run isaac-sim.
+
+```bash
+cd /isaac-sim
+./isaac-sim.sh --allow-root
+```
+
 ENJOY!
 
-*Back to [README](README.md)*
+## File Structure
+
+- /isaac-sim
+- /StrideSim
+- /IsaacLab
+- /opt/ros/humble
 
 ## Reference
 
 - [Container Installation](https://docs.omniverse.nvidia.com/isaacsim/latest/installation/install_container.html)
 - [NGC Key](https://docs.nvidia.com/ngc/gpu-cloud/ngc-user-guide/index.html#generating-api-key)
+
+*Back to [README](README.md)*
