@@ -98,8 +98,6 @@ docker build -t stride-sim:v0.0.1 docker
 
 ```bash
 docker run --name stride-sim-0.0.1 --entrypoint bash -it --runtime=nvidia --gpus all -e "ACCEPT_EULA=Y" --network=host --privileged \
-    --user $(id -u):$(id -g) \
-    -e "PRIVACY_CONSENT=Y" \
     -e DISPLAY=$DISPLAY \
     -v /tmp/.X11-unix:/tmp/.X11-unix \
     -v ~/docker/isaac-sim/cache/kit:/isaac-sim/kit/cache:rw \
