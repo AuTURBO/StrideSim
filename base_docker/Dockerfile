@@ -1,0 +1,42 @@
+# Base image
+FROM nvcr.io/nvidia/isaac-sim:4.0.0
+
+# Set environment variables
+ENV DEBIAN_FRONTEND=noninteractive
+ENV ROS_DISTRO=humble
+ENV LANG=C.UTF-8
+ENV LC_ALL=C.UTF-8
+ENV ACCEPT_EULA=Y
+
+# Install prerequisites
+RUN apt-get update && apt-get install -y \
+    curl gnupg2 lsb-release software-properties-common build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# Add ROS 2 GPG key and source list
+RUN curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | apt-key add - \
+    && echo "deb [arch=$(dpkg --print-architecture)] http://packages.ros.org/ros2/ubuntu $(lsb_release -cs) main" > /etc/apt/sources.list.d/ros2-latest.list
+
+# Install ROS 2 Humble
+RUN apt-get update && apt-get install -y \
+    ros-$ROS_DISTRO-desktop \
+    python3-colcon-common-extensions \
+    ros-$ROS_DISTRO-cyclonedds* \
+    && rm -rf /var/lib/apt/lists/*
+
+# Source ROS 2 setup file
+RUN echo "source /opt/ros/$ROS_DISTRO/setup.bash" >> ~/.bashrc
+
+# Install additional dependencies for Isaac Sim if needed
+RUN apt-get update && apt-get install -y \
+    python3-rosdep python3-vcstool \
+    && rm -rf /var/lib/apt/lists/*
+
+# Initialize rosdep
+RUN rosdep init && rosdep update
+
+# Set working directory
+WORKDIR /
+
+# Set default shell to bash
+SHELL ["/bin/bash", "-c"]

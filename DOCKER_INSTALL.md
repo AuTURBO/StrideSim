@@ -77,7 +77,7 @@ docker login nvcr.io
 
 ```bash
 Username: $oauthtoken
-Password: API키
+Password: API key
 ```
 
 ## Get Isaac Sim Docker Image
@@ -90,15 +90,32 @@ docker pull nvcr.io/nvidia/isaac-sim:4.0.0
 
 1. Build Docker Image
 
+First, you need to make base image.
+
 ```bash
-docker build -t stride-sim:v0.0.1 docker
+docker build -t isaac-sim-ros2:humble-4.0.0 base_docker
 ```
 
-2. Run Docker Container
+Then, build StrideSim Docker Image.
 
 ```bash
-docker run --name stride-sim-0.0.1 --entrypoint bash -it --runtime=nvidia --gpus all -e "ACCEPT_EULA=Y" --network=host --privileged \
+docker build -t stride-sim:v0.0.2 docker
+```
+
+> The reason why we need to build base image is to reduce the build time.
+
+1. Run Docker Container
+
+Then, you can run StrideSim Docker Container.
+
+```bash
+docker run --name stride-sim-0.0.2 --entrypoint bash -it --runtime=nvidia --gpus all -e "ACCEPT_EULA=Y" --network=host --privileged \
     -e DISPLAY=$DISPLAY \
+    -e OMNI_KIT_ALLOW_ROOT=1 \
+    -e RMW_IMPLEMENTATION=rmw_cyclonedds_cpp \
+    --shm-size=8g \
+    -m 16g \
+    --memory-swap 24g \
     -v /tmp/.X11-unix:/tmp/.X11-unix \
     -v ~/docker/isaac-sim/cache/kit:/isaac-sim/kit/cache:rw \
     -v ~/docker/isaac-sim/cache/ov:/root/.cache/ov:rw \
@@ -109,7 +126,7 @@ docker run --name stride-sim-0.0.1 --entrypoint bash -it --runtime=nvidia --gpus
     -v ~/docker/isaac-sim/data:/root/.local/share/ov/data:rw \
     -v ~/docker/isaac-sim/documents:/root/Documents:rw \
     -v /dev/shm:/dev/shm \
-    stride-sim:v0.0.1
+    stride-sim:v0.0.2
 ```
 
 Now you can run StrideSim Docker Container.
@@ -123,7 +140,7 @@ cd /isaac-sim
 ./isaac-sim.sh --allow-root
 ```
 
-3. Get ROS2 Topic from StrideSim
+1. Get ROS2 Topic from StrideSim
 
 The StrideSim container runs with administrative privileges. To receive ROS2 messages published by processes within this container, administrative permissions are required. You can choose one of the following methods, command below in host environment:
 
@@ -154,5 +171,39 @@ ENJOY!
 
 - [Container Installation](https://docs.omniverse.nvidia.com/isaacsim/latest/installation/install_container.html)
 - [NGC Key](https://docs.nvidia.com/ngc/gpu-cloud/ngc-user-guide/index.html#generating-api-key)
+
+## Troubleshooting
+
+### Memory Issues
+If you encounter "out of memory" errors:
+
+1. Increase shared memory size:
+```bash
+sudo mount -o remount,size=8G /dev/shm
+```
+
+2. Verify system resources before running:
+```bash
+free -h
+nvidia-smi
+```
+
+3. If using ROS2 bridge, try switching DDS implementation:
+```bash
+export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+```
+
+### Isaac Sim Crashes
+If Isaac Sim crashes during startup:
+
+1. Clear cached data:
+```bash
+rm -rf ~/docker/isaac-sim/cache/*
+```
+
+2. Run with reduced graphics settings:
+```bash
+./isaac-sim.sh --allow-root --headless
+```
 
 *Back to [README](README.md)*
