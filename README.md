@@ -23,7 +23,7 @@ StrideSim is a project based on Isaac Lab. This repository is designed to allow 
 
 You can build and run the container using the Dockerfile.
 
-[Docker Installation Guide](DOCKER_INSTALL.md)
+[Docker Installation Guide](docker/README.md)
 
 ## Local Installation
 

@@ -12,7 +12,7 @@ chmod +x NVIDIA-Linux-x86_64-535.129.03.run
 sudo ./NVIDIA-Linux-x86_64-535.129.03.run
 ```
 
-![alt text](Asset/docker_install/image-2.png)
+![alt text](../Asset/docker_install/image-2.png)
 > I tried to install *nvidia driver-550*, and it also works.
 
 ## Docker Installation
@@ -57,17 +57,18 @@ docker run --rm --runtime=nvidia --gpus all ubuntu nvidia-smi
 ```
 
 ## Get NGC Key
+
 You can follow this [official documentation](https://docs.nvidia.com/ngc/gpu-cloud/ngc-user-guide/index.html#generating-api-key) to get the NGC key.
 
 1. Go to [NGC](https://ngc.nvidia.com/signin)
 
 2. Click on the **Setup** button on the top right.
 
-    ![alt text](Asset/docker_install/image.png)
+    ![alt text](../Asset/docker_install/image.png)
 
 3. Click on the **Generate API Key** button.
 
-    ![alt text](Asset/docker_install/image-1.png)
+    ![alt text](../Asset/docker_install/image-1.png)
 
 4. Copy the API Key.
 
@@ -93,13 +94,15 @@ docker pull nvcr.io/nvidia/isaac-sim:4.0.0
 First, you need to make base image.
 
 ```bash
-docker build -t isaac-sim-ros2:humble-4.0.0 base_docker
+cd ${StrideSim_DIR}
+docker build -t isaac-sim-ros2:humble-4.0.0 -f docker/Dockerfile.isaacsim-humble .
 ```
 
 Then, build StrideSim Docker Image.
 
 ```bash
-docker build -t stride-sim:v0.0.2 docker
+cd ${StrideSim_DIR}
+docker build -t stride-sim:v0.0.2 -f docker/Dockerfile.stridesim .
 ```
 
 > The reason why we need to build base image is to reduce the build time.
@@ -206,4 +209,4 @@ rm -rf ~/docker/isaac-sim/cache/*
 ./isaac-sim.sh --allow-root --headless
 ```
 
-*Back to [README](README.md)*
+*Back to [README](../README.md)*
