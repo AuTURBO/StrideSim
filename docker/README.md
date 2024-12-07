@@ -89,20 +89,33 @@ docker pull nvcr.io/nvidia/isaac-sim:4.0.0
 
 ## Run StrideSim Docker Container
 
+First, set the environment variables to build Docker Image.
+
+```bash
+export StrideSim_DIR=${PWD}
+export StrideSim_NAME=$(whoami)-docker
+export StrideSim_PASSWORD=a
+```
+
 1. Build Docker Image
 
 First, you need to make base image.
 
 ```bash
 cd ${StrideSim_DIR}
-docker build -t isaac-sim-ros2:humble-4.0.0 -f docker/Dockerfile.isaacsim-humble .
+docker build -t isaac-sim-ros2:humble-4.0.0 \
+    --build-arg ROS_DISTRO=humble \
+    -f docker/Dockerfile.isaacsim-humble .
 ```
 
 Then, build StrideSim Docker Image.
 
 ```bash
 cd ${StrideSim_DIR}
-docker build -t stride-sim:v0.0.2 -f docker/Dockerfile.stridesim .
+docker build -t stride-sim:v0.0.3 \
+    --build-arg USERNAME=${StrideSim_NAME} \
+    --build-arg USERPASSWORD=${StrideSim_PASSWORD} \
+    -f docker/Dockerfile.stridesim .
 ```
 
 > The reason why we need to build base image is to reduce the build time.
@@ -112,7 +125,7 @@ docker build -t stride-sim:v0.0.2 -f docker/Dockerfile.stridesim .
 Then, you can run StrideSim Docker Container.
 
 ```bash
-docker run --name stride-sim-0.0.2 --entrypoint bash -it --runtime=nvidia --gpus all -e "ACCEPT_EULA=Y" --network=host --privileged \
+docker run --name stride-sim-0.0.3 --entrypoint bash -it --runtime=nvidia --gpus all -e "ACCEPT_EULA=Y" --network=host --privileged \
     -e DISPLAY=$DISPLAY \
     -e OMNI_KIT_ALLOW_ROOT=1 \
     -e RMW_IMPLEMENTATION=rmw_cyclonedds_cpp \
@@ -128,8 +141,14 @@ docker run --name stride-sim-0.0.2 --entrypoint bash -it --runtime=nvidia --gpus
     -v ~/docker/isaac-sim/logs:/root/.nvidia-omniverse/logs:rw \
     -v ~/docker/isaac-sim/data:/root/.local/share/ov/data:rw \
     -v ~/docker/isaac-sim/documents:/root/Documents:rw \
+    -v ${StrideSim_DIR}:/StrideSim:rw \
     -v /dev/shm:/dev/shm \
-    stride-sim:v0.0.2
+    stride-sim:v0.0.3
+```
+
+```bash
+# It takes a long time to run the first time about 3 minutes.
+sudo chmod 777 -R /isaac-sim
 ```
 
 Now you can run StrideSim Docker Container.
@@ -140,25 +159,7 @@ You can run the following command to run isaac-sim.
 
 ```bash
 cd /isaac-sim
-./isaac-sim.sh --allow-root
-```
-
-1. Get ROS2 Topic from StrideSim
-
-The StrideSim container runs with administrative privileges. To receive ROS2 messages published by processes within this container, administrative permissions are required. You can choose one of the following methods, command below in host environment:
-
-* Use an administrator prompt.
-
-```
-$ sudo su
-# source /opt/ros/humble/setup.bash
-# ros2 topic list
-```
-
-* Set permissions for /dev/shm.
-
-```
-$ sudo chmod -R 777 /dev/shm
+./isaac-sim.sh
 ```
 
 ENJOY!
@@ -206,7 +207,28 @@ rm -rf ~/docker/isaac-sim/cache/*
 
 2. Run with reduced graphics settings:
 ```bash
-./isaac-sim.sh --allow-root --headless
+./isaac-sim.sh --headless
 ```
 
 *Back to [README](../README.md)*
+
+
+## Deprecated
+
+1. Get ROS2 Topic from StrideSim
+
+The StrideSim container runs with administrative privileges. To receive ROS2 messages published by processes within this container, administrative permissions are required. You can choose one of the following methods, command below in host environment:
+
+* Use an administrator prompt.
+
+```
+$ sudo su
+# source /opt/ros/humble/setup.bash
+# ros2 topic list
+```
+
+* Set permissions for /dev/shm.
+
+```
+$ sudo chmod -R 777 /dev/shm
+```
