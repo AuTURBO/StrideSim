@@ -93,8 +93,8 @@ First, set the environment variables to build Docker Image.
 
 ```bash
 export StrideSim_DIR=${PWD}
-export StrideSim_NAME=$(whoami)-docker
-export StrideSim_PASSWORD=a
+export DOCKER_NAME=$(whoami)-docker
+export DOCKER_PW=a
 ```
 
 1. Build Docker Image
@@ -113,8 +113,8 @@ Then, build StrideSim Docker Image.
 ```bash
 cd ${StrideSim_DIR}
 docker build -t stride-sim:v0.0.3 \
-    --build-arg USERNAME=${StrideSim_NAME} \
-    --build-arg USERPASSWORD=${StrideSim_PASSWORD} \
+    --build-arg USERNAME=${DOCKER_NAME} \
+    --build-arg USERPASSWORD=${DOCKER_PW} \
     -f docker/Dockerfile.stridesim .
 ```
 
@@ -129,6 +129,7 @@ docker run --name stride-sim-0.0.3 --entrypoint bash -it --runtime=nvidia --gpus
     -e DISPLAY=$DISPLAY \
     -e OMNI_KIT_ALLOW_ROOT=1 \
     -e RMW_IMPLEMENTATION=rmw_cyclonedds_cpp \
+    -e ROS_DOMAIN_ID=${ROS_DOMAIN_ID} \
     --shm-size=8g \
     -m 16g \
     --memory-swap 24g \
