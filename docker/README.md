@@ -97,7 +97,7 @@ export DOCKER_NAME=$(whoami)-docker
 export DOCKER_PW=a
 ```
 
-1. Build Docker Image
+### 1. Build Docker Image
 
 First, you need to make base image.
 
@@ -120,7 +120,7 @@ docker build -t stride-sim:v0.0.3 \
 
 > The reason why we need to build base image is to reduce the build time.
 
-1. Run Docker Container
+### 2. Run Docker Container
 
 Then, you can run StrideSim Docker Container.
 
