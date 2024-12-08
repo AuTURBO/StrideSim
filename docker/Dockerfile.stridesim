@@ -7,9 +7,8 @@ ARG USERPASSWORD
 # Update apt-get, install necessary packages, and set up build tools
 RUN apt-get update && \
     apt-get install -y \
-    git curl git-lfs cmake \
-    build-essential gcc g++ sudo wget unzip software-properties-common python3-pip && \
-    git lfs install && \
+    git curl cmake \
+    build-essential gcc g++ sudo wget unzip software-properties-common python3-pip parallel && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -29,6 +28,9 @@ RUN usermod -aG sudo $USERNAME
 
 USER $USERNAME
 WORKDIR /
+
+# Source ROS 2 setup file
+RUN echo "source /opt/ros/$ROS_DISTRO/setup.bash" >> ~/.bashrc
 
 # Set default shell to bash
 SHELL ["/bin/bash", "-c"]

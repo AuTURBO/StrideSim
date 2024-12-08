@@ -21,11 +21,9 @@ RUN curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | a
 RUN apt-get update && apt-get install -y \
     ros-$ROS_DISTRO-desktop \
     python3-colcon-common-extensions \
-    ros-$ROS_DISTRO-rmw-cyclonedds-cpp \
-    && rm -rf /var/lib/apt/lists/*
-
-# Source ROS 2 setup file
-RUN echo "source /opt/ros/$ROS_DISTRO/setup.bash" >> ~/.bashrc
+    ros-$ROS_DISTRO-rmw-cyclonedds-cpp* \
+    && apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # Install additional dependencies for Isaac Sim if needed
 RUN apt-get update && apt-get install -y \

@@ -148,8 +148,9 @@ docker run --name stride-sim-0.0.3 --entrypoint bash -it --runtime=nvidia --gpus
 ```
 
 ```bash
-# It takes a long time to run the first time about 3 minutes.
-sudo chmod 777 -R /isaac-sim
+# It takes a long time to run the first time about 10 minutes.
+cd /isaac-sim
+find . -print0 | parallel -0 --jobs +0 --bar chmod 777 {}
 ```
 
 Now you can run StrideSim Docker Container.
